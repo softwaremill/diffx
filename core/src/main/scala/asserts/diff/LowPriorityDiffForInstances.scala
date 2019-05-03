@@ -6,7 +6,7 @@ trait LowPriorityDiffForInstances {
     if (left.toString != right.toString) {
       DiffResultValue(left, right)
     } else {
-      Identical2(left)
+      Identical(left)
     }
   }
 
@@ -14,7 +14,7 @@ trait LowPriorityDiffForInstances {
     if (left != right) {
       DiffResultValue(left, right)
     } else {
-      Identical2(left)
+      Identical(left)
     }
   }
 }

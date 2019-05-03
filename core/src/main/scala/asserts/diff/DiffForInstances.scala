@@ -8,7 +8,7 @@ trait DiffForInstances extends DiffForDerivation {
   implicit def diffForOption[T: DiffFor]: DiffFor[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
       case (Some(l), Some(r)) => implicitly[DiffFor[T]].diff(l, r)
-      case (None, None)       => Identical2(None)
+      case (None, None)       => Identical(None)
       case (l, r)             => DiffResultValue(l, r)
     }
   }

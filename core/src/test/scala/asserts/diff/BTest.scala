@@ -9,12 +9,12 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
 
   it should "calculate diff for simple value" in {
     compare(1, 2) shouldBe DiffResultValue(1, 2)
-    compare(1, 1) shouldBe Identical2(1)
+    compare(1, 1) shouldBe Identical(1)
   }
 
   it should "calculate diff for product types" in {
     compare(p1, p2) shouldBe DiffResultObject("Person",
-                                              Map("name" -> Identical2("kasper"), "age" -> DiffResultValue(22, 11)))
+                                              Map("name" -> Identical("kasper"), "age" -> DiffResultValue(22, 11)))
   }
 
   it should "calculate diff for nested products" in {
@@ -23,8 +23,8 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
     compare(f1, f2) shouldBe DiffResultObject(
       "Family",
       Map(
-        "first" -> DiffResultObject("Person", Map("name" -> Identical2("kasper"), "age" -> Identical2(22))),
-        "second" -> DiffResultObject("Person", Map("name" -> Identical2("kasper"), "age" -> DiffResultValue(11, 22)))
+        "first" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> Identical(22))),
+        "second" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22)))
       )
     )
   }
@@ -38,8 +38,8 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
         "people" -> DiffResultObject(
           "List",
           Map(
-            "0" -> DiffResultObject("Person", Map("name" -> Identical2("kasper"), "age" -> Identical2(22))),
-            "1" -> DiffResultObject("Person", Map("name" -> Identical2("kasper"), "age" -> DiffResultValue(11, 22))),
+            "0" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> Identical(22))),
+            "1" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22))),
             "2" -> DiffResultMissing(Person("kasper", 22))
           )
         ))
@@ -67,7 +67,7 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
     compare(left, right) shouldBe DiffResultObject(
       "Foo",
       Map(
-        "bar" -> DiffResultObject("Bar", Map("s" -> Identical2("asdf"), "i" -> DiffResultValue(5, 66))),
+        "bar" -> DiffResultObject("Bar", Map("s" -> Identical("asdf"), "i" -> DiffResultValue(5, 66))),
         "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(123, 1234), "1" -> DiffResultAdditional(1234))),
         "parent" -> DiffResultValue("asserts.diff.Bar", "asserts.diff.Foo")
       )

@@ -32,7 +32,7 @@ case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
   override def showIndented(indent: Int): String = showChange(left.toString, right.toString)
 }
 
-case class Identical2[T](value: T) extends DiffResult {
+case class Identical[T](value: T) extends DiffResult {
   override def showIndented(indent: Int): String = value.toString
 }
 
