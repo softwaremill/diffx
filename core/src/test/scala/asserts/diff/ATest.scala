@@ -25,6 +25,14 @@ class ATest extends FlatSpec with Matchers with DiffMatcher {
     left should matchTo(right)
   }
 
+  it should "work22" in {
+    import ai.x.diff.conversions._
+    "asd" shouldBe "asdd"
+    val aa = WA(List("a" -> 1, "c" -> 2))
+    val ab = WA(List("a" -> 2))
+    aa should matchTo(ab)
+  }
+
   def newEthWebhook_OUT(txHash: TxHash,
                         txFrom: AddressValue,
                         txTo: AddressValue,
@@ -85,6 +93,8 @@ object HarvestTransfer {
   def isConfirmed(confirmations: Confirmations, requiredConfirmations: Confirmations): Boolean =
     requiredConfirmations <= confirmations
 }
+
+case class WA(map: List[(String, Int)])
 
 object EthWebhook_OUT {
   def apply(ew: EthWebhookToCall): EthWebhook_OUT = EthWebhook_OUT(

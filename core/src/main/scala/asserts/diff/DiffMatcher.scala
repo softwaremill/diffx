@@ -12,8 +12,12 @@ trait DiffMatcher {
   case class UserMatcher[A: DiffShow](right: A) extends Matcher[A] {
     override def apply(left: A): MatchResult = DiffShow.diff[A](left, right) match {
       case _: Identical => MatchResult(matches = true, "Users does not match", "")
-      case c: Different => MatchResult(matches = false, Console.RESET + Console.BLUE + c.string, "a co to?")
-      case _: Error     => MatchResult(matches = false, "Error while comparing", "a co to?")
+      case c: Different =>
+        println(Console.RESET + Console.BLUE + c.string)
+        val value = s"$left was not equal to ${List.fill(100) { right }.mkString("\n")}"
+//        Console.err.println(value)
+        MatchResult(matches = false, value, "a co to?")
+      case _: Error => MatchResult(matches = false, "Error while comparing", "a co to?")
     }
   }
 
