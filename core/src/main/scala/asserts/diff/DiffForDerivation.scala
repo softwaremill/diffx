@@ -4,7 +4,7 @@ import magnolia._
 
 import scala.language.experimental.macros
 
-trait DiffForDerivation extends LowPriorityDiffForInstances {
+trait DiffForDerivation {
   type Typeclass[T] = DiffFor[T]
 
   def combine[T](ctx: CaseClass[DiffFor, T]): DiffFor[T] = (left: T, right: T) => {
