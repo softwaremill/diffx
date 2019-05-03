@@ -17,7 +17,11 @@ trait DiffForInstances {
       keySet.map { k =>
         val leftValue = left.toList.asInstanceOf[List[T]].lift(k)
         val rightValue = right.toList.asInstanceOf[List[T]].lift(k)
-        k.toString -> implicitly[DiffFor[Option[T]]].diff(leftValue, rightValue)
+        k.toString -> (implicitly[DiffFor[Option[T]]].diff(leftValue, rightValue) match {
+          case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
+          case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
+          case d                              => d
+        })
       }.toMap
     )
   }

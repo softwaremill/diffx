@@ -15,8 +15,21 @@ trait DiffForDerivation extends LowPriorityDiffForInstances {
     }.toMap)
   }
 
-  def dispatch[T](ctx: SealedTrait[DiffFor, T]): DiffFor[T] =
-    throw new RuntimeException(s"Sealed trait hierarchies are not yet supported for: ${ctx.typeName}")
+  def dispatch[T](ctx: SealedTrait[DiffFor, T]): DiffFor[T] = { (left: T, right: T) =>
+    {
+      val lType = ctx.dispatch(left) { sub =>
+        sub
+      }
+      val rType = ctx.dispatch(right) { sub =>
+        sub
+      }
+      if (lType == rType) {
+        lType.typeclass.diff(lType.cast(left), lType.cast(right))
+      } else {
+        DiffResultValue(lType, rType)
+      }
+    }
+  }
 
   implicit def gen[T]: DiffFor[T] = macro Magnolia.gen[T]
 }

@@ -23,9 +23,7 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
        |${showFields.mkString("\n")})""".stripMargin
   }
 
-  private def i(indent: Int) = {
-    List.fill(indent)(" ").mkString
-  }
+  private def i(indent: Int) = " " * indent
 }
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResult {
@@ -34,4 +32,15 @@ case class DiffResultValue[T](left: T, right: T) extends DiffResult {
 
 case class Identical2[T](value: T) extends DiffResult {
   override def showIndented(indent: Int): String = value.toString
+}
+
+case class DiffResultMissing[T](value: T) extends DiffResult {
+  override def showIndented(indent: Int): String = {
+    red(value.toString)
+  }
+}
+case class DiffResultAdditional[T](value: T) extends DiffResult {
+  override def showIndented(indent: Int): String = {
+    green(value.toString)
+  }
 }

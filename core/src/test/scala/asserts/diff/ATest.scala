@@ -2,7 +2,9 @@ package asserts.diff
 
 import java.net.URI
 import java.time.Instant
+
 import ai.x.diff._
+import asserts.diff.A.newEthWebhook_OUT
 import asserts.domain._
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -33,22 +35,6 @@ class ATest extends FlatSpec with Matchers with DiffMatcher {
     aa should matchTo(ab)
   }
 
-  def newEthWebhook_OUT(txHash: TxHash,
-                        txFrom: AddressValue,
-                        txTo: AddressValue,
-                        txValue: String,
-                        token: Option[EthTokenTransfer[TokenNameAddress]], // TODO
-                        direction: TsDirection,
-                        confirmed: Boolean): EthWebhook_OUT =
-    EthWebhook_OUT(
-      EthTransaction_OUT(txHash, txFrom, Some(txTo), txValue, "", 0, Instant.ofEpochSecond(0)),
-      token
-        .map(t =>
-          EthTokenTransfer_OUT(t.token.contractAddress, t.from, t.to, t.value.toString, direction, t.token.name))
-        .getOrElse(EthDirectTransfer_OUT(txFrom, txTo, txValue, direction)),
-      0,
-      confirmed
-    )
   val wh1 = newEthWebhook_OUT(
     "asdasd",
     "azxczxc",
@@ -244,4 +230,23 @@ sealed trait TsDirection // ts - transfer
 object TsDirection {
   case object Incoming extends TsDirection
   case object Outgoing extends TsDirection
+}
+
+object A {
+  def newEthWebhook_OUT(txHash: TxHash,
+                        txFrom: AddressValue,
+                        txTo: AddressValue,
+                        txValue: String,
+                        token: Option[EthTokenTransfer[TokenNameAddress]], // TODO
+                        direction: TsDirection,
+                        confirmed: Boolean): EthWebhook_OUT =
+    EthWebhook_OUT(
+      EthTransaction_OUT(txHash, txFrom, Some(txTo), txValue, "", 0, Instant.ofEpochSecond(0)),
+      token
+        .map(t =>
+          EthTokenTransfer_OUT(t.token.contractAddress, t.from, t.to, t.value.toString, direction, t.token.name))
+        .getOrElse(EthDirectTransfer_OUT(txFrom, txTo, txValue, direction)),
+      0,
+      confirmed
+    )
 }
