@@ -13,14 +13,14 @@ trait DiffForInstances extends DiffForDerivation {
     }
   }
 
-  implicit def diffForIterable[T: DiffFor, C[_] <: Iterable[_]]: DiffFor[C[T]] = (left: C[T], right: C[T]) => {
-    val keySet = Range(0, Math.max(left.size, right.size))
+  implicit def diffForIterable[T: DiffFor, C[W] <: Iterable[W]]: DiffFor[C[T]] = (left: C[T], right: C[T]) => {
+    val indexes = Range(0, Math.max(left.size, right.size))
+    val leftAsMap = left.toList.lift
+    val rightAsMap = right.toList.lift
     DiffResultObject(
       "List",
-      keySet.map { k =>
-        val leftValue = left.toList.asInstanceOf[List[T]].lift(k)
-        val rightValue = right.toList.asInstanceOf[List[T]].lift(k)
-        k.toString -> (implicitly[DiffFor[Option[T]]].diff(leftValue, rightValue) match {
+      indexes.map { index =>
+        index.toString -> (implicitly[DiffFor[Option[T]]].diff(leftAsMap(index), rightAsMap(index)) match {
           case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
           case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
           case d                              => d
