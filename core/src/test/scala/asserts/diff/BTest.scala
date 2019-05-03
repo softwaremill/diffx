@@ -1,8 +1,6 @@
 package asserts.diff
 
-import asserts.diff.Differ._
 import org.scalatest.{FlatSpec, Matchers}
-import asserts.diff.A.newEthWebhook_OUT
 
 class BTest extends FlatSpec with Matchers with DiffMatcher {
 
@@ -48,35 +46,11 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
     )
   }
 
-  it should "show org diff" in {
-    val o1 = Organization(List(p1, p2))
-    val o2 = Organization(List(p1, p1, p1))
-    println(compare(o1, o2).show)
+  it should "calculate diff for sealed trait objects" in {
+    compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
+      "asserts.diff.TsDirection.Outgoing",
+      "asserts.diff.TsDirection.Incoming")
   }
-
-//  val wh1 = newEthWebhook_OUT(
-//    "asdasd",
-//    "azxczxc",
-//    "0x1213123",
-//    "0",
-//    Some(EthTokenTransfer("0x1213123", "oxKasper", 2, TokenNameAddress("ZLX", "0x123123123"))),
-//    TsDirection.Incoming,
-//    confirmed = true
-//  )
-//
-//  val wh2 = newEthWebhook_OUT(
-//    "asdasd",
-//    "azxczxc",
-//    "0x1213123",
-//    "0-kasper",
-//    Some(EthTokenTransfer("0x1213123", "oxKasper", 2, TokenNameAddress("ZLX", "0x123123123"))),
-//    TsDirection.Outgoing,
-//    confirmed = false
-//  )
-//
-//  it should "wor2k" in {
-//    compare(wh1, wh2).show
-//  }
 
   val left: Foo = Foo(
     Bar("asdf", 5),
@@ -86,11 +60,23 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
   val right: Foo = Foo(
     Bar("asdf", 66),
     List(1234),
-    Some(Bar("qwer", 5))
+    Some(left)
   )
 
   it should "calculate diff for coproduct types" in {
-    println(compare(left, right).show)
+    compare(left, right) shouldBe DiffResultObject(
+      "Foo",
+      Map(
+        "bar" -> DiffResultObject("Bar", Map("s" -> Identical2("asdf"), "i" -> DiffResultValue(5, 66))),
+        "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(123, 1234), "1" -> DiffResultAdditional(1234))),
+        "parent" -> DiffResultValue("asserts.diff.Bar", "asserts.diff.Foo")
+      )
+    )
+
+  }
+
+  it should "work" in {
+    right should matchTo(left)
   }
 
   private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].diff(t1, t2)
@@ -101,3 +87,12 @@ case class Person(name: String, age: Int)
 case class Family(first: Person, second: Person)
 
 case class Organization(people: List[Person])
+sealed trait Parent
+case class Bar(s: String, i: Int) extends Parent
+case class Foo(bar: Bar, b: List[Int], parent: Option[Parent]) extends Parent
+
+sealed trait TsDirection
+object TsDirection {
+  case object Incoming extends TsDirection
+  case object Outgoing extends TsDirection
+}

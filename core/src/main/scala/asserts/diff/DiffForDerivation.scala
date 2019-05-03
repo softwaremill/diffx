@@ -17,16 +17,12 @@ trait DiffForDerivation extends LowPriorityDiffForInstances {
 
   def dispatch[T](ctx: SealedTrait[DiffFor, T]): DiffFor[T] = { (left: T, right: T) =>
     {
-      val lType = ctx.dispatch(left) { sub =>
-        sub
-      }
-      val rType = ctx.dispatch(right) { sub =>
-        sub
-      }
+      val lType = ctx.dispatch(left)(a => a)
+      val rType = ctx.dispatch(right)(a => a)
       if (lType == rType) {
         lType.typeclass.diff(lType.cast(left), lType.cast(right))
       } else {
-        DiffResultValue(lType, rType)
+        DiffResultValue(lType.typeName.full, rType.typeName.full)
       }
     }
   }
