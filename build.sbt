@@ -12,13 +12,10 @@ lazy val core: Project = (project in file("core"))
   .settings(
     name := "core",
     libraryDependencies ++= Seq(
-      compilerPlugin("io.tryp" % "splain" % "0.4.1" cross CrossVersion.patch),
-"com.softwaremill.common" %% "tagging" % "2.2.1",
+      "com.softwaremill.common" %% "tagging" % "2.2.1",
       "ai.x" %% "diff" % "2.0.1",
       "org.scalatest" %% "scalatest" % "3.0.7",
       "com.softwaremill" %% "magnolia" % "0.11.0-sml"
-    ),
-    scalacOptions += "-Xlog-implicits"
-
+    )
   )
 
