@@ -11,6 +11,7 @@ object DiffFor {
 }
 
 trait DiffResult {
+  def isIdentical: Boolean
   def show: String = showIndented(5)
 
   private[diff] def showIndented(indent: Int): String
@@ -26,13 +27,16 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
   private def i(indent: Int) = " " * indent
 }
 
-trait DiffResultDifferent extends DiffResult
+trait DiffResultDifferent extends DiffResult {
+  override def isIdentical: Boolean = false
+}
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
   override def showIndented(indent: Int): String = showChange(left.toString, right.toString)
 }
 
 case class Identical[T](value: T) extends DiffResult {
+  override def isIdentical: Boolean = true
   override def showIndented(indent: Int): String = value.toString
 }
 

@@ -1,11 +1,14 @@
 package asserts.diff
 
+import java.time.Instant
+
 import org.scalatest.{FlatSpec, Matchers}
 
 class BTest extends FlatSpec with Matchers with DiffMatcher {
 
-  val p1 = Person("kasper", 22)
-  val p2 = Person("kasper", 11)
+  private val instant: Instant = Instant.now()
+  val p1 = Person("kasper", 22, instant)
+  val p2 = Person("kasper", 11, instant)
 
   it should "calculate diff for simple value" in {
     compare(1, 2) shouldBe DiffResultValue(1, 2)
@@ -13,8 +16,13 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
   }
 
   it should "calculate diff for product types" in {
-    compare(p1, p2) shouldBe DiffResultObject("Person",
-                                              Map("name" -> Identical("kasper"), "age" -> DiffResultValue(22, 11)))
+    compare(p1, p2) shouldBe DiffResultObject(
+      "Person",
+      Map("name" -> Identical("kasper"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant)))
+  }
+
+  it should "calculate identity for product types" in {
+    compare(p1, p1) shouldBe Identical(p1)
   }
 
   it should "calculate diff for nested products" in {
@@ -23,8 +31,11 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
     compare(f1, f2) shouldBe DiffResultObject(
       "Family",
       Map(
-        "first" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> Identical(22))),
-        "second" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22)))
+        "first" -> Identical(p1),
+        "second" -> DiffResultObject("Person",
+                                     Map("name" -> Identical("kasper"),
+                                         "age" -> DiffResultValue(11, 22),
+                                         "in" -> Identical(instant)))
       )
     )
   }
@@ -38,9 +49,12 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
         "people" -> DiffResultObject(
           "List",
           Map(
-            "0" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> Identical(22))),
-            "1" -> DiffResultObject("Person", Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22))),
-            "2" -> DiffResultMissing(Person("kasper", 22))
+            "0" -> Identical(p1),
+            "1" -> DiffResultObject("Person",
+                                    Map("name" -> Identical("kasper"),
+                                        "age" -> DiffResultValue(11, 22),
+                                        "in" -> Identical(instant))),
+            "2" -> DiffResultMissing(Person("kasper", 22, instant))
           )
         ))
     )
@@ -52,37 +66,37 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
       "asserts.diff.TsDirection.Incoming")
   }
 
-  val left: Foo = Foo(
+  val right: Foo = Foo(
     Bar("asdf", 5),
     List(123, 1234),
     Some(Bar("asdf", 5))
   )
-  val right: Foo = Foo(
+  val left: Foo = Foo(
     Bar("asdf", 66),
     List(1234),
-    Some(left)
+    Some(right)
   )
 
   it should "calculate diff for coproduct types" in {
     compare(left, right) shouldBe DiffResultObject(
       "Foo",
       Map(
-        "bar" -> DiffResultObject("Bar", Map("s" -> Identical("asdf"), "i" -> DiffResultValue(5, 66))),
-        "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(123, 1234), "1" -> DiffResultAdditional(1234))),
-        "parent" -> DiffResultValue("asserts.diff.Bar", "asserts.diff.Foo")
+        "bar" -> DiffResultObject("Bar", Map("s" -> Identical("asdf"), "i" -> DiffResultValue(66, 5))),
+        "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234))),
+        "parent" -> DiffResultValue("asserts.diff.Foo", "asserts.diff.Bar")
       )
     )
 
   }
 
   it should "work" in {
-    right should matchTo(left)
+    left should matchTo(right)
   }
 
   private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].diff(t1, t2)
 }
 
-case class Person(name: String, age: Int)
+case class Person(name: String, age: Int, in: Instant)
 
 case class Family(first: Person, second: Person)
 

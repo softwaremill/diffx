@@ -1,9 +1,8 @@
 package asserts.diff
 
-import java.time.Instant
 import java.util.UUID
 
-trait DiffForInstances extends DiffForDerivation {
+trait DiffForInstances extends LowPriorityDiffForInstances {
 
   implicit def diffForOption[T: DiffFor]: DiffFor[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
@@ -38,6 +37,12 @@ trait DiffForInstances extends DiffForDerivation {
     }
 
   implicit val diffForBigDecimal: DiffFor[BigDecimal] = DiffFor.apply(_.toString)
-  implicit val diffForInstant: DiffFor[Instant] = DiffFor.apply(_.toString)
   implicit val diffForUUID: DiffFor[UUID] = DiffFor.apply(_.toString)
+  implicit val diffForInt: DiffFor[Int] = (left: Int, right: Int) => {
+    if (left != right) {
+      DiffResultValue(left, right)
+    } else {
+      Identical(left)
+    }
+  }
 }

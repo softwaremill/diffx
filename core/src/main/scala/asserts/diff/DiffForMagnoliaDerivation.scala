@@ -4,15 +4,20 @@ import magnolia._
 
 import scala.language.experimental.macros
 
-trait DiffForDerivation extends LowPriorityDiffForInstances {
+trait DiffForMagnoliaDerivation {
   type Typeclass[T] = DiffFor[T]
 
   def combine[T](ctx: CaseClass[DiffFor, T]): DiffFor[T] = (left: T, right: T) => {
-    DiffResultObject(ctx.typeName.short, ctx.parameters.map { p =>
+    val map = ctx.parameters.map { p =>
       val lType = p.dereference(left)
       val pType = p.dereference(right)
       p.label -> p.typeclass.diff(lType, pType)
-    }.toMap)
+    }.toMap
+    if (map.values.forall(p => p.isIdentical)) {
+      Identical(left)
+    } else {
+      DiffResultObject(ctx.typeName.short, map)
+    }
   }
 
   def dispatch[T](ctx: SealedTrait[DiffFor, T]): DiffFor[T] = { (left: T, right: T) =>

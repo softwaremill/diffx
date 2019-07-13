@@ -1,14 +1,6 @@
 package asserts.diff
 
-trait LowPriorityDiffForInstances {
-
-  implicit def diffForAny[T <: AnyVal]: DiffFor[T] = (left: T, right: T) => {
-    if (left.toString != right.toString) {
-      DiffResultValue(left, right)
-    } else {
-      Identical(left)
-    }
-  }
+trait LowPriorityDiffForInstances extends DiffForAnyDerivation {
 
   implicit def diffForString: DiffFor[String] = (left: String, right: String) => {
     if (left != right) {
