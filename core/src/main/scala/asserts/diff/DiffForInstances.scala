@@ -1,6 +1,6 @@
 package asserts.diff
 
-trait DiffForInstances extends LowPriorityDiffForInstances {
+trait DiffForInstances extends DiffForAnyDerivation {
 
   implicit def diffForOption[T: DiffFor]: DiffFor[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
@@ -33,4 +33,12 @@ trait DiffForInstances extends LowPriorityDiffForInstances {
         k -> implicitly[DiffFor[Option[T]]].diff(left.get(k), right.get(k))
       }.toMap)
     }
+
+  implicit def diffForString: DiffFor[String] = (left: String, right: String) => {
+    if (left != right) {
+      DiffResultValue(left, right)
+    } else {
+      Identical(left)
+    }
+  }
 }
