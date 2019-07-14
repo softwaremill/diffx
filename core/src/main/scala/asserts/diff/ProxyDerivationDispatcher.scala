@@ -8,7 +8,7 @@ object ProxyDerivationDispatcher {
     import c.universe._
     val symbol = c.symbolOf[T]
     val t = weakTypeOf[T]
-    if (symbol.asClass.isCaseClass || symbol.asClass.isSealed) {
+    if (symbol.isClass && (symbol.asClass.isCaseClass || symbol.asClass.isSealed)) {
       q"gen[$t]"
     } else {
       q"""new asserts.diff.DiffFor[$t] {
