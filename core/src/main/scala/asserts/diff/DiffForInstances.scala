@@ -38,11 +38,4 @@ trait DiffForInstances extends LowPriorityDiffForInstances {
 
   implicit val diffForBigDecimal: DiffFor[BigDecimal] = DiffFor.apply(_.toString)
   implicit val diffForUUID: DiffFor[UUID] = DiffFor.apply(_.toString)
-  implicit val diffForInt: DiffFor[Int] = (left: Int, right: Int) => {
-    if (left != right) {
-      DiffResultValue(left, right)
-    } else {
-      Identical(left)
-    }
-  }
 }
