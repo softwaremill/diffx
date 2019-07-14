@@ -1,6 +1,16 @@
 package asserts.diff
 
-trait DiffForInstances extends DiffForAnyDerivation {
+trait DiffForInstances extends DiffForMagnoliaDerivation {
+
+  implicit def diffForInt: DiffFor[Int] = new Typeclass[Int] {
+    override def diff(left: Int, right: Int): DiffResult = {
+      if (left != right) {
+        DiffResultValue(left, right)
+      } else {
+        Identical(left)
+      }
+    }
+  }
 
   implicit def diffForOption[T: DiffFor]: DiffFor[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
@@ -34,11 +44,4 @@ trait DiffForInstances extends DiffForAnyDerivation {
       }.toMap)
     }
 
-  implicit def diffForString: DiffFor[String] = (left: String, right: String) => {
-    if (left != right) {
-      DiffResultValue(left, right)
-    } else {
-      Identical(left)
-    }
-  }
 }

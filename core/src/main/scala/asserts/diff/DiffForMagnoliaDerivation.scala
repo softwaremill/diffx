@@ -4,7 +4,7 @@ import magnolia._
 
 import scala.language.experimental.macros
 
-trait DiffForMagnoliaDerivation {
+trait DiffForMagnoliaDerivation extends LowPriority {
   type Typeclass[T] = DiffFor[T]
 
   def combine[T](ctx: CaseClass[DiffFor, T]): DiffFor[T] = (left: T, right: T) => {
@@ -33,4 +33,16 @@ trait DiffForMagnoliaDerivation {
   }
 
   implicit def gen[T]: DiffFor[T] = macro Magnolia.gen[T]
+}
+
+trait LowPriority {
+  def fallback[T]: DiffFor[T] = new DiffFor[T] {
+    override def diff(left: T, right: T): DiffResult = {
+      if (left != right) {
+        DiffResultValue(left, right)
+      } else {
+        Identical(left)
+      }
+    }
+  }
 }
