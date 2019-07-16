@@ -4,11 +4,11 @@ import java.time.Instant
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class DiffTest extends FlatSpec with Matchers with DiffForInstances {
+class DiffTest extends FlatSpec with Matchers with DiffForInstances with DiffMatcherInstances {
 
   private val instant: Instant = Instant.now()
-  val p1 = Person("kasper", 22, instant)
-  val p2 = Person("kasper", 11, instant)
+  val p1 = Person("p1", 22, instant)
+  val p2 = Person("p2", 11, instant)
 
   it should "calculate diff for simple value" in {
     compare(1, 2) shouldBe DiffResultValue(1, 2)
@@ -18,7 +18,11 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for product types" in {
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
-      Map("name" -> Identical("kasper"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
+      Map(
+        "name" -> DiffResultValue(p1.name, p2.name),
+        "age" -> DiffResultValue(p1.age, p2.age),
+        "in" -> Identical(instant)
+      )
     )
   }
 
@@ -35,7 +39,11 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
         "first" -> Identical(p1),
         "second" -> DiffResultObject(
           "Person",
-          Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22), "in" -> Identical(instant))
+          Map(
+            "name" -> DiffResultValue(p2.name, p1.name),
+            "age" -> DiffResultValue(p2.age, p1.age),
+            "in" -> Identical(instant)
+          )
         )
       )
     )
@@ -53,9 +61,13 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
             "0" -> Identical(p1),
             "1" -> DiffResultObject(
               "Person",
-              Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22), "in" -> Identical(instant))
+              Map(
+                "name" -> DiffResultValue(p2.name, p1.name),
+                "age" -> DiffResultValue(p2.age, p1.age),
+                "in" -> Identical(instant)
+              )
             ),
-            "2" -> DiffResultMissing(Person("kasper", 22, instant))
+            "2" -> DiffResultMissing(Person(p1.name, p1.age, instant))
           )
         )
       )
@@ -70,14 +82,14 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   }
 
   it should "calculate diff for sets" in {
-    implicitly[DiffFor[Set[Int]]].diff(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)) shouldBe DiffResultSet(
+    compare(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)) shouldBe DiffResultSet(
       List(DiffResultAdditional(5))
     )
   }
 
   it should "calculate diff for mutable sets" in {
     import scala.collection.{Set => mSet}
-    implicitly[DiffFor[mSet[Int]]].diff(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)) shouldBe DiffResultSet(
+    compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)) shouldBe DiffResultSet(
       List(DiffResultAdditional(5))
     )
   }
@@ -103,6 +115,25 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
       )
     )
 
+  }
+
+  it should "calculate diff for set of products" in {
+    val p2m = p2.copy(age = 33)
+    compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(List(DiffResultAdditional(p2), DiffResultMissing(p2m)))
+  }
+
+  it should "calculate diff for set of products using instance matcher" in {
+    val p2m = p2.copy(age = 33)
+    implicit val im: DiffMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
+      List(
+        Identical(p1),
+        DiffResultObject(
+          "Person",
+          Map("name" -> Identical(p2.name), "age" -> DiffResultValue(p2.age, p2m.age), "in" -> Identical(p1.in))
+        )
+      )
+    )
   }
   private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].diff(t1, t2)
 }
