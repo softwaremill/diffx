@@ -4,9 +4,6 @@ lazy val commonSettings = commonSmlBuildSettings ++ acyclicSettings ++ Seq(
   scalafmtOnCompile := true
 )
 
-val circeVersion = "0.11.1"
-val tapirVersion = "0.7"
-
 lazy val core: Project = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(
