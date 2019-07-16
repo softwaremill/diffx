@@ -1,4 +1,5 @@
-# diff-x
+# diff-x 
+[![Build Status](https://travis-ci.org/softwaremill/diff-x.svg?branch=master)](https://travis-ci.org/softwaremill/diff-x)
 
 Pretty diffs for case classes. 
 
