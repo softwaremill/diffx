@@ -3,6 +3,8 @@ scala:
   - 2.12.8
   - 2.13.0
 before_install:
+  - openssl aes-256-cbc -K $encrypted_5331bd37a5e5_key -iv $encrypted_5331bd37a5e5_iv
+    -in secrets.tar.enc -out secrets.tar -d
   - tar xvf secrets.tar
 before_cache:
   - du -h -d 1 $HOME/.ivy2/
