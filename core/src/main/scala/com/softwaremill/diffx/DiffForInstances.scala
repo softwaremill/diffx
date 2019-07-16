@@ -1,4 +1,4 @@
-package asserts.diff
+package com.softwaremill.diffx
 
 trait DiffForInstances extends DiffForMagnoliaDerivation {
 

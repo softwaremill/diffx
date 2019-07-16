@@ -1,4 +1,4 @@
-package asserts.diff
+package com.softwaremill.diffx
 
 trait DiffFor[T] {
 
@@ -14,7 +14,7 @@ trait DiffResult {
   def isIdentical: Boolean
   def show: String = showIndented(5)
 
-  private[diff] def showIndented(indent: Int): String
+  private[diffx] def showIndented(indent: Int): String
 }
 
 case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResultDifferent {

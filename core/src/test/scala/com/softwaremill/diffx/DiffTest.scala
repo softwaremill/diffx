@@ -1,10 +1,10 @@
-package asserts.diff
+package com.softwaremill.diffx
 
 import java.time.Instant
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class BTest extends FlatSpec with Matchers with DiffMatcher {
+class DiffTest extends FlatSpec with Matchers with DiffForInstances {
 
   private val instant: Instant = Instant.now()
   val p1 = Person("kasper", 22, instant)
@@ -62,8 +62,8 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
 
   it should "calculate diff for sealed trait objects" in {
     compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
-      "asserts.diff.TsDirection.Outgoing",
-      "asserts.diff.TsDirection.Incoming")
+      "com.softwaremill.diffx.TsDirection.Outgoing",
+      "com.softwaremill.diffx.TsDirection.Incoming")
   }
 
   val right: Foo = Foo(
@@ -83,16 +83,11 @@ class BTest extends FlatSpec with Matchers with DiffMatcher {
       Map(
         "bar" -> DiffResultObject("Bar", Map("s" -> Identical("asdf"), "i" -> DiffResultValue(66, 5))),
         "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234))),
-        "parent" -> DiffResultValue("asserts.diff.Foo", "asserts.diff.Bar")
+        "parent" -> DiffResultValue("com.softwaremill.diffx.Foo", "com.softwaremill.diffx.Bar")
       )
     )
 
   }
-
-  it should "work" in {
-    left should matchTo(right)
-  }
-
   private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].diff(t1, t2)
 }
 

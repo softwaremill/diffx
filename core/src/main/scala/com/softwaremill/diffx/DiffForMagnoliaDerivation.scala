@@ -1,4 +1,4 @@
-package asserts.diff
+package com.softwaremill.diffx
 
 import magnolia._
 

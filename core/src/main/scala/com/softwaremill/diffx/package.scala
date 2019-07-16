@@ -1,6 +1,6 @@
-package asserts
+package com.softwaremill
 
-package object diff {
+package object diffx {
   def red(s: String): String = Console.RED + s + Console.RESET
   def green(s: String): String = Console.GREEN + s + Console.RESET
   def blue(s: String): String = Console.BLUE + s + Console.RESET

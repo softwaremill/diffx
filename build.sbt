@@ -12,10 +12,24 @@ lazy val core: Project = (project in file("core"))
   .settings(
     name := "core",
     libraryDependencies ++= Seq(
-      "com.softwaremill.common" %% "tagging" % "2.2.1",
-      "ai.x" %% "diff" % "2.0.1",
-      "org.scalatest" %% "scalatest" % "3.0.7",
-      "com.softwaremill" %% "magnolia" % "0.11.0-sml"
+      "com.propensive" %% "magnolia" % "0.11.0",
+      "org.scalatest" %% "scalatest" % "3.0.7" % "test",
     )
   )
 
+lazy val scalatest: Project = (project in file("scalatest"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "scalatest",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.0.7",
+    )
+  )
+  .dependsOn(core)
+
+lazy val rootProject = (project in file("."))
+  .settings(commonSettings: _*)
+  .aggregate(
+    core,
+    scalatest
+  )
