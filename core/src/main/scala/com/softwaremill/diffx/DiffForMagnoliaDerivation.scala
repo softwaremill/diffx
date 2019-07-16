@@ -36,13 +36,11 @@ trait DiffForMagnoliaDerivation extends LowPriority {
 }
 
 trait LowPriority {
-  def fallback[T]: DiffFor[T] = new DiffFor[T] {
-    override def diff(left: T, right: T): DiffResult = {
-      if (left != right) {
-        DiffResultValue(left, right)
-      } else {
-        Identical(left)
-      }
+  def fallback[T]: DiffFor[T] = (left: T, right: T) => {
+    if (left != right) {
+      DiffResultValue(left, right)
+    } else {
+      Identical(left)
     }
   }
 }
