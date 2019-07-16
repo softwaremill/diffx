@@ -1,7 +1,6 @@
 package com.softwaremill.diffx
 
 trait DiffFor[T] {
-
   def diff(left: T, right: T): DiffResult
 }
 

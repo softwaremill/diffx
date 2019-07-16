@@ -15,7 +15,7 @@ class DiffMatcherTest extends FlatSpec with Matchers with DiffMatcher {
     Some(right)
   )
 
-  ignore should "wor" in {
+  ignore should "work" in {
     left should matchTo(right)
   }
 

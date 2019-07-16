@@ -18,7 +18,8 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for product types" in {
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
-      Map("name" -> Identical("kasper"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant)))
+      Map("name" -> Identical("kasper"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
+    )
   }
 
   it should "calculate identity for product types" in {
@@ -32,10 +33,10 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
       "Family",
       Map(
         "first" -> Identical(p1),
-        "second" -> DiffResultObject("Person",
-                                     Map("name" -> Identical("kasper"),
-                                         "age" -> DiffResultValue(11, 22),
-                                         "in" -> Identical(instant)))
+        "second" -> DiffResultObject(
+          "Person",
+          Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22), "in" -> Identical(instant))
+        )
       )
     )
   }
@@ -50,20 +51,22 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
           "List",
           Map(
             "0" -> Identical(p1),
-            "1" -> DiffResultObject("Person",
-                                    Map("name" -> Identical("kasper"),
-                                        "age" -> DiffResultValue(11, 22),
-                                        "in" -> Identical(instant))),
+            "1" -> DiffResultObject(
+              "Person",
+              Map("name" -> Identical("kasper"), "age" -> DiffResultValue(11, 22), "in" -> Identical(instant))
+            ),
             "2" -> DiffResultMissing(Person("kasper", 22, instant))
           )
-        ))
+        )
+      )
     )
   }
 
   it should "calculate diff for sealed trait objects" in {
     compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
       "com.softwaremill.diffx.TsDirection.Outgoing",
-      "com.softwaremill.diffx.TsDirection.Incoming")
+      "com.softwaremill.diffx.TsDirection.Incoming"
+    )
   }
 
   val right: Foo = Foo(

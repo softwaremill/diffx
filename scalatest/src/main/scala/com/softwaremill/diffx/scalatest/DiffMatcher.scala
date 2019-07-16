@@ -16,3 +16,5 @@ trait DiffMatcher extends DiffForInstances {
   }
 
 }
+
+object DiffMatcher extends DiffMatcher
