@@ -2,13 +2,11 @@ package com.softwaremill.diffx
 
 trait DiffForInstances extends DiffForMagnoliaDerivation {
 
-  implicit def diffForInt: DiffFor[Int] = new Typeclass[Int] {
-    override def diff(left: Int, right: Int): DiffResult = {
-      if (left != right) {
-        DiffResultValue(left, right)
-      } else {
-        Identical(left)
-      }
+  implicit def diffForInt: DiffFor[Int] = (left: Int, right: Int) => {
+    if (left != right) {
+      DiffResultValue(left, right)
+    } else {
+      Identical(left)
     }
   }
 
@@ -17,6 +15,18 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
       case (Some(l), Some(r)) => implicitly[DiffFor[T]].diff(l, r)
       case (None, None)       => Identical(None)
       case (l, r)             => DiffResultValue(l, r)
+    }
+  }
+
+  implicit def diffForSet[T: DiffFor, C[W] <: scala.collection.Set[W]]: DiffFor[C[T]] = (left: C[T], right: C[T]) => {
+    val diffs = left.diff(right).map(DiffResultAdditional(_)).toList ++ right
+      .diff(left)
+      .map(DiffResultMissing(_))
+      .toList
+    if (diffs.isEmpty) {
+      Identical(left)
+    } else {
+      DiffResultSet(diffs)
     }
   }
 

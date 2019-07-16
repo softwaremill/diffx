@@ -69,6 +69,19 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
+  it should "calculate diff for sets" in {
+    implicitly[DiffFor[Set[Int]]].diff(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)) shouldBe DiffResultSet(
+      List(DiffResultAdditional(5))
+    )
+  }
+
+  it should "calculate diff for mutable sets" in {
+    import scala.collection.{Set => mSet}
+    implicitly[DiffFor[mSet[Int]]].diff(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)) shouldBe DiffResultSet(
+      List(DiffResultAdditional(5))
+    )
+  }
+
   val right: Foo = Foo(
     Bar("asdf", 5),
     List(123, 1234),

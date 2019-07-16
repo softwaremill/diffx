@@ -17,17 +17,24 @@ trait DiffResult {
 }
 
 case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResultDifferent {
-  override def showIndented(indent: Int): String = {
+  override private[diffx] def showIndented(indent: Int): String = {
     val showFields = fields.map(f => s"${i(indent)}${f._1}: ${f._2.showIndented(indent + 5)}")
     s"""$name(
        |${showFields.mkString("\n")})""".stripMargin
   }
+}
 
-  private def i(indent: Int) = " " * indent
+case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
+  override private[diffx] def showIndented(indent: Int): String = {
+    val showFields = diffs.map(f => s"${i(indent)}$f")
+    s"""Set(
+       |${showFields.mkString("\n")})""".stripMargin
+  }
 }
 
 trait DiffResultDifferent extends DiffResult {
   override def isIdentical: Boolean = false
+  protected def i(indent: Int) = " " * indent
 }
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
