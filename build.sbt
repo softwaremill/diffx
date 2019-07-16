@@ -4,29 +4,32 @@ lazy val commonSettings = commonSmlBuildSettings ++ acyclicSettings ++ Seq(
   scalafmtOnCompile := true
 )
 
-lazy val core: Project = (project in file("core"))
-  .settings(commonSettings: _*)
-  .settings(
-    name := "diffx-core",
-    libraryDependencies ++= Seq(
-      "com.propensive" %% "magnolia" % "0.11.0",
-      "org.scalatest" %% "scalatest" % "3.0.7" % "test",
-    )
-  )
-
-lazy val scalatest: Project = (project in file("scalatest"))
-  .settings(commonSettings: _*)
-  .settings(
-    name := "diffx-scalatest",
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.0.7",
-    )
-  )
-  .dependsOn(core)
+val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.8"
 
 lazy val rootProject = (project in file("."))
-  .settings(commonSettings: _*)
+  .settings(name := "diffx")
+  .settings(commonSettings)
   .aggregate(
     core,
     scalatest
   )
+
+lazy val core: Project = (project in file("core"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-core",
+    libraryDependencies ++= Seq(
+      "com.propensive" %% "magnolia" % "0.11.0",
+      scalatestDependency % "test",
+    )
+  )
+
+lazy val scalatest: Project = (project in file("scalatest"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-scalatest",
+    libraryDependencies ++= Seq(
+      scalatestDependency
+    )
+  )
+  .dependsOn(core)
