@@ -19,7 +19,7 @@ left should matchTo(right)
 
 Giving you nice error messages, such as:
 
-![alt text](https://raw.githubusercontent.com/softwaremill/diffx/master/example.png)
+![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
 
 ## Using directly
 
