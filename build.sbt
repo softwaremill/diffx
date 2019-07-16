@@ -1,5 +1,5 @@
 lazy val commonSettings = commonSmlBuildSettings ++ acyclicSettings ++ Seq(
-  organization := "com.sakiewka",
+  organization := "com.softwaremill.diffx",
   scalaVersion := "2.12.8",
   scalafmtOnCompile := true
 )
@@ -10,7 +10,7 @@ val tapirVersion = "0.7"
 lazy val core: Project = (project in file("core"))
   .settings(commonSettings: _*)
   .settings(
-    name := "core",
+    name := "diffx-core",
     libraryDependencies ++= Seq(
       "com.propensive" %% "magnolia" % "0.11.0",
       "org.scalatest" %% "scalatest" % "3.0.7" % "test",
@@ -20,7 +20,7 @@ lazy val core: Project = (project in file("core"))
 lazy val scalatest: Project = (project in file("scalatest"))
   .settings(commonSettings: _*)
   .settings(
-    name := "scalatest",
+    name := "diffx-scalatest",
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.0.7",
     )
