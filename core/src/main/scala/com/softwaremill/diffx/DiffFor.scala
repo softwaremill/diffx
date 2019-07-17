@@ -1,12 +1,12 @@
 package com.softwaremill.diffx
 
 trait DiffFor[T] {
-  def diff(left: T, right: T): DiffResult
+  def apply(left: T, right: T): DiffResult
 }
 
 object DiffFor {
   def apply[T, R: DiffFor](converter: T => R): DiffFor[T] =
-    (left: T, right: T) => implicitly[DiffFor[R]].diff(converter(left), converter(right))
+    (left: T, right: T) => implicitly[DiffFor[R]].apply(converter(left), converter(right))
 }
 
 trait DiffResult {

@@ -148,7 +148,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
-  private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].diff(t1, t2)
+  private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].apply(t1, t2)
 }
 
 case class Person(name: String, age: Int, in: Instant)
