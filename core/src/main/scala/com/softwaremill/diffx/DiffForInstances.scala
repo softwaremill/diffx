@@ -13,15 +13,15 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
   implicit def diffForOption[T: DiffFor]: DiffFor[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
       case (Some(l), Some(r)) => implicitly[DiffFor[T]].diff(l, r)
-      case (None, None) => Identical(None)
-      case (l, r) => DiffResultValue(l, r)
+      case (None, None)       => Identical(None)
+      case (l, r)             => DiffResultValue(l, r)
     }
   }
 
-  implicit def diffForSet[T: DiffFor : DiffMatcher, C[W] <: scala.collection.Set[W]]: DiffFor[C[T]] =
+  implicit def diffForSet[T: DiffFor: EntityMatcher, C[W] <: scala.collection.Set[W]]: DiffFor[C[T]] =
     (left: C[T], right: C[T]) => {
-      val matcher = implicitly[DiffMatcher[T]]
-      val matchedInstances = left.flatMap(l => right.collectFirst { case r if matcher.isSameInstance(l, r) => l -> r })
+      val matcher = implicitly[EntityMatcher[T]]
+      val matchedInstances = left.flatMap(l => right.collectFirst { case r if matcher.isSameEntity(l, r) => l -> r })
       val unMatchedLeftInstances = left.diff(matchedInstances.map(_._1))
       val unMatchedRightInstances = right.diff(matchedInstances.map(_._2))
       val differ = implicitly[DiffFor[T]]
@@ -53,7 +53,7 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
         index.toString -> (implicitly[DiffFor[Option[T]]].diff(leftAsMap(index), rightAsMap(index)) match {
           case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
           case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
-          case d => d
+          case d                              => d
         })
       }.toMap
     )

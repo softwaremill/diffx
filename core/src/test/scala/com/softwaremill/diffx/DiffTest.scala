@@ -4,7 +4,7 @@ import java.time.Instant
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class DiffTest extends FlatSpec with Matchers with DiffForInstances with DiffMatcherInstances {
+class DiffTest extends FlatSpec with Matchers with DiffForInstances {
 
   private val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -82,15 +82,25 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances with DiffMat
   }
 
   it should "calculate diff for sets" in {
-    compare(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)) shouldBe DiffResultSet(
-      List(DiffResultAdditional(5))
+    val diffResult = compare(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
+    diffResult.diffs should contain theSameElementsAs List(
+      DiffResultAdditional(5),
+      Identical(4),
+      Identical(3),
+      Identical(2),
+      Identical(1)
     )
   }
 
   it should "calculate diff for mutable sets" in {
     import scala.collection.{Set => mSet}
-    compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)) shouldBe DiffResultSet(
-      List(DiffResultAdditional(5))
+    val diffResult = compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
+    diffResult.diffs should contain theSameElementsAs List(
+      DiffResultAdditional(5),
+      Identical(4),
+      Identical(3),
+      Identical(2),
+      Identical(1)
     )
   }
 
@@ -119,12 +129,14 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances with DiffMat
 
   it should "calculate diff for set of products" in {
     val p2m = p2.copy(age = 33)
-    compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(List(DiffResultAdditional(p2), DiffResultMissing(p2m)))
+    compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
+      List(DiffResultAdditional(p2), DiffResultMissing(p2m), Identical(p1))
+    )
   }
 
   it should "calculate diff for set of products using instance matcher" in {
     val p2m = p2.copy(age = 33)
-    implicit val im: DiffMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
     compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
       List(
         Identical(p1),
@@ -135,6 +147,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances with DiffMat
       )
     )
   }
+
   private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].diff(t1, t2)
 }
 
@@ -143,12 +156,19 @@ case class Person(name: String, age: Int, in: Instant)
 case class Family(first: Person, second: Person)
 
 case class Organization(people: List[Person])
+
 sealed trait Parent
+
 case class Bar(s: String, i: Int) extends Parent
+
 case class Foo(bar: Bar, b: List[Int], parent: Option[Parent]) extends Parent
 
 sealed trait TsDirection
+
 object TsDirection {
+
   case object Incoming extends TsDirection
+
   case object Outgoing extends TsDirection
+
 }
