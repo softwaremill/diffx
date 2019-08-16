@@ -11,7 +11,7 @@ To use with scalatest, add the following dependency:
 "com.softwaremill.diffx" %% "diffx-scalatest" % "0.1.1"
 ```
 
-Then, extend the `com.softwaremill.diffx.DiffMatcher` trait or `import com.softwaremill.diffx.DiffMatcher._`.
+Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
 You will then be able to use syntax such as:
 
 ```scala
