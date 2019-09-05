@@ -82,6 +82,27 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
+  it should "calculate diff for nested products ignoring fields only in given path" in {
+    val p1p = p1.copy(name = "other")
+    val f1 = Family(p1, p2)
+    val f2 = Family(p1p, p2.copy(name = "other"))
+    val d = implicitly[DiffFor[Family]].ignore(List(List("second", "name")))
+    compare(f1, f2)(d) shouldBe DiffResultObject(
+      "Family",
+      Map(
+        "first" -> DiffResultObject(
+          "Person",
+          Map(
+            "name" -> DiffResultValue(p1.name, p1p.name),
+            "age" -> Identical(p1.age),
+            "in" -> Identical(instant)
+          )
+        ),
+        "second" -> Identical(p2)
+      )
+    )
+  }
+
   it should "calculate diff for nested products ignoring nested products" in {
     val f1 = Family(p1, p2)
     val f2 = Family(p1, p1)

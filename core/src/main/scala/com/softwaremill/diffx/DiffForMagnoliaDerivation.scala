@@ -15,7 +15,9 @@ trait DiffForMagnoliaDerivation extends LowPriority {
         if (toIgnore.contains(List(p.label))) {
           p.label -> Identical(lType)
         } else {
-          p.label -> p.typeclass(lType, pType, toIgnore.map(_.drop(1)))
+          val nestedIgnore =
+            if (toIgnore.exists(_.headOption.exists(h => h == p.label))) toIgnore.map(_.drop(1)) else Nil
+          p.label -> p.typeclass(lType, pType, nestedIgnore)
         }
       }.toMap
       if (map.values.forall(p => p.isIdentical)) {
