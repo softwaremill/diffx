@@ -27,7 +27,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   }
 
   it should "calculate diff for product types ignoring given fields" in {
-    val d = implicitly[DiffFor[Person]].ignore(List(List("name", "age")))
+    val d = implicitly[DiffFor[Person]].ignore(List(List("name"), List("age")))
     val p3 = p2.copy(in = Instant.now())
     compare(p1, p3)(d) shouldBe DiffResultObject(
       "Person",

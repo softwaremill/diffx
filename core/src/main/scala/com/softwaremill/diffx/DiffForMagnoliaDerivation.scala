@@ -12,7 +12,7 @@ trait DiffForMagnoliaDerivation extends LowPriority {
       val map = ctx.parameters.map { p =>
         val lType = p.dereference(left)
         val pType = p.dereference(right)
-        if (toIgnore.exists(_.contains(p.label))) {
+        if (toIgnore.exists(_.headOption.exists(h => h == p.label))) {
           p.label -> Identical(lType)
         } else {
           p.label -> p.typeclass(lType, pType, toIgnore.map(_.drop(1)))
