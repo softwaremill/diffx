@@ -1,14 +1,24 @@
 package com.softwaremill.diffx
 
-trait DiffFor[T] {
-  def apply(left: T, right: T): DiffResult
+trait DiffFor[T] { outer =>
+  val ignored: List[List[String]] = List.empty
+  def apply(left: T, right: T): DiffResult = apply(left, right, ignored)
+  def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult
+  def ignore(fields: List[List[String]]): DiffFor[T] = new DiffFor[T] {
+    override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult = outer.apply(left, right, toIgnore)
+    override val ignored: List[List[String]] = outer.ignored ++ fields
+  }
 }
 
 object DiffFor {
   def apply[T, R: DiffFor](converter: T => R): DiffFor[T] =
-    (left: T, right: T) => implicitly[DiffFor[R]].apply(converter(left), converter(right))
+    new DiffFor[T] {
+      override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult = {
+        implicitly[DiffFor[R]].apply(converter(left), converter(right))
+      }
+    }
 
-  def identical[T] :DiffFor[T] = (left: T, _: T) => Identical(left)
+  def identical[T]: DiffFor[T] = (left: T, _: T, toIgnore: List[List[String]]) => Identical(left)
 }
 
 trait DiffResult {

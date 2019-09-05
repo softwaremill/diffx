@@ -26,6 +26,19 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
+  it should "calculate diff for product types ignoring given fields" in {
+    val d = implicitly[DiffFor[Person]].ignore(List(List("name", "age")))
+    val p3 = p2.copy(in = Instant.now())
+    compare(p1, p3)(d) shouldBe DiffResultObject(
+      "Person",
+      Map(
+        "name" -> Identical(p1.name),
+        "age" -> Identical(p1.age),
+        "in" -> DiffResultValue(p1.in, p3.in)
+      )
+    )
+  }
+
   it should "calculate identity for product types" in {
     compare(p1, p1) shouldBe Identical(p1)
   }
@@ -148,7 +161,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
-  private def compare[T: DiffFor](t1: T, t2: T) = implicitly[DiffFor[T]].apply(t1, t2)
+  private def compare[T](t1: T, t2: T)(implicit d: DiffFor[T]) = d.apply(t1, t2)
 }
 
 case class Person(name: String, age: Int, in: Instant)
