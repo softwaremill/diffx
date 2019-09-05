@@ -27,7 +27,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   }
 
   it should "calculate diff for product types ignoring given fields" in {
-    val d = implicitly[DiffFor[Person]].ignore(List(List("name"), List("age")))
+    val d = implicitly[DiffFor[Person]].ignore("name").ignore("age")
     val p3 = p2.copy(in = Instant.now())
     compare(p1, p3)(d) shouldBe DiffResultObject(
       "Person",
@@ -65,7 +65,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for nested products ignoring nested fields" in {
     val f1 = Family(p1, p2)
     val f2 = Family(p1, p1)
-    val d = implicitly[DiffFor[Family]].ignore(List(List("second", "name")))
+    val d = implicitly[DiffFor[Family]].ignore("second", "name")
     compare(f1, f2)(d) shouldBe DiffResultObject(
       "Family",
       Map(
@@ -86,7 +86,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     val p1p = p1.copy(name = "other")
     val f1 = Family(p1, p2)
     val f2 = Family(p1p, p2.copy(name = "other"))
-    val d = implicitly[DiffFor[Family]].ignore(List(List("second", "name")))
+    val d = implicitly[DiffFor[Family]].ignore("second", "name")
     compare(f1, f2)(d) shouldBe DiffResultObject(
       "Family",
       Map(
@@ -106,7 +106,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for nested products ignoring nested products" in {
     val f1 = Family(p1, p2)
     val f2 = Family(p1, p1)
-    val d = implicitly[DiffFor[Family]].ignore(List(List("second")))
+    val d = implicitly[DiffFor[Family]].ignore("second")
     compare(f1, f2)(d) shouldBe Identical(f1)
   }
 
