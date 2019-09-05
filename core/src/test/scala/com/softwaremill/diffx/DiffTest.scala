@@ -82,6 +82,13 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
+  it should "calculate diff for nested products ignoring nested products" in {
+    val f1 = Family(p1, p2)
+    val f2 = Family(p1, p1)
+    val d = implicitly[DiffFor[Family]].ignore(List(List("second")))
+    compare(f1, f2)(d) shouldBe Identical(f1)
+  }
+
   it should "calculate diff for iterables" in {
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p1, p1, p1))
