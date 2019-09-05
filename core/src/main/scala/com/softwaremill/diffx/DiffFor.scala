@@ -1,7 +1,7 @@
 package com.softwaremill.diffx
 
 trait DiffFor[T] { outer =>
-  val ignored: List[List[String]] = List.empty
+  protected val ignored: List[List[String]] = List.empty
   def apply(left: T, right: T): DiffResult = apply(left, right, ignored)
   def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult
   def ignore(fields: List[List[String]]): DiffFor[T] = new DiffFor[T] {

@@ -18,7 +18,7 @@ trait DiffForMagnoliaDerivation extends LowPriority {
           p.label -> p.typeclass(lType, pType, toIgnore.map(_.drop(1)))
         }
       }.toMap
-      if (map.filterKeys(k => !toIgnore.exists(_.contains(k))).values.forall(p => p.isIdentical)) {
+      if (map.values.forall(p => p.isIdentical)) {
         Identical(left)
       } else {
         DiffResultObject(ctx.typeName.short, map)
