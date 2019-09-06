@@ -209,6 +209,52 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
+  it should "ignore elements elements when they are wrapped with lists" in {
+    val o1 = Organization(List(p1, p2))
+    val o2 = Organization(List(p1, p1, p1))
+    val d = implicitly[DiffFor[Organization]].ignore("people", "name")
+    compare(o1, o2)(d) shouldBe DiffResultObject(
+      "Organization",
+      Map(
+        "people" -> DiffResultObject(
+          "List",
+          Map(
+            "0" -> Identical(p1),
+            "1" -> DiffResultObject(
+              "Person",
+              Map(
+                "name" -> Identical(p2.name),
+                "age" -> DiffResultValue(p2.age, p1.age),
+                "in" -> Identical(instant)
+              )
+            ),
+            "2" -> DiffResultMissing(Person(p1.name, p1.age, instant))
+          )
+        )
+      )
+    )
+  }
+
+  it should "calculate diff for sets ignoring some parts of products" in {
+    val p2m = p2.copy(age = 33, in = Instant.now())
+    val d = implicitly[DiffFor[Person]].ignore("age")
+    implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    val ds: DiffFor[Set[Person]] = diffForSet(d, im)
+    compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
+      List(
+        Identical(p1),
+        DiffResultObject(
+          "Person",
+          Map(
+            "name" -> Identical(p2.name),
+            "age" -> Identical(p2.age),
+            "in" -> DiffResultValue(p1.in, p2m.in)
+          )
+        )
+      )
+    )
+  }
+
   private def compare[T](t1: T, t2: T)(implicit d: DiffFor[T]) = d.apply(t1, t2)
 }
 

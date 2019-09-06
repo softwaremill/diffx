@@ -3,11 +3,12 @@ package com.softwaremill.diffx
 trait DiffFor[T] { outer =>
   protected val ignored: List[List[String]] = List.empty
 
-  def apply(left: T, right: T): DiffResult = apply(left, right, ignored)
+  def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
   def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult
 
   def ignore(fields: String*): DiffFor[T] = new DiffFor[T] {
-    override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult = outer.apply(left, right, toIgnore)
+    override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult =
+      outer.apply(left, right, toIgnore ++ ignored)
     override val ignored: List[List[String]] = outer.ignored ++ List(fields.toList)
   }
 }

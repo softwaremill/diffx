@@ -13,7 +13,7 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
   implicit def diffForOption[T: DiffFor]: DiffFor[Option[T]] =
     (left: Option[T], right: Option[T], toIgnore: List[List[String]]) => {
       (left, right) match {
-        case (Some(l), Some(r)) => implicitly[DiffFor[T]].apply(l, r)
+        case (Some(l), Some(r)) => implicitly[DiffFor[T]].apply(l, r, toIgnore)
         case (None, None)       => Identical(None)
         case (l, r)             => DiffResultValue(l, r)
       }
@@ -35,7 +35,7 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
         .diff(unMatchedLeftInstances)
         .map(DiffResultMissing(_))
         .toList
-      val matchedDiffs = matchedInstances.map { case (l, r) => differ(l, r) }
+      val matchedDiffs = matchedInstances.map { case (l, r) => differ(l, r, toIgnore) }
       val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
       if (diffs.isEmpty) {
         Identical(left)
@@ -52,7 +52,8 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
       DiffResultObject(
         "List",
         indexes.map { index =>
-          index.toString -> (implicitly[DiffFor[Option[T]]].apply(leftAsMap(index), rightAsMap(index)) match {
+          index.toString -> (implicitly[DiffFor[Option[T]]]
+            .apply(leftAsMap(index), rightAsMap(index), toIgnore) match {
             case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
             case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
             case d                              => d
