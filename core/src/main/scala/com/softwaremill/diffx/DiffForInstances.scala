@@ -2,8 +2,9 @@ package com.softwaremill.diffx
 
 trait DiffForInstances extends DiffForMagnoliaDerivation {
 
-  implicit def diffForInt: DiffFor[Int] = (left: Int, right: Int, toIgnore: List[List[String]]) => {
-    if (left != right) {
+  implicit def diffForNumeric[T: Numeric]: DiffFor[T] = (left: T, right: T, toIgnore: List[List[String]]) => {
+    val numeric = implicitly[Numeric[T]]
+    if (!numeric.equiv(left, right)) {
       DiffResultValue(left, right)
     } else {
       Identical(left)
