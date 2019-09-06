@@ -235,11 +235,30 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
-  it should "calculate diff for sets ignoring some parts of products" in {
+  it should "calculate diff for sets of products using ignored from product" in {
     val p2m = p2.copy(age = 33, in = Instant.now())
     val d = implicitly[DiffFor[Person]].ignore("age")
     implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
     val ds: DiffFor[Set[Person]] = diffForSet(d, im)
+    compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
+      List(
+        Identical(p1),
+        DiffResultObject(
+          "Person",
+          Map(
+            "name" -> Identical(p2.name),
+            "age" -> Identical(p2.age),
+            "in" -> DiffResultValue(p1.in, p2m.in)
+          )
+        )
+      )
+    )
+  }
+
+  it should "calculate diff for sets of products propagating ignored fields" in {
+    val p2m = p2.copy(age = 33, in = Instant.now())
+    implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    val ds: DiffFor[Set[Person]] = diffForSet(implicitly[DiffFor[Person]], im).ignore("age")
     compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
       List(
         Identical(p1),
