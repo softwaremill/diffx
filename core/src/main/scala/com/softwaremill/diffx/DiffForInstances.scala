@@ -66,7 +66,7 @@ trait DiffForInstances extends DiffForMagnoliaDerivation {
     (left: Map[String, T], right: Map[String, T], toIgnore: List[List[String]]) => {
       val keySet = left.keySet ++ right.keySet
       DiffResultObject("Map", keySet.map { k =>
-        k -> implicitly[DiffFor[Option[T]]].apply(left.get(k), right.get(k))
+        k -> implicitly[DiffFor[Option[T]]].apply(left.get(k), right.get(k), toIgnore)
       }.toMap)
     }
 
