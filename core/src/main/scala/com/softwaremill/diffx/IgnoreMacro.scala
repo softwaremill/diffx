@@ -8,14 +8,35 @@ object IgnoreMacro {
 
   def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree = modificationForPath(c)(path)
+  )(path: c.Expr[T => U]): c.Tree = applyIgnored(c)(ignoredFromPathMacro(c)(path))
+
+  /**
+    * A helper method for modifyPimp_impl and modifyAllPimp_impl.
+    */
+  private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+      path: c.Expr[List[String]]
+  ): c.Tree = {
+    import c.universe._
+
+    val wrappedValue = c.macroApplication match {
+      case Apply(TypeApply(Select(Apply(_, List(w)), _), _), _) => w
+      case _                                                    => c.abort(c.enclosingPosition, s"Unknown usage of ModifyPimp. Please file a bug.")
+    }
+
+    val valueAlias = TermName(c.freshName())
+
+    q"""{
+      val $valueAlias = $wrappedValue;
+      ${Ident(valueAlias)}.ignoreUnsafe($path:_*)
+     }"""
+  }
 
   /**
     * Produce a modification for a single path.
     */
-  private def modificationForPath[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+  def ignoredFromPathMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
       path: c.Expr[T => U]
-  ): c.Tree = {
+  ): c.Expr[List[String]] = {
     import c.universe._
 
     sealed trait PathAccess
@@ -73,8 +94,6 @@ object IgnoreMacro {
         case q"$parent.$child " =>
           val access = determinePathAccess(parent.tpe.typeSymbol)
           collectPathElements(parent, TermPathElement(child, access) :: acc)
-        //        case q"$tpname[..$_]($parent).when[$tp]" if typeSupported(tpname) =>
-        //          collectPathElements(parent, SubtypePathElement(tp.tpe.typeSymbol) :: acc)
         case q"$tpname[..$_]($t)($f) " if typeSupported(tpname) =>
           val newAcc = acc match {
             // replace the term controlled by quicklens
@@ -93,10 +112,10 @@ object IgnoreMacro {
       case _                       => c.abort(c.enclosingPosition, s"$ShapeInfo, got: ${path.tree}")
     }
 
-    q"${pathEls.collect {
+    c.Expr[List[String]](q"${pathEls.collect {
       case TermPathElement(c, _) => c.decodedName.toString
-    }}"
+    }}")
   }
 
-  def ignore[T, U](path: T => U): List[String] = macro ignoreMacro[T, U]
+  private[diffx] def ignoredFromPath[T, U](path: T => U): List[String] = macro ignoredFromPathMacro[T, U]
 }

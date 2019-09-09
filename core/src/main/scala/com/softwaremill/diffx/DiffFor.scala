@@ -6,7 +6,7 @@ trait DiffFor[T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
   def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult
 
-  def ignore(fields: String*): DiffFor[T] = new DiffFor[T] {
+  private[diffx] def ignoreUnsafe(fields: String*): DiffFor[T] = new DiffFor[T] {
     override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult =
       outer.apply(left, right, toIgnore ++ ignored)
     override val ignored: List[List[String]] = outer.ignored ++ List(fields.toList)
