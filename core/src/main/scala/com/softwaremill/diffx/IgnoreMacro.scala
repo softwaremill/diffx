@@ -87,7 +87,7 @@ object IgnoreMacro {
     @tailrec
     def collectPathElements(tree: c.Tree, acc: List[PathElement]): List[PathElement] = {
       def typeSupported(quicklensType: c.Tree) =
-        Seq("QuicklensEach", "QuicklensAt", "QuicklensMapAt", "QuicklensWhen", "QuicklensEither", "QuicklensEachMap")
+        Seq("DiffxEach", "DiffxAt", "DiffxMapAt", "DiffxWhen", "DiffxEither", "DiffxEachMap")
           .exists(quicklensType.toString.endsWith)
 
       tree match {

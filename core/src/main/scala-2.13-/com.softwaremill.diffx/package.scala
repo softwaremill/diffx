@@ -14,29 +14,29 @@ package object diffx {
   def arrow(l: String, r: String): String = l + " -> " + r
   def showChange(l: String, r: String): String = red(l) + " -> " + green(r)
 
-  implicit class QuicklensEach[F[_], T](t: F[T])(implicit f: QuicklensFunctor[F, T]) {
+  implicit class DiffxEach[F[_], T](t: F[T])(implicit f: DiffxFunctor[F, T]) {
     @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
     def each: T = sys.error("")
   }
 
   private def canOnlyBeUsedInsideModify(method: String) =
-    s"$method can only be used inside modify"
+    s"$method can only be used inside ignore"
 
-  trait QuicklensFunctor[F[_], A] {
+  trait DiffxFunctor[F[_], A] {
     @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
     def each(fa: F[A])(f: A => A): F[A] = sys.error("")
   }
 
-  implicit def optionQuicklensFunctor[A]: QuicklensFunctor[Option, A] =
-    new QuicklensFunctor[Option, A] {}
+  implicit def optionDiffxFunctor[A]: DiffxFunctor[Option, A] =
+    new DiffxFunctor[Option, A] {}
 
-  implicit def traversableQuicklensFunctor[F[_], A](
+  implicit def traversableDiffxFunctor[F[_], A](
       implicit cbf: CanBuildFrom[F[A], A, F[A]],
       ev: F[A] => TraversableLike[A, F[A]]
-  ): QuicklensFunctor[F, A] =
-    new QuicklensFunctor[F, A] {}
+  ): DiffxFunctor[F, A] =
+    new DiffxFunctor[F, A] {}
 
-  implicit class QuicklensEither[T[_, _], L, R](e: T[L, R])(implicit f: QuicklensEitherFunctor[T, L, R]) {
+  implicit class DiffxEither[T[_, _], L, R](e: T[L, R])(implicit f: DiffxEitherFunctor[T, L, R]) {
     @compileTimeOnly(canOnlyBeUsedInsideModify("eachLeft"))
     def eachLeft: L = sys.error("")
 
@@ -44,29 +44,29 @@ package object diffx {
     def eachRight: R = sys.error("")
   }
 
-  trait QuicklensEitherFunctor[T[_, _], L, R] {
+  trait DiffxEitherFunctor[T[_, _], L, R] {
     def eachLeft(e: T[L, R])(f: L => L): T[L, R]
 
     def eachRight(e: T[L, R])(f: R => R): T[L, R]
   }
 
-  implicit def eitherQuicklensFunctor[T[_, _], L, R]: QuicklensEitherFunctor[Either, L, R] =
-    new QuicklensEitherFunctor[Either, L, R] {
+  implicit def eitherDiffxFunctor[T[_, _], L, R]: DiffxEitherFunctor[Either, L, R] =
+    new DiffxEitherFunctor[Either, L, R] {
       override def eachLeft(e: Either[L, R])(f: (L) => L) = e.left.map(f)
 
       override def eachRight(e: Either[L, R])(f: (R) => R) = e.right.map(f)
     }
 
-  trait QuicklensMapAtFunctor[F[_, _], K, T] {
+  trait DiffxMapAtFunctor[F[_, _], K, T] {
     @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
     def each(fa: F[K, T])(f: T => T): F[K, T] = sys.error("")
   }
 
-  implicit def mapQuicklensFunctor[M[KT, TT] <: Map[KT, TT], K, T](
+  implicit def mapDiffxFunctor[M[KT, TT] <: Map[KT, TT], K, T](
       implicit cbf: CanBuildFrom[M[K, T], (K, T), M[K, T]]
-  ): QuicklensMapAtFunctor[M, K, T] = new QuicklensMapAtFunctor[M, K, T] {}
+  ): DiffxMapAtFunctor[M, K, T] = new DiffxMapAtFunctor[M, K, T] {}
 
-  implicit class QuicklensEachMap[F[_, _], K, T](t: F[K, T])(implicit f: QuicklensMapAtFunctor[F, K, T]) {
+  implicit class DiffxEachMap[F[_, _], K, T](t: F[K, T])(implicit f: DiffxMapAtFunctor[F, K, T]) {
     @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
     def each: T = sys.error("")
   }
