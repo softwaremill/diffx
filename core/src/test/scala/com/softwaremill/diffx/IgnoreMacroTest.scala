@@ -20,7 +20,18 @@ class IgnoreMacroTest extends FlatSpec with Matchers {
   it should "ignore fields in product wrapped with option" in {
     IgnoreMacro.ignore[Option[Person], String](_.each.name) shouldBe List("name")
   }
+
   it should "ignore fields in map of products" in {
     IgnoreMacro.ignore[Map[String, Person], String](_.each.name) shouldBe List("name")
   }
+
+  it should "work for sealed traits" in {
+    IgnoreMacro.ignore[Animal, String](_.name) shouldBe List("name")
+  }
 }
+
+sealed trait Animal {
+  def name: String
+}
+case class Fish(name: String) extends Animal
+case class Dog(name: String) extends Animal
