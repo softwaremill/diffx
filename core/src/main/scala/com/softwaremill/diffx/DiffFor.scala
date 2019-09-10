@@ -20,8 +20,6 @@ trait DiffFor[T] { outer =>
 object DiffFor {
   def apply[T: DiffFor]: DiffFor[T] = implicitly[DiffFor[T]]
 
-  def apply[T, R: DiffFor](converter: T => R): DiffFor[T] = DiffFor[R].contramap(converter)
-
   def identical[T]: DiffFor[T] = (left: T, _: T, _: List[List[String]]) => Identical(left)
 
   implicit def anyDiff[T](implicit dd: Derived[DiffFor[T]]): DiffFor[T] = dd.value
