@@ -13,7 +13,7 @@ package object diffx extends DiffxSupport {
     new DiffxFunctor[F, A] {}
 
   implicit class DiffxEachMap[F[_, _], K, T](t: F[K, T])(implicit fac: Factory[(K, T), F[K, T]]) {
-    @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
+    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each: T = sys.error("")
   }
 }
