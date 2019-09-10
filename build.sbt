@@ -20,6 +20,7 @@ lazy val core: Project = (project in file("core"))
       "com.propensive" %% "magnolia" % "0.11.0",
       scalatestDependency % "test",
     ),
+    unmanagedSourceDirectories in Compile += (baseDirectory in Compile).value / "src" / "main" / "scala-common",
     unmanagedSourceDirectories in Compile += {
       // sourceDirectory returns a platform-scoped directory, e.g. /.jvm
       val sourceDir = (baseDirectory in Compile).value / "src" / "main"
