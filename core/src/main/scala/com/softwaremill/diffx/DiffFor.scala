@@ -22,6 +22,8 @@ object DiffFor {
     }
 
   def identical[T]: DiffFor[T] = (left: T, _: T, toIgnore: List[List[String]]) => Identical(left)
+
+  implicit def anyDiff[T](implicit dd: DerivedDiff[T]): DiffFor[T] = dd.value
 }
 
 trait DiffResult {
@@ -71,3 +73,5 @@ case class DiffResultAdditional[T](value: T) extends DiffResultDifferent {
     green(value.toString)
   }
 }
+
+case class DerivedDiff[T](value: DiffFor[T])

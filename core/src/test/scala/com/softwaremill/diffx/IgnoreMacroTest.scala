@@ -24,12 +24,6 @@ class IgnoreMacroTest extends FlatSpec with Matchers {
   it should "ignore fields in map of products" in {
     IgnoreMacro.ignoredFromPath[Map[String, Person], String](_.each.name) shouldBe List("name")
   }
-
-  it should "work for sealed traits 2" in {
-    import com.softwaremill.diffx.DiffForInstances._
-    val d = implicitly[Typeclass[Person]]
-    println(d.ignore(_.name))
-  }
 }
 
 sealed trait Animal {
