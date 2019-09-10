@@ -10,16 +10,16 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with Diff
 }
 
 object DiffxSupport {
-  private[diffx] def canOnlyBeUsedInsideModify(method: String) =
+  private[diffx] def canOnlyBeUsedInsideIgnore(method: String) =
     s"$method can only be used inside ignore"
 }
 
 trait DiffxEitherSupport {
   implicit class DiffxEither[T[_, _], L, R](e: T[L, R])(implicit f: DiffxEitherFunctor[T, L, R]) {
-    @compileTimeOnly(canOnlyBeUsedInsideModify("eachLeft"))
+    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachLeft"))
     def eachLeft: L = sys.error("")
 
-    @compileTimeOnly(canOnlyBeUsedInsideModify("eachRight"))
+    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachRight"))
     def eachRight: R = sys.error("")
   }
 
@@ -44,12 +44,12 @@ trait DiffxConsoleSupport {
 
 trait DiffxFunctorSupport {
   implicit class DiffxEach[F[_], T](t: F[T])(implicit f: DiffxFunctor[F, T]) {
-    @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
+    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each: T = sys.error("")
   }
 
   trait DiffxFunctor[F[_], A] {
-    @compileTimeOnly(canOnlyBeUsedInsideModify("each"))
+    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each(fa: F[A])(f: A => A): F[A] = sys.error("")
   }
 }
