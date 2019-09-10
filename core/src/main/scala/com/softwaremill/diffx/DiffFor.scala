@@ -1,18 +1,18 @@
 package com.softwaremill.diffx
 
 trait DiffFor[T] { outer =>
-  protected val ignored: List[List[String]] = List.empty
+  protected val ignored: List[FieldPath] = List.empty
 
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
-  def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult
+  def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
 
   private[diffx] def ignoreUnsafe(fields: String*): DiffFor[T] = new DiffFor[T] {
-    override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult =
+    override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
       outer.apply(left, right, toIgnore ++ ignored)
-    override val ignored: List[List[String]] = outer.ignored ++ List(fields.toList)
+    override val ignored: List[FieldPath] = outer.ignored ++ List(fields.toList)
   }
 
-  def contramap[R](f: R => T): DiffFor[R] = (left: R, right: R, toIgnore: List[List[String]]) => {
+  def contramap[R](f: R => T): DiffFor[R] = (left: R, right: R, toIgnore: List[FieldPath]) => {
     outer(f(left), f(right), toIgnore ++ ignored)
   }
 }
@@ -20,7 +20,7 @@ trait DiffFor[T] { outer =>
 object DiffFor {
   def apply[T: DiffFor]: DiffFor[T] = implicitly[DiffFor[T]]
 
-  def identical[T]: DiffFor[T] = (left: T, _: T, _: List[List[String]]) => Identical(left)
+  def identical[T]: DiffFor[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
 
   implicit def anyDiff[T](implicit dd: Derived[DiffFor[T]]): DiffFor[T] = dd.value
 }

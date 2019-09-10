@@ -9,7 +9,7 @@ trait DiffForMagnoliaDerivation extends LowPriority {
 
   def combine[T](ctx: CaseClass[Typeclass, T]): Derived[DiffFor[T]] =
     Derived(new DiffFor[T] {
-      override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult = {
+      override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult = {
         val map = ctx.parameters.map { p =>
           val lType = p.dereference(left)
           val pType = p.dereference(right)
@@ -30,7 +30,7 @@ trait DiffForMagnoliaDerivation extends LowPriority {
     })
 
   def dispatch[T](ctx: SealedTrait[Typeclass, T]): Derived[DiffFor[T]] =
-    Derived({ (left: T, right: T, toIgnore: List[List[String]]) =>
+    Derived({ (left: T, right: T, toIgnore: List[FieldPath]) =>
       {
         val lType = ctx.dispatch(left)(a => a)
         val rType = ctx.dispatch(right)(a => a)
@@ -47,7 +47,7 @@ trait DiffForMagnoliaDerivation extends LowPriority {
 
 trait LowPriority {
   def fallback[T]: Derived[DiffFor[T]] =
-    Derived((left: T, right: T, toIgnore: List[List[String]]) => {
+    Derived((left: T, right: T, toIgnore: List[FieldPath]) => {
       if (left != right) {
         DiffResultValue(left, right)
       } else {

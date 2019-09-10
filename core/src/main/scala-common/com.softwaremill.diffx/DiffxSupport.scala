@@ -7,6 +7,8 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with Diff
 
   implicit def optionDiffxFunctor[A]: DiffxFunctor[Option, A] =
     new DiffxFunctor[Option, A] {}
+
+  private[diffx] type FieldPath = List[String]
 }
 
 object DiffxSupport {
