@@ -11,17 +11,18 @@ trait DiffFor[T] { outer =>
       outer.apply(left, right, toIgnore ++ ignored)
     override val ignored: List[List[String]] = outer.ignored ++ List(fields.toList)
   }
+
+  def contramap[R](f: R => T): DiffFor[R] = (left: R, right: R, toIgnore: List[List[String]]) => {
+    outer(f(left), f(right), toIgnore ++ ignored)
+  }
 }
 
 object DiffFor {
-  def apply[T, R: DiffFor](converter: T => R): DiffFor[T] =
-    new DiffFor[T] {
-      override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult = {
-        implicitly[DiffFor[R]].apply(converter(left), converter(right))
-      }
-    }
+  def apply[T: DiffFor]: DiffFor[T] = implicitly[DiffFor[T]]
 
-  def identical[T]: DiffFor[T] = (left: T, _: T, toIgnore: List[List[String]]) => Identical(left)
+  def apply[T, R: DiffFor](converter: T => R): DiffFor[T] = DiffFor[R].contramap(converter)
+
+  def identical[T]: DiffFor[T] = (left: T, _: T, _: List[List[String]]) => Identical(left)
 
   implicit def anyDiff[T](implicit dd: DerivedDiff[T]): DiffFor[T] = dd.value
 }
