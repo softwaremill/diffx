@@ -11,7 +11,7 @@ class DiffIgnoreIntTest extends FlatSpec with Matchers with DiffForInstances {
   val p2 = Person("p2", 11, instant)
 
   it should "allow importing and exporting implicits" in {
-    implicit val d: DiffFor[Person] = implicitly[DerivedDiff[Person]].value.ignore(_.name)
+    implicit val d: DiffFor[Person] = Derived[DiffFor[Person]].value.ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> Identical("p1"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))

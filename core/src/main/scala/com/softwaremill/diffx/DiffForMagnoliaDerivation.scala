@@ -5,10 +5,10 @@ import magnolia._
 import scala.language.experimental.macros
 
 trait DiffForMagnoliaDerivation extends LowPriority {
-  type Typeclass[T] = DerivedDiff[T]
+  type Typeclass[T] = Derived[DiffFor[T]]
 
-  def combine[T](ctx: CaseClass[DerivedDiff, T]): DerivedDiff[T] =
-    DerivedDiff(new DiffFor[T] {
+  def combine[T](ctx: CaseClass[Typeclass, T]): Derived[DiffFor[T]] =
+    Derived(new DiffFor[T] {
       override def apply(left: T, right: T, toIgnore: List[List[String]]): DiffResult = {
         val map = ctx.parameters.map { p =>
           val lType = p.dereference(left)
@@ -29,8 +29,8 @@ trait DiffForMagnoliaDerivation extends LowPriority {
       }
     })
 
-  def dispatch[T](ctx: SealedTrait[DerivedDiff, T]): DerivedDiff[T] =
-    DerivedDiff({ (left: T, right: T, toIgnore: List[List[String]]) =>
+  def dispatch[T](ctx: SealedTrait[Typeclass, T]): Derived[DiffFor[T]] =
+    Derived({ (left: T, right: T, toIgnore: List[List[String]]) =>
       {
         val lType = ctx.dispatch(left)(a => a)
         val rType = ctx.dispatch(right)(a => a)
@@ -42,12 +42,12 @@ trait DiffForMagnoliaDerivation extends LowPriority {
       }
     })
 
-  implicit def gen[T]: DerivedDiff[T] = macro Magnolia.gen[T]
+  implicit def gen[T]: Derived[DiffFor[T]] = macro Magnolia.gen[T]
 }
 
 trait LowPriority {
-  def fallback[T]: DerivedDiff[T] =
-    DerivedDiff((left: T, right: T, toIgnore: List[List[String]]) => {
+  def fallback[T]: Derived[DiffFor[T]] =
+    Derived((left: T, right: T, toIgnore: List[List[String]]) => {
       if (left != right) {
         DiffResultValue(left, right)
       } else {
