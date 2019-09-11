@@ -10,6 +10,10 @@ object IgnoreMacro {
       c: blackbox.Context
   )(path: c.Expr[T => U]): c.Tree = applyIgnored(c)(ignoredFromPathMacro(c)(path))
 
+  def ignoreMacroDerived[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[T => U]): c.Tree = applyIgnoredDerived(c)(ignoredFromPathMacro(c)(path))
+
   private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
       path: c.Expr[List[String]]
   ): c.Tree = {
@@ -25,6 +29,24 @@ object IgnoreMacro {
     q"""{
       val $valueAlias = $wrappedValue;
       ${Ident(valueAlias)}.ignoreUnsafe($path:_*)
+     }"""
+  }
+
+  private def applyIgnoredDerived[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+      path: c.Expr[List[String]]
+  ): c.Tree = {
+    import c.universe._
+
+    val wrappedValue = c.macroApplication match {
+      case Apply(TypeApply(Select(Apply(_, List(w)), _), _), _) => w
+      case _                                                    => c.abort(c.enclosingPosition, s"Unknown usage of IgnoreMacroExt. Please file a bug.")
+    }
+
+    val valueAlias = TermName(c.freshName())
+
+    q"""{
+      val $valueAlias = $wrappedValue;
+      ${Ident(valueAlias)}.value.ignoreUnsafe($path:_*)
      }"""
   }
 
