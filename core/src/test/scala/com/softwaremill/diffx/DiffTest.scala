@@ -4,7 +4,7 @@ import java.time.Instant
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class DiffTest extends FlatSpec with Matchers with DiffForInstances {
+class DiffTest extends FlatSpec with Matchers with DiffInstances {
 
   private val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -27,7 +27,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   }
 
   it should "calculate diff for product types ignoring given fields" in {
-    val d = DiffFor[Person].ignoreUnsafe("name").ignoreUnsafe("age")
+    val d = Diff[Person].ignoreUnsafe("name").ignoreUnsafe("age")
     val p3 = p2.copy(in = Instant.now())
     compare(p1, p3)(d) shouldBe DiffResultObject(
       "Person",
@@ -65,7 +65,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for nested products ignoring nested fields" in {
     val f1 = Family(p1, p2)
     val f2 = Family(p1, p1)
-    val d = DiffFor[Family].ignoreUnsafe("second", "name")
+    val d = Diff[Family].ignoreUnsafe("second", "name")
     compare(f1, f2)(d) shouldBe DiffResultObject(
       "Family",
       Map(
@@ -86,7 +86,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     val p1p = p1.copy(name = "other")
     val f1 = Family(p1, p2)
     val f2 = Family(p1p, p2.copy(name = "other"))
-    val d = DiffFor[Family].ignoreUnsafe("second", "name")
+    val d = Diff[Family].ignoreUnsafe("second", "name")
     compare(f1, f2)(d) shouldBe DiffResultObject(
       "Family",
       Map(
@@ -106,7 +106,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for nested products ignoring nested products" in {
     val f1 = Family(p1, p2)
     val f2 = Family(p1, p1)
-    val d = DiffFor[Family].ignoreUnsafe("second")
+    val d = Diff[Family].ignoreUnsafe("second")
     compare(f1, f2)(d) shouldBe Identical(f1)
   }
 
@@ -212,7 +212,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "ignore elements elements when they are wrapped with lists" in {
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p1, p1, p1))
-    val d = DiffFor[Organization].ignoreUnsafe("people", "name")
+    val d = Diff[Organization].ignoreUnsafe("people", "name")
     compare(o1, o2)(d) shouldBe DiffResultObject(
       "Organization",
       Map(
@@ -237,9 +237,9 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
 
   it should "calculate diff for sets of products using ignored from product" in {
     val p2m = p2.copy(age = 33, in = Instant.now())
-    val d = DiffFor[Person].ignoreUnsafe("age")
+    val d = Diff[Person].ignoreUnsafe("age")
     implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
-    val ds: Derived[DiffFor[Set[Person]]] = diffForSet(im, Derived(d))
+    val ds: Derived[Diff[Set[Person]]] = diffForSet(im, Derived(d))
     compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe DiffResultSet(
       List(
         Identical(p1),
@@ -258,7 +258,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   it should "calculate diff for sets of products propagating ignored fields" in {
     val p2m = p2.copy(in = Instant.now())
     implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
-    val ds: DiffFor[Set[Person]] = diffForSet(im, Derived[DiffFor[Person]]).value.ignoreUnsafe("age")
+    val ds: Diff[Set[Person]] = diffForSet(im, Derived[Diff[Person]]).value.ignoreUnsafe("age")
     compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
       List(
         Identical(p1),
@@ -275,7 +275,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
   }
 
   it should "propagate ignored fields through map" in {
-    val dm = DiffFor[Map[String, Person]].ignoreUnsafe("age")
+    val dm = Diff[Map[String, Person]].ignoreUnsafe("age")
     compare(Map("first" -> p1), Map("first" -> p2))(dm) shouldBe DiffResultObject(
       "Map",
       Map(
@@ -291,7 +291,7 @@ class DiffTest extends FlatSpec with Matchers with DiffForInstances {
     )
   }
 
-  private def compare[T](t1: T, t2: T)(implicit d: DiffFor[T]) = d.apply(t1, t2)
+  private def compare[T](t1: T, t2: T)(implicit d: Diff[T]) = d.apply(t1, t2)
 }
 
 case class Person(name: String, age: Int, in: Instant)

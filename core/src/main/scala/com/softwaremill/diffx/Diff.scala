@@ -1,25 +1,25 @@
 package com.softwaremill.diffx
 
-trait DiffFor[T] { outer =>
+trait Diff[T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
   def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
 
-  private[diffx] def ignoreUnsafe(fields: String*): DiffFor[T] = new DiffFor[T] {
+  private[diffx] def ignoreUnsafe(fields: String*): Diff[T] = new Diff[T] {
     override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
       outer.apply(left, right, toIgnore ++ List(fields.toList))
   }
 
-  def contramap[R](f: R => T): DiffFor[R] = (left: R, right: R, toIgnore: List[FieldPath]) => {
+  def contramap[R](f: R => T): Diff[R] = (left: R, right: R, toIgnore: List[FieldPath]) => {
     outer(f(left), f(right), toIgnore)
   }
 }
 
-object DiffFor {
-  def apply[T: DiffFor]: DiffFor[T] = implicitly[DiffFor[T]]
+object Diff {
+  def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
-  def identical[T]: DiffFor[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
+  def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
 
-  implicit def anyDiff[T](implicit dd: Derived[DiffFor[T]]): DiffFor[T] = dd.value
+  implicit def anyDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 }
 
 trait DiffResult {

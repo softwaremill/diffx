@@ -1,13 +1,13 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.{DiffFor, DiffForInstances, DiffResultDifferent}
+import com.softwaremill.diffx.{Diff, DiffInstances, DiffResultDifferent}
 import org.scalatest.matchers.{MatchResult, Matcher}
 
-trait DiffMatcher extends DiffForInstances {
-  def matchTo[A: DiffFor](left: A): DiffForMatcher[A] = DiffForMatcher(left)
+trait DiffMatcher extends DiffInstances {
+  def matchTo[A: Diff](left: A): DiffForMatcher[A] = DiffForMatcher(left)
 
-  case class DiffForMatcher[A: DiffFor](right: A) extends Matcher[A] {
-    override def apply(left: A): MatchResult = DiffFor[A].apply(left, right) match {
+  case class DiffForMatcher[A: Diff](right: A) extends Matcher[A] {
+    override def apply(left: A): MatchResult = Diff[A].apply(left, right) match {
       case c: DiffResultDifferent =>
         println(c.show)
         MatchResult(matches = false, "Matching error", "a co to?")

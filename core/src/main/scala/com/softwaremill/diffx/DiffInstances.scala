@@ -1,8 +1,8 @@
 package com.softwaremill.diffx
 
-trait DiffForInstances extends DiffForMagnoliaDerivation with DiffForMacroIgnoreExt {
+trait DiffInstances extends DiffMagnoliaDerivation with DiffMacroIgnoreExt {
 
-  implicit def diffForNumeric[T: Numeric]: Derived[DiffFor[T]] =
+  implicit def diffForNumeric[T: Numeric]: Derived[Diff[T]] =
     Derived((left: T, right: T, _: List[FieldPath]) => {
       val numeric = implicitly[Numeric[T]]
       if (!numeric.equiv(left, right)) {
@@ -12,7 +12,7 @@ trait DiffForInstances extends DiffForMagnoliaDerivation with DiffForMacroIgnore
       }
     })
 
-  implicit def diffForOption[T](implicit ddt: Derived[DiffFor[T]]): Derived[DiffFor[Option[T]]] =
+  implicit def diffForOption[T](implicit ddt: Derived[Diff[T]]): Derived[Diff[Option[T]]] =
     Derived((left: Option[T], right: Option[T], toIgnore: List[FieldPath]) => {
       (left, right) match {
         case (Some(l), Some(r)) => ddt.value.apply(l, r, toIgnore)
@@ -22,8 +22,8 @@ trait DiffForInstances extends DiffForMagnoliaDerivation with DiffForMacroIgnore
     })
 
   implicit def diffForSet[T: EntityMatcher, C[W] <: scala.collection.Set[W]](
-      implicit ddt: Derived[DiffFor[T]]
-  ): Derived[DiffFor[C[T]]] =
+      implicit ddt: Derived[Diff[T]]
+  ): Derived[Diff[C[T]]] =
     new Derived((left: C[T], right: C[T], toIgnore: List[FieldPath]) => {
       val matcher = implicitly[EntityMatcher[T]]
       val matchedInstances = left.flatMap(l => right.collectFirst { case r if matcher.isSameEntity(l, r) => l -> r })
@@ -49,8 +49,8 @@ trait DiffForInstances extends DiffForMagnoliaDerivation with DiffForMacroIgnore
     })
 
   implicit def diffForIterable[T, C[W] <: Iterable[W]](
-      implicit ddot: Derived[DiffFor[Option[T]]]
-  ): Derived[DiffFor[C[T]]] =
+      implicit ddot: Derived[Diff[Option[T]]]
+  ): Derived[Diff[C[T]]] =
     Derived((left: C[T], right: C[T], toIgnore: List[FieldPath]) => {
       val indexes = Range(0, Math.max(left.size, right.size))
       val leftAsMap = left.toList.lift
@@ -69,8 +69,8 @@ trait DiffForInstances extends DiffForMagnoliaDerivation with DiffForMacroIgnore
     })
 
   implicit def diffForMap[T, C[_, _] <: Map[_, _]](
-      implicit ddot: Derived[DiffFor[Option[T]]]
-  ): Derived[DiffFor[Map[String, T]]] =
+      implicit ddot: Derived[Diff[Option[T]]]
+  ): Derived[Diff[Map[String, T]]] =
     Derived((left: Map[String, T], right: Map[String, T], toIgnore: List[FieldPath]) => {
       val keySet = left.keySet ++ right.keySet
       DiffResultObject("Map", keySet.map { k =>
@@ -79,4 +79,4 @@ trait DiffForInstances extends DiffForMagnoliaDerivation with DiffForMacroIgnore
     })
 }
 
-object DiffForInstances extends DiffForInstances
+object DiffInstances extends DiffInstances
