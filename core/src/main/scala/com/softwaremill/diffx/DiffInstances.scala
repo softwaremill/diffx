@@ -1,6 +1,6 @@
 package com.softwaremill.diffx
 
-trait DiffInstances extends DiffMagnoliaDerivation with DiffMacroIgnoreExt {
+trait DiffInstances extends DiffMagnoliaDerivation {
 
   implicit def diffForNumeric[T: Numeric]: Derived[Diff[T]] =
     Derived((left: T, right: T, _: List[FieldPath]) => {

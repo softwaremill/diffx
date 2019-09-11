@@ -12,6 +12,8 @@ trait Diff[T] { outer =>
   def contramap[R](f: R => T): Diff[R] = (left: R, right: R, toIgnore: List[FieldPath]) => {
     outer(f(left), f(right), toIgnore)
   }
+
+  def ignore[U](path: T => U): Diff[T] = macro IgnoreMacro.ignoreMacro[T, U]
 }
 
 object Diff {
@@ -19,7 +21,11 @@ object Diff {
 
   def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
 
+  // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
   implicit def anyDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
+
+  // Implicit conversion
+  implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
 }
 
 trait DiffResult {
