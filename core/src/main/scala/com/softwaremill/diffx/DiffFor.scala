@@ -1,19 +1,16 @@
 package com.softwaremill.diffx
 
 trait DiffFor[T] { outer =>
-  protected val ignored: List[FieldPath] = List.empty
-
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
   def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
 
   private[diffx] def ignoreUnsafe(fields: String*): DiffFor[T] = new DiffFor[T] {
     override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
-      outer.apply(left, right, toIgnore ++ ignored)
-    override val ignored: List[FieldPath] = outer.ignored ++ List(fields.toList)
+      outer.apply(left, right, toIgnore ++ List(fields.toList))
   }
 
   def contramap[R](f: R => T): DiffFor[R] = (left: R, right: R, toIgnore: List[FieldPath]) => {
-    outer(f(left), f(right), toIgnore ++ ignored)
+    outer(f(left), f(right), toIgnore)
   }
 }
 
