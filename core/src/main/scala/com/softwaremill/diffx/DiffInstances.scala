@@ -28,7 +28,7 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       val matcher = implicitly[ObjectMatcher[T]]
       val matchedInstances = left.flatMap(
         l =>
-          right.collectFirst { case r if matcher.isSameEntity(l, r) || ddt(l, r, toIgnore) == Identical(l) => l -> r }
+          right.collectFirst { case r if matcher.isSameObject(l, r) || ddt(l, r, toIgnore) == Identical(l) => l -> r }
       )
       val unMatchedLeftInstances = left.diff(matchedInstances.map(_._1))
       val unMatchedRightInstances = right.diff(matchedInstances.map(_._2))

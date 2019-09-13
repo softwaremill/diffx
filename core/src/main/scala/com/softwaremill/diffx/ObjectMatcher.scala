@@ -4,7 +4,7 @@ package com.softwaremill.diffx
   Used to pair elements within unordered containers like sets
  */
 trait ObjectMatcher[T] {
-  def isSameEntity(left: T, right: T): Boolean
+  def isSameObject(left: T, right: T): Boolean
 }
 
 object ObjectMatcher {
