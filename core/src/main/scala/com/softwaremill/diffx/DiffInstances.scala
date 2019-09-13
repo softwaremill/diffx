@@ -21,15 +21,17 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       }
     })
 
-  implicit def diffForSet[T: EntityMatcher, C[W] <: scala.collection.Set[W]](
+  implicit def diffForSet[T: ObjectMatcher, C[W] <: scala.collection.Set[W]](
       implicit ddt: Derived[Diff[T]]
   ): Derived[Diff[C[T]]] =
     new Derived((left: C[T], right: C[T], toIgnore: List[FieldPath]) => {
-      val matcher = implicitly[EntityMatcher[T]]
-      val matchedInstances = left.flatMap(l => right.collectFirst { case r if matcher.isSameEntity(l, r) => l -> r })
+      val matcher = implicitly[ObjectMatcher[T]]
+      val matchedInstances = left.flatMap(
+        l =>
+          right.collectFirst { case r if matcher.isSameEntity(l, r) || ddt(l, r, toIgnore) == Identical(l) => l -> r }
+      )
       val unMatchedLeftInstances = left.diff(matchedInstances.map(_._1))
       val unMatchedRightInstances = right.diff(matchedInstances.map(_._2))
-      val differ = ddt.value
 
       val leftDiffs = unMatchedLeftInstances
         .diff(unMatchedRightInstances)
@@ -39,9 +41,9 @@ trait DiffInstances extends DiffMagnoliaDerivation {
         .diff(unMatchedLeftInstances)
         .map(DiffResultMissing(_))
         .toList
-      val matchedDiffs = matchedInstances.map { case (l, r) => differ(l, r, toIgnore) }
+      val matchedDiffs = matchedInstances.map { case (l, r) => ddt(l, r, toIgnore) }
       val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
-      if (diffs.isEmpty) {
+      if (diffs.forall(_.isInstanceOf[Identical[_]])) {
         Identical(left)
       } else {
         DiffResultSet(diffs)
@@ -73,9 +75,14 @@ trait DiffInstances extends DiffMagnoliaDerivation {
   ): Derived[Diff[Map[String, T]]] =
     Derived((left: Map[String, T], right: Map[String, T], toIgnore: List[FieldPath]) => {
       val keySet = left.keySet ++ right.keySet
-      DiffResultObject("Map", keySet.map { k =>
+      val diffs = keySet.map { k =>
         k -> ddot.value.apply(left.get(k), right.get(k), toIgnore)
-      }.toMap)
+      }.toMap
+      if (diffs.values.forall(_.isInstanceOf[Identical[_]])) {
+        Identical(left)
+      } else {
+        DiffResultObject("Map", diffs)
+      }
     })
 }
 

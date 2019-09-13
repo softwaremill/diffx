@@ -153,18 +153,6 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
-  it should "calculate diff for mutable sets" in {
-    import scala.collection.{Set => mSet}
-    val diffResult = compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
-    diffResult.diffs should contain theSameElementsAs List(
-      DiffResultAdditional(5),
-      Identical(4),
-      Identical(3),
-      Identical(2),
-      Identical(1)
-    )
-  }
-
   val right: Foo = Foo(
     Bar("asdf", 5),
     List(123, 1234),
@@ -197,7 +185,7 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
 
   it should "calculate diff for set of products using instance matcher" in {
     val p2m = p2.copy(age = 33)
-    implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
     compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
       List(
         Identical(p1),
@@ -209,7 +197,7 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
-  it should "ignore elements elements when they are wrapped with lists" in {
+  "diff for list" should "use ignored fields from elements" in {
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p1, p1, p1))
     val d = Diff[Organization].ignoreUnsafe("people", "name")
@@ -235,10 +223,10 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
-  it should "calculate diff for sets of products using ignored from product" in {
+  "diff for sets" should "calculate diff using ignored fields from elements" in {
     val p2m = p2.copy(age = 33, in = Instant.now())
     val d = Diff[Person].ignoreUnsafe("age")
-    implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
     val ds: Derived[Diff[Set[Person]]] = diffForSet(im, Derived(d))
     compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe DiffResultSet(
       List(
@@ -255,9 +243,28 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
-  it should "calculate diff for sets of products propagating ignored fields" in {
+  it should "work also for mutable variant" in {
+    import scala.collection.{Set => mSet}
+    val diffResult = compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
+    diffResult.diffs should contain theSameElementsAs List(
+      DiffResultAdditional(5),
+      Identical(4),
+      Identical(3),
+      Identical(2),
+      Identical(1)
+    )
+  }
+
+  it should "be identical when products are identical using ignored" in {
+    val p2m = p2.copy(age = 33, in = Instant.now())
+    val d = Diff[Person].ignoreUnsafe("age").ignoreUnsafe("in")
+    val ds: Derived[Diff[Set[Person]]] = diffForSet(implicitly[ObjectMatcher[Person]], Derived(d))
+    compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe Identical(Set(p1, p2))
+  }
+
+  it should "propagate ignore fields to elements" in {
     val p2m = p2.copy(in = Instant.now())
-    implicit val im: EntityMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
     val ds: Diff[Set[Person]] = diffForSet(im, Derived[Diff[Person]]).value.ignoreUnsafe("age")
     compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
       List(
@@ -274,7 +281,7 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
-  it should "propagate ignored fields through map" in {
+  "diff of maps" should "propagate ignored fields to elements" in {
     val dm = Diff[Map[String, Person]].ignoreUnsafe("age")
     compare(Map("first" -> p1), Map("first" -> p2))(dm) shouldBe DiffResultObject(
       "Map",
@@ -289,6 +296,11 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
         )
       )
     )
+  }
+
+  it should "be identical when products are identical using ignore" in {
+    val dm = Diff[Map[String, Person]].ignoreUnsafe("age").ignoreUnsafe("name")
+    compare(Map("first" -> p1), Map("first" -> p2))(dm) shouldBe Identical(Map("first" -> p1))
   }
 
   private def compare[T](t1: T, t2: T)(implicit d: Diff[T]) = d.apply(t1, t2)
