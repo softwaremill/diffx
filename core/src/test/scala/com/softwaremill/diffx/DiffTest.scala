@@ -135,6 +135,14 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
+  it should "compare lists using set-like comparator" in {
+    val o1 = Organization(List(p1, p2))
+    val o2 = Organization(List(p2, p1))
+    implicit val om: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
+    implicit val dd: Derived[Diff[List[Person]]] = new Derived(Diff[Set[Person]].contramap(_.toSet))
+    compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
+  }
+
   it should "calculate diff for sealed trait objects" in {
     compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
       "com.softwaremill.diffx.TsDirection.Outgoing",
