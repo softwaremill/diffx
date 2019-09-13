@@ -8,7 +8,7 @@ Pretty diffs for case classes.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.1.1"
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.2.0"
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -27,7 +27,7 @@ Giving you nice error messages:
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.1.1"
+"com.softwaremill.diffx" %% "diffx-core" % "0.2.0"
 ```
 
 Then call:
