@@ -12,13 +12,13 @@ To use with scalatest, add the following dependency:
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
-You will then be able to use syntax such as:
+After that you will be able to use syntax such as:
 
 ```scala
 left should matchTo(right)
 ```
 
-Giving you nice error messages, such as:
+Giving you nice error messages:
 
 ![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
 
@@ -33,11 +33,24 @@ Add the following dependency:
 Then call:
 
 ```scala
-import com.softwaremill.diffx.DiffFor
-implicitly[DiffFor[T]].diff(o1, o2)
+import com.softwaremill.diffx.Diff
+Diff[T].diff(o1, o2)
 ```
 
-## Custom types
+## Customization
 
-If you'd like to implement custom matching logic for a custom type, create an implicit `DiffFor` instance for that 
-type, and make sure it's in scope when creating `DiffFor` for the case class.
+If you'd like to implement custom matching logic for given type, create an implicit `Diff` instance for that 
+type, and make sure it's in scope when creating `Diff` for the root type.
+
+
+## Ignoring
+
+Fields can be excluded from comparision simply by calling `ignore` method on `Diff` instance.
+Since `Diff` instances are immutable it creates a copy with modified logic. You can use this instance 
+explicitly. If you still would like to use it implicitly you first need to summon instance of `Diff` typeclass using
+`Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick latter you will be able to put your modified
+instance of `Diff` typeclass into implicit scope. The whole process looks following:
+```scala
+implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
+``` 
+
