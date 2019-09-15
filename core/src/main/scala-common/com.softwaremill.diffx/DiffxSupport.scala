@@ -3,10 +3,7 @@ package com.softwaremill.diffx
 import scala.annotation.compileTimeOnly
 import com.softwaremill.diffx.DiffxSupport._
 
-trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with DiffxFunctorSupport {
-
-  implicit def optionDiffxFunctor[A]: DiffxFunctor[Option, A] =
-    new DiffxFunctor[Option, A] {}
+trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with DiffxOptionSupport {
 
   type FieldPath = List[String]
 }
@@ -44,7 +41,7 @@ trait DiffxConsoleSupport {
 
 }
 
-trait DiffxFunctorSupport {
+trait DiffxOptionSupport {
   implicit class DiffxEach[F[_], T](t: F[T])(implicit f: DiffxFunctor[F, T]) {
     @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each: T = sys.error("")
@@ -54,4 +51,7 @@ trait DiffxFunctorSupport {
     @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each(fa: F[A])(f: A => A): F[A] = sys.error("")
   }
+
+  implicit def optionDiffxFunctor[A]: DiffxFunctor[Option, A] =
+    new DiffxFunctor[Option, A] {}
 }
