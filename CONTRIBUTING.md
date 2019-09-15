@@ -1,4 +1,3 @@
-Contributing
 Diffx is an early stage project. Everything might change. All suggestions welcome :)
 
 See the list of [issues](https://github.com/softwaremill/diffx/issues) and pick one! Or report your own.
