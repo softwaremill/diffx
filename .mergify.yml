@@ -5,7 +5,7 @@ pull_request_rules:
       delete_head_branch: {}
   - name: automatic merge for Dependabot pull requests
     conditions:
-      - author=dependabot[bot]
+      - author=scala-steward
       - status-success=Travis CI - Pull Request
     actions:
       merge:
