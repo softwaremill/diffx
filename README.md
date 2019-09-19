@@ -67,7 +67,7 @@ implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ## Tagging support
 
 Support for tagged types can be added easily by providing an additional generic instance of the `Diff` type class
-```
+```scala
 implicit def taggedDiff[T:Diff, U]: Diff[T @@ U] = Diff[T].contramap(identity)
 ```
 
