@@ -36,6 +36,10 @@ Then call:
 
 ```scala
 import com.softwaremill.diffx.Diff
+
+//import this or extend the trait with the same name
+import com.softwaremill.diffx.DiffInstances._
+
 Diff[T].diff(o1, o2)
 ```
 
