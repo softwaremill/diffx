@@ -64,3 +64,10 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ``` 
 
+## Tagging support
+
+Support for tagged types can added easily by providing an additional generic instance of `Diff` type class
+```
+implicit def taggedDiff[T:Diff, U]: Diff[T @@ U] = Diff[T].contramap(identity)
+```
+
