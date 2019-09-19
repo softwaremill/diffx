@@ -53,7 +53,7 @@ type, and make sure it's in scope when any any `Diff` instances depending on tha
 
 ## Ignoring
 
-Fields can be excluded from comparision by calling the `ignore` method on `Diff` instance.
+Fields can be excluded from comparision by calling the `ignore` method on the `Diff` instance.
 Since `Diff` instances are immutable, the `ignore` method creates a copy of the instance with modified logic.
 You can use this instance explicitly.
 If you still would like to use it implicitly, you first need to summon the instance of the `Diff` typeclass using
