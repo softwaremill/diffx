@@ -5,6 +5,8 @@
 
 Pretty diffs for case classes. 
 
+The library is published for Scala 2.12 and 2.13.
+
 ## Scalatest integration
 
 To use with scalatest, add the following dependency:
@@ -45,17 +47,19 @@ Diff[T].diff(o1, o2)
 
 ## Customization
 
-If you'd like to implement custom matching logic for given type, create an implicit `Diff` instance for that 
-type, and make sure it's in scope when creating `Diff` for the root type.
+If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that 
+type, and make sure it's in scope when any any `Diff` instances depending on that type are created.
 
 
 ## Ignoring
 
-Fields can be excluded from comparision simply by calling `ignore` method on `Diff` instance.
-Since `Diff` instances are immutable it creates a copy with modified logic. You can use this instance 
-explicitly. If you still would like to use it implicitly you first need to summon instance of `Diff` typeclass using
-`Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick latter you will be able to put your modified
-instance of `Diff` typeclass into implicit scope. The whole process looks following:
+Fields can be excluded from comparision by calling the `ignore` method on the `Diff` instance.
+Since `Diff` instances are immutable, the `ignore` method creates a copy of the instance with modified logic.
+You can use this instance explicitly.
+If you still would like to use it implicitly, you first need to summon the instance of the `Diff` typeclass using
+the `Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick, later you will be able to put your modified
+instance of the `Diff` typeclass into the implicit scope. The whole process looks as follows:
+
 ```scala
 implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ``` 
