@@ -57,17 +57,21 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       val indexes = Range(0, Math.max(left.size, right.size))
       val leftAsMap = left.toList.lift
       val rightAsMap = right.toList.lift
-      DiffResultObject(
-        "List",
-        indexes.map { index =>
-          index.toString -> (ddot.value
-            .apply(leftAsMap(index), rightAsMap(index), toIgnore) match {
-            case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
-            case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
-            case d                              => d
-          })
-        }.toMap
-      )
+
+      val diffs: Map[String, DiffResult] = indexes.map { index =>
+        index.toString -> (ddot.value
+          .apply(leftAsMap(index), rightAsMap(index), toIgnore) match {
+          case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
+          case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
+          case d                              => d
+        })
+      }.toMap
+
+      if (diffs.values.forall(_.isInstanceOf[Identical[_]])) {
+        Identical(left)
+      } else {
+        DiffResultObject("List", diffs)
+      }
     })
 
   implicit def diffForMap[T, C[_, _] <: Map[_, _]](
