@@ -231,6 +231,10 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     )
   }
 
+  it should "consider same lists as identical" in {
+    compare(List("a"), List("a")) shouldBe Identical(List("a"))
+  }
+
   "diff for sets" should "calculate diff using ignored fields from elements" in {
     val p2m = p2.copy(age = 33, in = Instant.now())
     val d = Diff[Person].ignoreUnsafe("age")

@@ -43,7 +43,7 @@ trait DiffInstances extends DiffMagnoliaDerivation {
         .toList
       val matchedDiffs = matchedInstances.map { case (l, r) => ddt(l, r, toIgnore) }
       val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
-      if (diffs.forall(_.isInstanceOf[Identical[_]])) {
+      if (diffs.forall(_.isIdentical)) {
         Identical(left)
       } else {
         DiffResultSet(diffs)
@@ -57,8 +57,7 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       val indexes = Range(0, Math.max(left.size, right.size))
       val leftAsMap = left.toList.lift
       val rightAsMap = right.toList.lift
-
-      val diffs: Map[String, DiffResult] = indexes.map { index =>
+      val differences = indexes.map { index =>
         index.toString -> (ddot.value
           .apply(leftAsMap(index), rightAsMap(index), toIgnore) match {
           case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
@@ -66,11 +65,13 @@ trait DiffInstances extends DiffMagnoliaDerivation {
           case d                              => d
         })
       }.toMap
-
-      if (diffs.values.forall(_.isInstanceOf[Identical[_]])) {
+      if (differences.values.forall(_.isIdentical)) {
         Identical(left)
       } else {
-        DiffResultObject("List", diffs)
+        DiffResultObject(
+          "List",
+          differences
+        )
       }
     })
 
@@ -82,7 +83,7 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       val diffs = keySet.map { k =>
         k -> ddot.value.apply(left.get(k), right.get(k), toIgnore)
       }.toMap
-      if (diffs.values.forall(_.isInstanceOf[Identical[_]])) {
+      if (diffs.values.forall(_.isIdentical)) {
         Identical(left)
       } else {
         DiffResultObject("Map", diffs)
