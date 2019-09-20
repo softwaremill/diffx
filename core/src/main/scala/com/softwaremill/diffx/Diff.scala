@@ -1,4 +1,5 @@
 package com.softwaremill.diffx
+import acyclic.skipped
 
 trait Diff[T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
@@ -16,7 +17,7 @@ trait Diff[T] { outer =>
   def ignore[U](path: T => U): Diff[T] = macro IgnoreMacro.ignoreMacro[T, U]
 }
 
-object Diff {
+object Diff extends DiffInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)

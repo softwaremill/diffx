@@ -4,7 +4,7 @@ import java.time.Instant
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class DiffTest extends FlatSpec with Matchers with DiffInstances {
+class DiffTest extends FlatSpec with Matchers {
 
   private val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -235,7 +235,7 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
     val p2m = p2.copy(age = 33, in = Instant.now())
     val d = Diff[Person].ignoreUnsafe("age")
     implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
-    val ds: Derived[Diff[Set[Person]]] = diffForSet(im, Derived(d))
+    val ds: Derived[Diff[Set[Person]]] = Diff.diffForSet(im, Derived(d))
     compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe DiffResultSet(
       List(
         Identical(p1),
@@ -266,14 +266,14 @@ class DiffTest extends FlatSpec with Matchers with DiffInstances {
   it should "be identical when products are identical using ignored" in {
     val p2m = p2.copy(age = 33, in = Instant.now())
     val d = Diff[Person].ignoreUnsafe("age").ignoreUnsafe("in")
-    val ds: Derived[Diff[Set[Person]]] = diffForSet(implicitly[ObjectMatcher[Person]], Derived(d))
+    val ds: Derived[Diff[Set[Person]]] = Diff.diffForSet(implicitly[ObjectMatcher[Person]], Derived(d))
     compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe Identical(Set(p1, p2))
   }
 
   it should "propagate ignore fields to elements" in {
     val p2m = p2.copy(in = Instant.now())
     implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
-    val ds: Diff[Set[Person]] = diffForSet(im, Derived[Diff[Person]]).value.ignoreUnsafe("age")
+    val ds: Diff[Set[Person]] = Diff.diffForSet(im, Derived[Diff[Person]]).value.ignoreUnsafe("age")
     compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
       List(
         Identical(p1),

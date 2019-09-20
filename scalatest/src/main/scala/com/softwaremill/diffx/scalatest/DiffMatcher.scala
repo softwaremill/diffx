@@ -3,7 +3,7 @@ package com.softwaremill.diffx.scalatest
 import com.softwaremill.diffx.{Diff, DiffInstances, DiffResultDifferent}
 import org.scalatest.matchers.{MatchResult, Matcher}
 
-trait DiffMatcher extends DiffInstances {
+trait DiffMatcher {
   def matchTo[A: Diff](left: A): DiffForMatcher[A] = DiffForMatcher(left)
 
   case class DiffForMatcher[A: Diff](right: A) extends Matcher[A] {

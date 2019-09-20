@@ -4,7 +4,7 @@ import java.time.Instant
 
 import org.scalatest.{FlatSpec, Matchers}
 
-class DiffIgnoreIntTest extends FlatSpec with Matchers with DiffInstances {
+class DiffIgnoreIntTest extends FlatSpec with Matchers {
 
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)

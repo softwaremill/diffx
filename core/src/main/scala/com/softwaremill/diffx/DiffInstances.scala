@@ -1,4 +1,5 @@
 package com.softwaremill.diffx
+import acyclic.skipped
 
 trait DiffInstances extends DiffMagnoliaDerivation {
 
