@@ -1,6 +1,5 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.Diff
 import org.scalatest.{FlatSpec, Matchers}
 
 class DiffMatcherTest extends FlatSpec with Matchers with DiffMatcher {

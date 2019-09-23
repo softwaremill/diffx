@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.{Diff, DiffInstances, DiffResultDifferent}
+import com.softwaremill.diffx.{Diff, DiffResultDifferent}
 import org.scalatest.matchers.{MatchResult, Matcher}
 
 trait DiffMatcher {
