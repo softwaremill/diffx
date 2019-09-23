@@ -8,7 +8,7 @@ object IgnoreMacro {
 
   def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree = applyIgnored(c)(ignoredFromPathMacro(c)(path))
+  )(path: c.Expr[T => U]): c.Tree = applyIgnored[T, U](c)(ignoredFromPathMacro(c)(path))
 
   private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
       path: c.Expr[List[String]]
@@ -23,10 +23,13 @@ object IgnoreMacro {
     }
 
     val valueAlias = TermName(c.freshName())
-
+    val t = weakTypeOf[T]
     q"""{
       val $valueAlias = $wrappedValue;
-      ${Ident(valueAlias)}.ignoreUnsafe($path:_*)
+      new Diff[$t] {
+        override def apply(left: $t, right: $t, toIgnore: List[FieldPath]): DiffResult =
+          ${Ident(valueAlias)}.apply(left, right, toIgnore ++ List($path))
+      }
      }"""
   }
 
