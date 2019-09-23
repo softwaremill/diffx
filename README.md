@@ -12,7 +12,7 @@ The library is published for Scala 2.12 and 2.13.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.2.0"
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.2.2"
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -31,7 +31,7 @@ Giving you nice error messages:
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.2.0"
+"com.softwaremill.diffx" %% "diffx-core" % "0.2.2"
 ```
 
 Then call:
@@ -63,4 +63,11 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 ```scala
 implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ``` 
+
+## Tagging support
+
+Support for tagged types can be added easily by providing an additional generic instance of the `Diff` type class
+```scala
+implicit def taggedDiff[T:Diff, U]: Diff[T @@ U] = Diff[T].contramap(identity)
+```
 

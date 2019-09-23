@@ -5,11 +5,6 @@ trait Diff[T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
   def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
 
-  private[diffx] def ignoreUnsafe(fields: String*): Diff[T] = new Diff[T] {
-    override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
-      outer.apply(left, right, toIgnore ++ List(fields.toList))
-  }
-
   def contramap[R](f: R => T): Diff[R] = (left: R, right: R, toIgnore: List[FieldPath]) => {
     outer(f(left), f(right), toIgnore)
   }
