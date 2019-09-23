@@ -26,8 +26,8 @@ object IgnoreMacro {
     val t = weakTypeOf[T]
     q"""{
       val $valueAlias = $wrappedValue;
-      new Diff[$t] {
-        override def apply(left: $t, right: $t, toIgnore: List[FieldPath]): DiffResult =
+      new com.softwaremill.diffx.Diff[$t] {
+        override def apply(left: $t, right: $t, toIgnore: List[List[String]]): com.softwaremill.diffx.DiffResult =
           ${Ident(valueAlias)}.apply(left, right, toIgnore ++ List($path))
       }
      }"""
