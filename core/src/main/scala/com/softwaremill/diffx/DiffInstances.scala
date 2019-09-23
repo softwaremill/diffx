@@ -91,5 +91,3 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       }
     })
 }
-
-object DiffInstances extends DiffInstances
