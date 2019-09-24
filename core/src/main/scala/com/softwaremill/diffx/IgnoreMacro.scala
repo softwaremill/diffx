@@ -14,22 +14,8 @@ object IgnoreMacro {
       path: c.Expr[List[String]]
   ): c.Tree = {
     import c.universe._
-
-    val wrappedValue = c.macroApplication match {
-      case Apply(TypeApply(Select(Apply(_, List(w)), _), _), _)            => w
-      case Apply(TypeApply(Select(Select(Apply(_, List(w)), _), _), _), _) => w
-      case _ =>
-        c.abort(c.enclosingPosition, s"Unknown usage of IgnoreMacroExt. Please file a bug.")
-    }
-
-    val valueAlias = TermName(c.freshName())
-    val t = weakTypeOf[T]
     q"""{
-      val $valueAlias = $wrappedValue;
-      new com.softwaremill.diffx.Diff[$t] {
-        override def apply(left: $t, right: $t, toIgnore: List[List[String]]): com.softwaremill.diffx.DiffResult =
-          ${Ident(valueAlias)}.apply(left, right, toIgnore ++ List($path))
-      }
+      ${c.prefix}.ignoreUnsafe($path:_*)
      }"""
   }
 

@@ -10,6 +10,11 @@ trait Diff[T] { outer =>
   }
 
   def ignore[U](path: T => U): Diff[T] = macro IgnoreMacro.ignoreMacro[T, U]
+
+  def ignoreUnsafe(fields: String*): Diff[T] = new Diff[T] {
+    override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
+      outer.apply(left, right, toIgnore ++ List(fields.toList))
+  }
 }
 
 object Diff extends DiffInstances {

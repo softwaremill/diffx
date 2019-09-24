@@ -10,13 +10,6 @@ class DiffTest extends FlatSpec with Matchers {
   val p1 = Person("p1", 22, instant)
   val p2 = Person("p2", 11, instant)
 
-  implicit class IgnoreUnsafeEx[T](d: Diff[T]) {
-    private[diffx] def ignoreUnsafe(fields: String*): Diff[T] = new Diff[T] {
-      override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
-        d.apply(left, right, toIgnore ++ List(fields.toList))
-    }
-  }
-
   it should "calculate diff for simple value" in {
     compare(1, 2) shouldBe DiffResultValue(1, 2)
     compare(1, 1) shouldBe Identical(1)
