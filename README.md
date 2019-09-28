@@ -41,7 +41,7 @@ Then call:
 ```scala
 import com.softwaremill.diffx.Diff
 
-Diff[T].diff(o1, o2)
+Diff[T].apply(o1, o2)
 ```
 
 ## Customization
