@@ -1,8 +1,8 @@
-package com.softwaremill.diffx.scalatest
+package com.softwaremill.diffx.specs2
 
 import org.specs2.Specification
 
-class HelloWorldSpec extends Specification with DiffMatcher {
+class DiffMatcherTest extends Specification with DiffMatcher {
   override def is = s2"""This is an empty specification"""
 
   val right: Foo = Foo(

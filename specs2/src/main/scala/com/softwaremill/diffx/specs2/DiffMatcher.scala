@@ -1,4 +1,4 @@
-package com.softwaremill.diffx.scalatest
+package com.softwaremill.diffx.specs2
 
 import com.softwaremill.diffx.{Diff, DiffResultDifferent}
 import org.specs2.matcher.{Expectable, MatchResult, Matcher}
