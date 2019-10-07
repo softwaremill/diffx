@@ -11,12 +11,7 @@ trait DiffMatcher {
       val diff = Diff[A]
       result(
         test = {
-          diff.apply(left.value, right) match {
-            case c: DiffResultDifferent =>
-              false
-            case _ =>
-              true
-          }
+          diff.apply(left.value, right).isIdentical
         },
         okMessage = "",
         koMessage = diff.apply(left.value, right) match {
