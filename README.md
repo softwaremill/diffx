@@ -14,7 +14,7 @@ The library is published for Scala 2.12 and 2.13.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.3"
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.4"
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -33,7 +33,7 @@ Giving you nice error messages:
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.3.3"
+"com.softwaremill.diffx" %% "diffx-core" % "0.3.4"
 ```
 
 Then call:
