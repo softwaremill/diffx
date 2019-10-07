@@ -59,5 +59,6 @@ lazy val rootProject = (project in file("."))
   .settings(publishTravisSettings)
   .aggregate(
     core,
-    scalatest
+    scalatest,
+    specs2
   )
