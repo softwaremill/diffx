@@ -9,6 +9,15 @@ Pretty diffs for case classes.
 
 The library is published for Scala 2.12 and 2.13.
 
+## Table of contents
+- integrations
+  - [scalatest](#scalatest-integration)
+  - [specs2](#specs2-integration)
+- [direct usage](#using-directly)
+- [customization](#customization)
+- [ignoring](#ignoring)
+- [tagging support](#tagging-support)
+
 ## Scalatest integration
 
 To use with scalatest, add the following dependency:
@@ -27,6 +36,21 @@ left should matchTo(right)
 Giving you nice error messages:
 
 ![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
+
+## Specs2 integration
+
+To use with specs2, add the following dependency:
+
+```scala
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.4"
+```
+
+Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
+After that you will be able to use syntax such as:
+
+```scala
+left must matchTo(right)
+```
 
 ## Using directly
 
