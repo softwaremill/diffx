@@ -4,7 +4,7 @@ val v2_12 = "2.12.8"
 val v2_13 = "2.13.0"
 
 val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.8"
-val specs2Dependency = "org.specs2" %% "specs2-core" % "4.6.0"
+val specs2Dependency = "org.specs2" %% "specs2-core" % "4.7.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
   organization := "com.softwaremill.diffx",
