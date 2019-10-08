@@ -31,5 +31,16 @@ class DiffIgnoreIntTest extends FlatSpec with Matchers {
     compare(p1, p2) shouldBe Identical(p1)
   }
 
+  it should "compare maps by values" in {
+    type DD[T] = Derived[Diff[T]]
+    implicit def mapWithoutKeys[T, R: DD]: Derived[Diff[Map[T, R]]] =
+      new Derived(Diff[List[R]].contramap(_.values.toList))
+    val person = Person("123", 11, Instant.now())
+    compare(
+      Map[String, Person]("i1" -> person),
+      Map[String, Person]("i2" -> person)
+    ) shouldBe Identical(List(person))
+  }
+
   private def compare[T](t1: T, t2: T)(implicit d: Diff[T]) = d.apply(t1, t2)
 }
