@@ -89,8 +89,19 @@ implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 
 ## Tagging support
 
-Support for tagged types can be added easily by providing an additional generic instance of the `Diff` type class
+To use with softwaremill-tagging library, add the following dependency:
+
 ```scala
-implicit def taggedDiff[T:Diff, U]: Diff[T @@ U] = Diff[T].contramap(identity)
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.5"
+```
+
+And then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
+
+Diffx should be able to work with any other tagging library. I decided to create this module in order to check
+if any future changes won't break this integration.
+
+If you want to use diffx with other tagging library you need to provide a way for creating `Diff` type class for tagged types:
+```scala
+implicit def taggedDiff[T: Diff, U]: Derived[Diff[T @@ U]] = Derived(Diff[T].contramap[T @@ U](identity))
 ```
 

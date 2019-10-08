@@ -5,6 +5,7 @@ val v2_13 = "2.13.0"
 
 val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.8"
 val specs2Dependency = "org.specs2" %% "specs2-core" % "4.7.1"
+val smlTaggingDependency = "com.softwaremill.common" %% "tagging" % "2.2.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
   organization := "com.softwaremill.diffx",
@@ -53,6 +54,17 @@ lazy val specs2: Project = (project in file("specs2"))
   )
   .dependsOn(core)
 
+lazy val tagging: Project = (project in file("tagging"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "diffx-tagging",
+    libraryDependencies ++= Seq(
+      smlTaggingDependency,
+      scalatestDependency % "test",
+    )
+  )
+  .dependsOn(core)
+
 lazy val rootProject = (project in file("."))
   .settings(commonSettings: _*)
   .settings(publishArtifact := false, name := "diffx")
@@ -60,5 +72,6 @@ lazy val rootProject = (project in file("."))
   .aggregate(
     core,
     scalatest,
-    specs2
+    specs2,
+    tagging
   )
