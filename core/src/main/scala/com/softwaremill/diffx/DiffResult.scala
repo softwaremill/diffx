@@ -7,7 +7,7 @@ trait DiffResult {
   private[diffx] def showIndented(indent: Int): String
 }
 
-case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResultDifferent {
+case class DiffResultObject(name: String, fields: Map[_, DiffResult]) extends DiffResultDifferent {
   override private[diffx] def showIndented(indent: Int): String = {
     val showFields = fields.map(f => s"${i(indent)}${f._1}: ${f._2.showIndented(indent + 5)}")
     s"""$name(
@@ -25,7 +25,7 @@ case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
 
 trait DiffResultDifferent extends DiffResult {
   override def isIdentical: Boolean = false
-  protected def i(indent: Int) = " " * indent
+  protected def i(indent: Int): String = " " * indent
 }
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
