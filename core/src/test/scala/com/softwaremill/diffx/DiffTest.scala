@@ -300,10 +300,9 @@ class DiffTest extends FunSpec with Matchers {
   describe("diff for maps") {
     it("propagate ignored fields to elements") {
       val dm = Diff[Map[String, Person]].ignoreUnsafe("age")
-      compare(Map("first" -> p1), Map("first" -> p2))(dm) shouldBe DiffResultObject(
-        "Map",
+      compare(Map("first" -> p1), Map("first" -> p2))(dm) shouldBe DiffResultMap(
         Map(
-          "first" -> DiffResultObject(
+          Identical("first") -> DiffResultObject(
             "Person",
             Map(
               "name" -> DiffResultValue(p1.name, p2.name),
@@ -335,6 +334,7 @@ class DiffTest extends FunSpec with Matchers {
 
     it("ignore part of map's key using keys's diff specification") {
       implicit def dm: Diff[KeyModel] = Derived[Diff[KeyModel]].ignore(_.id)
+
       val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
       val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
       compare(a1, a2) shouldBe Identical(a1)
@@ -344,9 +344,26 @@ class DiffTest extends FunSpec with Matchers {
       implicit val om: ObjectMatcher[KeyModel] = new ObjectMatcher[KeyModel] {
         override def isSameObject(left: KeyModel, right: KeyModel): Boolean = left.name == right.name
       }
-      val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
-      val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
-      compare(a1, a2) shouldBe Identical(a1)
+      val uuid1 = UUID.randomUUID()
+      val uuid2 = UUID.randomUUID()
+      val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+      val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+      compare(a1, a2) shouldBe DiffResultObject(
+        "MyLookup",
+        Map(
+          "map" -> DiffResultMap(
+            Map(
+              DiffResultObject(
+                "KeyModel",
+                Map(
+                  "id" -> DiffResultValue(uuid1, uuid2),
+                  "name" -> Identical("k1")
+                )
+              ) -> Identical("val1")
+            )
+          )
+        )
+      )
     }
   }
 

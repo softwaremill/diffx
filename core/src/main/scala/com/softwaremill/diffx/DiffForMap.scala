@@ -15,11 +15,11 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
     val leftDiffs = this.leftDiffs(left, unMatchedLeftKeys, unMatchedRightKeys)
     val rightDiffs = this.rightDiffs(right, unMatchedLeftKeys, unMatchedRightKeys)
     val matchedDiffs = this.matchedDiffs(matchedKeys, left, right, toIgnore)
-    val diffs = (leftDiffs ++ rightDiffs ++ matchedDiffs).toMap
-    if (diffs.values.forall(_.isIdentical)) {
+    val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
+    if (diffs.forall(p => p._1.isIdentical && p._2.isIdentical)) {
       Identical(left)
     } else {
-      DiffResultObject("Map", diffs)
+      DiffResultMap(diffs.toMap)
     }
   }
 
@@ -28,10 +28,11 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
       left: Map[K, V],
       right: Map[K, V],
       toIgnore: List[FieldPath]
-  ): List[(K, DiffResult)] = {
+  ): List[(DiffResult, DiffResult)] = {
     matchedKeys.map {
       case (lKey, rKey) =>
-        lKey -> diffValue.apply(left.get(lKey), right.get(rKey), toIgnore)
+        val result = diffKey.apply(lKey, rKey)
+        result -> diffValue.apply(left.get(lKey), right.get(rKey), toIgnore)
     }.toList
   }
 
@@ -39,10 +40,10 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
       right: Map[K, V],
       unMatchedLeftKeys: Set[K],
       unMatchedRightKeys: Set[K]
-  ): List[(K, DiffResult)] = {
+  ): List[(DiffResult, DiffResult)] = {
     unMatchedRightKeys
       .diff(unMatchedLeftKeys)
-      .map(k => k -> DiffResultMissing(right(k)))
+      .map(k => DiffResultMissing(k) -> DiffResultMissing(right(k)))
       .toList
   }
 
@@ -50,10 +51,10 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
       left: Map[K, V],
       unMatchedLeftKeys: Set[K],
       unMatchedRightKeys: Set[K]
-  ): List[(K, DiffResult)] = {
+  ): List[(DiffResult, DiffResult)] = {
     unMatchedLeftKeys
       .diff(unMatchedRightKeys)
-      .map(k => k -> DiffResultAdditional(left(k)))
+      .map(k => DiffResultAdditional(k) -> DiffResultAdditional(left(k)))
       .toList
   }
 }
