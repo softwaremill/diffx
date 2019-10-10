@@ -2,6 +2,7 @@ package com.softwaremill.diffx
 
 trait DiffResult {
   def isIdentical: Boolean
+
   def show: String = showIndented(5)
 
   private[diffx] def showIndented(indent: Int): String
@@ -11,6 +12,14 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
   override private[diffx] def showIndented(indent: Int): String = {
     val showFields = fields.map(f => s"${i(indent)}${f._1}: ${f._2.showIndented(indent + 5)}")
     s"""$name(
+       |${showFields.mkString("\n")})""".stripMargin
+  }
+}
+
+case class DiffResultMap(fields: Map[DiffResult, DiffResult]) extends DiffResultDifferent {
+  override private[diffx] def showIndented(indent: Int): String = {
+    val showFields = fields.map(f => s"${i(indent)}${f._1.showIndented(indent + 5)}: ${f._2.showIndented(indent + 5)}")
+    s"""Map(
        |${showFields.mkString("\n")})""".stripMargin
   }
 }
@@ -25,7 +34,8 @@ case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
 
 trait DiffResultDifferent extends DiffResult {
   override def isIdentical: Boolean = false
-  protected def i(indent: Int) = " " * indent
+
+  protected def i(indent: Int): String = " " * indent
 }
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
@@ -34,6 +44,7 @@ case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
 
 case class Identical[T](value: T) extends DiffResult {
   override def isIdentical: Boolean = true
+
   override def showIndented(indent: Int): String = value.toString
 }
 
@@ -42,6 +53,7 @@ case class DiffResultMissing[T](value: T) extends DiffResultDifferent {
     red(value.toString)
   }
 }
+
 case class DiffResultAdditional[T](value: T) extends DiffResultDifferent {
   override def showIndented(indent: Int): String = {
     green(value.toString)
