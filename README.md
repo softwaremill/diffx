@@ -1,4 +1,5 @@
-# diffx 
+![diffx](https://github.com/softwaremill/diffx/raw/master/banner.png)
+
 [![Build Status](https://travis-ci.org/softwaremill/diffx.svg?branch=master)](https://travis-ci.org/softwaremill/diffx)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.softwaremill.diffx/diffx-core_2.13/badge.svg)](https://search.maven.org/search?q=g:com.softwaremill.diffx)
 [![Gitter](https://badges.gitter.im/softwaremill/diffx.svg)](https://gitter.im/softwaremill/diffx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
@@ -105,3 +106,10 @@ If you want to use diffx with other tagging library you need to provide a way fo
 implicit def taggedDiff[T: Diff, U]: Derived[Diff[T @@ U]] = Derived(Diff[T].contramap[T @@ U](identity))
 ```
 
+## Commercial Support
+
+We offer commercial support for diffx and related technologies, as well as development services. [Contact us](https://softwaremill.com) to learn more about our offer!
+
+## Copyright
+
+Copyright (C) 2019 SoftwareMill [https://softwaremill.com](https://softwaremill.com).
