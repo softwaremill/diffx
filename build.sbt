@@ -12,7 +12,7 @@ lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acycli
   scalaVersion := v2_12,
   scalafmtOnCompile := true,
   crossScalaVersions := Seq(v2_12, v2_13),
-  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.4")),
+  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5")),
 )
 
 lazy val core: Project = (project in file("core"))
