@@ -6,7 +6,6 @@ import java.util.UUID
 import org.scalatest.{FunSpec, Matchers}
 
 class DiffTest extends FunSpec with Matchers {
-
   private val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
   val p2 = Person("p2", 11, instant)
@@ -399,11 +398,9 @@ case class Foo(bar: Bar, b: List[Int], parent: Option[Parent]) extends Parent
 sealed trait TsDirection
 
 object TsDirection {
-
   case object Incoming extends TsDirection
 
   case object Outgoing extends TsDirection
-
 }
 
 case class KeyModel(id: UUID, name: String)

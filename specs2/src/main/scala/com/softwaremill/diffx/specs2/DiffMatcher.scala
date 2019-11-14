@@ -24,7 +24,6 @@ trait DiffMatcher {
       )
     }
   }
-
 }
 
 object DiffMatcher extends DiffMatcher

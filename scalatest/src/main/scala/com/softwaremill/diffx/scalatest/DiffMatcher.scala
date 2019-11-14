@@ -14,7 +14,6 @@ trait DiffMatcher {
       case _ => MatchResult(matches = true, "", "")
     }
   }
-
 }
 
 object DiffMatcher extends DiffMatcher

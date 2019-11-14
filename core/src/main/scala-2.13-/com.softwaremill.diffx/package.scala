@@ -8,7 +8,6 @@ import scala.language.higherKinds
 import com.softwaremill.diffx.DiffxSupport._
 
 package object diffx extends DiffxSupport {
-
   implicit def traversableDiffxFunctor[F[_], A](
       implicit cbf: CanBuildFrom[F[A], A, F[A]],
       ev: F[A] => TraversableLike[A, F[A]]

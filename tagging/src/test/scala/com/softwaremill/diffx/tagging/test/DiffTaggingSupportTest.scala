@@ -7,7 +7,6 @@ import org.scalatest.{FlatSpec, Matchers}
 import com.softwaremill.tagging.@@
 
 class DiffTaggingSupportTest extends FlatSpec with Matchers with DiffTaggingSupport {
-
   it should "work for tagged types" in {
     val p1 = 1.taggedWith[T1]
     val p11 = 2.taggedWith[T1]

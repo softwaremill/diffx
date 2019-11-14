@@ -3,7 +3,6 @@ package com.softwaremill.diffx.scalatest
 import org.scalatest.{FlatSpec, Matchers}
 
 class DiffMatcherTest extends FlatSpec with Matchers with DiffMatcher {
-
   val right: Foo = Foo(
     Bar("asdf", 5),
     List(123, 1234),
@@ -18,7 +17,6 @@ class DiffMatcherTest extends FlatSpec with Matchers with DiffMatcher {
   ignore should "work" in {
     left should matchTo(right)
   }
-
 }
 sealed trait Parent
 case class Bar(s: String, i: Int) extends Parent
