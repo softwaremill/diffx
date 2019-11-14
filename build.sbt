@@ -10,7 +10,7 @@ lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acycli
   scalaVersion := v2_12,
   scalafmtOnCompile := true,
   crossScalaVersions := Seq(v2_12, v2_13),
-  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.4")),
+  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.4"))
 )
 
 lazy val core: Project = (project in file("core"))
@@ -19,7 +19,7 @@ lazy val core: Project = (project in file("core"))
     name := "diffx-core",
     libraryDependencies ++= Seq(
       "com.propensive" %% "magnolia" % "0.12.0",
-      scalatestDependency % "test",
+      scalatestDependency % "test"
     ),
     unmanagedSourceDirectories in Compile += (baseDirectory in Compile).value / "src" / "main" / "scala-common",
     unmanagedSourceDirectories in Compile += {
@@ -37,7 +37,7 @@ lazy val scalatest: Project = (project in file("scalatest"))
   .settings(
     name := "diffx-scalatest",
     libraryDependencies ++= Seq(
-      scalatestDependency,
+      scalatestDependency
     )
   )
   .dependsOn(core)
