@@ -1,7 +1,7 @@
 import com.softwaremill.PublishTravis.publishTravisSettings
 
 val v2_12 = "2.12.8"
-val v2_13 = "2.13.0"
+val v2_13 = "2.13.1"
 
 val scalatestDependency = "org.scalatest" %% "scalatest" % "3.0.8"
 val specs2Dependency = "org.specs2" %% "specs2-core" % "4.8.0"
@@ -12,7 +12,7 @@ lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acycli
   scalaVersion := v2_12,
   scalafmtOnCompile := true,
   crossScalaVersions := Seq(v2_12, v2_13),
-  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.4")),
+  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5"))
 )
 
 lazy val core: Project = (project in file("core"))
@@ -21,7 +21,7 @@ lazy val core: Project = (project in file("core"))
     name := "diffx-core",
     libraryDependencies ++= Seq(
       "com.propensive" %% "magnolia" % "0.12.0",
-      scalatestDependency % "test",
+      scalatestDependency % "test"
     ),
     unmanagedSourceDirectories in Compile += (baseDirectory in Compile).value / "src" / "main" / "scala-common",
     unmanagedSourceDirectories in Compile += {
@@ -39,7 +39,7 @@ lazy val scalatest: Project = (project in file("scalatest"))
   .settings(
     name := "diffx-scalatest",
     libraryDependencies ++= Seq(
-      scalatestDependency,
+      scalatestDependency
     )
   )
   .dependsOn(core)
