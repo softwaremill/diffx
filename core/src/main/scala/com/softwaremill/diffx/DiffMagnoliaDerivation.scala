@@ -36,7 +36,7 @@ trait DiffMagnoliaDerivation extends LowPriority {
         val lType = ctx.dispatch(left)(a => a)
         val rType = ctx.dispatch(right)(a => a)
         if (lType == rType) {
-          lType.typeclass.value(lType.cast(left), lType.cast(right))
+          lType.typeclass.value(lType.cast(left), lType.cast(right), toIgnore)
         } else {
           DiffResultValue(lType.typeName.full, rType.typeName.full)
         }

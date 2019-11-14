@@ -163,7 +163,21 @@ class DiffTest extends FunSpec with Matchers {
         "parent" -> DiffResultValue("com.softwaremill.diffx.Foo", "com.softwaremill.diffx.Bar")
       )
     )
+  }
 
+  it("coproduct types with ignored fields") {
+    sealed trait Base {
+      def id: Int
+      def name: String
+    }
+
+    final case class SubtypeOne(id: Int, name: String) extends Base
+    final case class SubtypeTwo(id: Int, name: String) extends Base
+
+    val left: Base = SubtypeOne(2, "one")
+    val right: Base = SubtypeOne(1, "one")
+    val diff = Derived[Diff[Base]].ignoreUnsafe("id")
+    compare(left, right)(diff) shouldBe an[Identical[Base]]
   }
 
   describe("diff for list") {
