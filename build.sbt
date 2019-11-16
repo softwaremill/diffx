@@ -12,7 +12,8 @@ lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acycli
   scalaVersion := v2_12,
   scalafmtOnCompile := true,
   crossScalaVersions := Seq(v2_12, v2_13),
-  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5"))
+  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5")),
+  scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git"))
 )
 
 lazy val core: Project = (project in file("core"))
@@ -49,7 +50,7 @@ lazy val specs2: Project = (project in file("specs2"))
   .settings(
     name := "diffx-specs2",
     libraryDependencies ++= Seq(
-      specs2Dependency,
+      specs2Dependency
     )
   )
   .dependsOn(core)
@@ -60,7 +61,7 @@ lazy val tagging: Project = (project in file("tagging"))
     name := "diffx-tagging",
     libraryDependencies ++= Seq(
       smlTaggingDependency,
-      scalatestDependency % "test",
+      scalatestDependency % "test"
     )
   )
   .dependsOn(core)
