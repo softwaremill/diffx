@@ -36,7 +36,7 @@ The library is published for Scala 2.12 and 2.13.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.9"
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.10"
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -55,7 +55,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.9"
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.10"
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -70,7 +70,7 @@ left must matchTo(right)
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.3.9"
+"com.softwaremill.diffx" %% "diffx-core" % "0.3.10"
 ```
 
 Then call:
@@ -105,7 +105,7 @@ implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 To use with softwaremill-tagging library, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.9"
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.10"
 ```
 
 And then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
