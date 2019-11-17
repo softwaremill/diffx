@@ -3,12 +3,15 @@ import acyclic.skipped
 
 import com.softwaremill.diffx.Matching._
 
-private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K], diffValue: Diff[Option[V]])
-    extends Diff[Map[K, V]] {
+private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](
+    matcher: ObjectMatcher[K],
+    diffKey: Diff[K],
+    diffValue: Diff[Option[V]]
+) extends Diff[C[K, V]] {
   override def apply(
-      left: Map[K, V],
-      right: Map[K, V],
-      toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+      left: C[K, V],
+      right: C[K, V],
+      toIgnore: List[FieldPath]
   ): DiffResult = {
     val MatchingResults(unMatchedLeftKeys, unMatchedRightKeys, matchedKeys) =
       matching[K](left.keySet, right.keySet, matcher, diffKey, toIgnore)
@@ -24,9 +27,9 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
   }
 
   private def matchedDiffs(
-      matchedKeys: Set[(K, K)],
-      left: Map[K, V],
-      right: Map[K, V],
+      matchedKeys: scala.collection.Set[(K, K)],
+      left: C[K, V],
+      right: C[K, V],
       toIgnore: List[FieldPath]
   ): List[(DiffResult, DiffResult)] = {
     matchedKeys.map {
@@ -37,9 +40,9 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
   }
 
   private def rightDiffs(
-      right: Map[K, V],
-      unMatchedLeftKeys: Set[K],
-      unMatchedRightKeys: Set[K]
+      right: C[K, V],
+      unMatchedLeftKeys: scala.collection.Set[K],
+      unMatchedRightKeys: scala.collection.Set[K]
   ): List[(DiffResult, DiffResult)] = {
     unMatchedRightKeys
       .diff(unMatchedLeftKeys)
@@ -48,9 +51,9 @@ private[diffx] class DiffForMap[K, V](matcher: ObjectMatcher[K], diffKey: Diff[K
   }
 
   private def leftDiffs(
-      left: Map[K, V],
-      unMatchedLeftKeys: Set[K],
-      unMatchedRightKeys: Set[K]
+      left: C[K, V],
+      unMatchedLeftKeys: scala.collection.Set[K],
+      unMatchedRightKeys: scala.collection.Set[K]
   ): List[(DiffResult, DiffResult)] = {
     unMatchedLeftKeys
       .diff(unMatchedRightKeys)

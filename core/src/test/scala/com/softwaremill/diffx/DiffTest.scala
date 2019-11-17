@@ -342,6 +342,18 @@ class DiffTest extends FreeSpec with Matchers {
         compare(m1, m1) shouldBe an[Identical[_]]
       }
 
+      "simple diff" in {
+        val m1 = Map("a" -> 1)
+        val m2 = Map("a" -> 2)
+        compare(m1, m2) shouldBe DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2)))
+      }
+
+      "simple diff - mutable map" in {
+        val m1 = scala.collection.Map("a" -> 1)
+        val m2 = scala.collection.Map("a" -> 2)
+        compare(m1, m2) shouldBe DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2)))
+      }
+
       "propagate ignored fields to elements" in {
         val dm = Diff[Map[String, Person]].ignoreUnsafe("age")
         compare(Map("first" -> p1), Map("first" -> p2))(dm) shouldBe DiffResultMap(

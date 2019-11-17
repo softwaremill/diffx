@@ -79,9 +79,9 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       }
     })
 
-  implicit def diffForMap[K, V, C[_, _] <: Map[_, _]](
+  implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](
       implicit ddot: Diff[Option[V]],
       ddk: Diff[K],
       matcher: ObjectMatcher[K]
-  ): Derived[Diff[Map[K, V]]] = Derived(new DiffForMap[K, V](matcher, ddk, ddot))
+  ): Derived[Diff[C[K, V]]] = Derived(new DiffForMap[K, V, C](matcher, ddk, ddot))
 }

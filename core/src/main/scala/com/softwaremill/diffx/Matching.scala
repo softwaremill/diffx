@@ -3,8 +3,8 @@ import acyclic.skipped
 
 private[diffx] object Matching {
   private[diffx] def matching[T](
-      left: Set[T],
-      right: Set[T],
+      left: scala.collection.Set[T],
+      right: scala.collection.Set[T],
       matcher: ObjectMatcher[T],
       diff: Diff[T],
       toIgnore: List[FieldPath]
@@ -18,5 +18,9 @@ private[diffx] object Matching {
     MatchingResults(left.diff(matchedKeys.map(_._1)), right.diff(matchedKeys.map(_._2)), matchedKeys)
   }
 
-  private[diffx] case class MatchingResults[T](unmatchedLeft: Set[T], unmatchedRight: Set[T], matched: Set[(T, T)])
+  private[diffx] case class MatchingResults[T](
+      unmatchedLeft: scala.collection.Set[T],
+      unmatchedRight: scala.collection.Set[T],
+      matched: scala.collection.Set[(T, T)]
+  )
 }
