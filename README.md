@@ -11,6 +11,7 @@ Pretty diffs for case classes.
 The library is published for Scala 2.12 and 2.13.
 
 ## Table of contents
+- [goals of the project](#goals-of-the-project)
 - integrations
   - [scalatest](#scalatest-integration)
   - [specs2](#specs2-integration)
@@ -20,6 +21,15 @@ The library is published for Scala 2.12 and 2.13.
 - [tagging support](#tagging-support)
 - [similar projects](#similar-projects)
 - [commercial support](#commercial-support)
+
+## Goals of the project
+
+- human-readable case class diffs
+- support for popular testing frameworks
+- OTB collections support
+- OTB non-case class support
+- smaller compilation overhead compared to shapless based solutions (thanks to magnolia <3)
+- programmer friendly and type safe api for partial ignore
 
 ## Scalatest integration
 
