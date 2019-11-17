@@ -18,6 +18,8 @@ The library is published for Scala 2.12 and 2.13.
 - [customization](#customization)
 - [ignoring](#ignoring)
 - [tagging support](#tagging-support)
+- [similar projects](#similar-projects)
+- [commercial support](#commercial-support)
 
 ## Scalatest integration
 
@@ -105,6 +107,14 @@ If you want to use diffx with other tagging library you need to provide a way fo
 ```scala
 implicit def taggedDiff[T: Diff, U]: Derived[Diff[T @@ U]] = Derived(Diff[T].contramap[T @@ U](identity))
 ```
+
+## Similar projects
+
+There is a number of similar projects from which diffx draws inspiration.
+
+Below is a list of some of them, which I am aware of, with their main differences:
+- [xotai/diff](https://github.com/xdotai/diff) - based on shapeless, seems not to be activly developed anymore
+- [ratatool-diffy](https://github.com/spotify/ratatool/tree/master/ratatool-diffy) - the main purpose is to compare large data sets stored on gs or hdfs
 
 ## Commercial Support
 
