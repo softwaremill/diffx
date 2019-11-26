@@ -36,9 +36,9 @@ object IgnoreMacro {
       */
     @tailrec
     def collectPathElements(tree: c.Tree, acc: List[PathElement]): List[PathElement] = {
-      def typeSupported(quicklensType: c.Tree) =
-        Seq("DiffxEach", "DiffxAt", "DiffxMapAt", "DiffxWhen", "DiffxEither", "DiffxEachMap")
-          .exists(quicklensType.toString.endsWith)
+      def typeSupported(diffxIgnoreType: c.Tree) =
+        Seq("DiffxEach", "DiffxEither", "DiffxEachMap")
+          .exists(diffxIgnoreType.toString.endsWith)
 
       tree match {
         case q"$parent.$child " =>
