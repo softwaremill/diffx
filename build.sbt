@@ -21,7 +21,7 @@ lazy val core: Project = (project in file("core"))
   .settings(
     name := "diffx-core",
     libraryDependencies ++= Seq(
-      "com.propensive" %% "magnolia" % "0.12.1",
+      "com.propensive" %% "magnolia" % "0.12.2",
       scalatestDependency % "test"
     ),
     unmanagedSourceDirectories in Compile += (baseDirectory in Compile).value / "src" / "main" / "scala-common",
