@@ -24,9 +24,3 @@ class IgnoreMacroTest extends FlatSpec with Matchers {
     IgnoreMacro.ignoredFromPath[Map[String, Person], String](_.each.name) shouldBe List("name")
   }
 }
-
-sealed trait Animal {
-  def name: String
-}
-case class Fish(name: String) extends Animal
-case class Dog(name: String) extends Animal
