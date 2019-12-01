@@ -1,8 +1,9 @@
 package com.softwaremill.diffx
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class IgnoreMacroTest extends FlatSpec with Matchers {
+class IgnoreMacroTest extends AnyFlatSpec with Matchers {
   "IgnoreMacroTest" should "ignore field in nested products" in {
     IgnoreMacro.ignoredFromPath[Family, String](_.first.name) shouldBe List("first", "name")
   }
