@@ -3,10 +3,11 @@ package com.softwaremill.diffx.tagging.test
 import com.softwaremill.diffx.tagging.DiffTaggingSupport
 import com.softwaremill.diffx.{Diff, DiffResultObject, DiffResultValue, Identical}
 import com.softwaremill.tagging._
-import org.scalatest.{FlatSpec, Matchers}
 import com.softwaremill.tagging.@@
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DiffTaggingSupportTest extends FlatSpec with Matchers with DiffTaggingSupport {
+class DiffTaggingSupportTest extends AnyFlatSpec with Matchers with DiffTaggingSupport {
   it should "work for tagged types" in {
     val p1 = 1.taggedWith[T1]
     val p11 = 2.taggedWith[T1]

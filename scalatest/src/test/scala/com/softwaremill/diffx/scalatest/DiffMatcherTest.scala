@@ -1,8 +1,9 @@
 package com.softwaremill.diffx.scalatest
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DiffMatcherTest extends FlatSpec with Matchers with DiffMatcher {
+class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMatcher {
   val right: Foo = Foo(
     Bar("asdf", 5),
     List(123, 1234),

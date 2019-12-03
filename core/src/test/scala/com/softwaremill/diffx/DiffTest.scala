@@ -3,9 +3,10 @@ package com.softwaremill.diffx
 import java.time.Instant
 import java.util.UUID
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class DiffTest extends FreeSpec with Matchers {
+class DiffTest extends AnyFreeSpec with Matchers {
   private val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
   val p2 = Person("p2", 11, instant)

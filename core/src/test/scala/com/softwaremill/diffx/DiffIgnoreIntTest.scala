@@ -2,9 +2,10 @@ package com.softwaremill.diffx
 
 import java.time.Instant
 
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DiffIgnoreIntTest extends FlatSpec with Matchers {
+class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
   val p2 = Person("p2", 11, instant)
