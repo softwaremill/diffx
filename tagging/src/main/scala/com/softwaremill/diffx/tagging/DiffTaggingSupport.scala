@@ -6,5 +6,3 @@ import com.softwaremill.tagging.@@
 trait DiffTaggingSupport {
   implicit def taggedDiff[T: Diff, U]: Derived[Diff[T @@ U]] = Derived(Diff[T].contramap[T @@ U](identity))
 }
-
-object DiffTaggingSupport extends DiffTaggingSupport

@@ -66,6 +66,17 @@ lazy val tagging: Project = (project in file("tagging"))
   )
   .dependsOn(core)
 
+lazy val cats: Project = (project in file("cats"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "diffx-cats",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % "2.0.0",
+      scalatestDependency % "test"
+    )
+  )
+  .dependsOn(core)
+
 lazy val rootProject = (project in file("."))
   .settings(commonSettings: _*)
   .settings(publishArtifact := false, name := "diffx")
@@ -74,5 +85,6 @@ lazy val rootProject = (project in file("."))
     core,
     scalatest,
     specs2,
-    tagging
+    tagging,
+    cats
   )
