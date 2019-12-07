@@ -86,6 +86,18 @@ Diff[T].apply(o1, o2)
 If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that 
 type, and make sure it's in scope when any any `Diff` instances depending on that type are created.
 
+If there is already a typeclass for a particular type, but you would like to use another one, you wil have to override existing instance. Because of the "exporting" mechanism the top level typeclass is `Derived[Diff]` rather then `Diff` and that's the typeclass you need to override. 
+
+To understand it better, consider following example with `NonEmptyList` from cats.
+`NonEmptyList` is implemented as case class so diffx will create a `Derived[Diff[NonEmptyList]]` typeclass instance using magnolia derivation.
+
+Obviously that's not what we usually want. In most of the cases we would like `NonEmptyList` to be compared as a list.
+Diffx already has an instance of a typeclass for a list. One more thing to do is to use that typeclass by converting `NonEmptyList` to list which can be done using `contramap` method.
+
+The final code looks as follows:
+
+`implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))`
+
 
 ## Ignoring
 
