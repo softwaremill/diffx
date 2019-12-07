@@ -21,6 +21,8 @@ object Diff extends DiffInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
+  
+  def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
   // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
   implicit def anyDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
