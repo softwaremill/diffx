@@ -1,10 +1,13 @@
 package com.softwaremill.diffx
+import acyclic.skipped
 
 import scala.annotation.compileTimeOnly
 import com.softwaremill.diffx.DiffxSupport._
 
 trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with DiffxOptionSupport {
   type FieldPath = List[String]
+
+  def compare[T](left: T, right: T)(implicit d: Diff[T]): DiffResult = d.apply(left, right)
 }
 
 object DiffxSupport {

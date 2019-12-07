@@ -1,4 +1,5 @@
 package com.softwaremill.diffx
+import acyclic.skipped
 
 trait DiffResult {
   def isIdentical: Boolean

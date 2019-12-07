@@ -30,6 +30,4 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name).ignore(_.age)
     compare(p1, p2) shouldBe Identical(p1)
   }
-
-  private def compare[T](t1: T, t2: T)(implicit d: Diff[T]) = d.apply(t1, t2)
 }

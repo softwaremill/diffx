@@ -424,8 +424,6 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
     }
   }
-
-  private def compare[T](t1: T, t2: T)(implicit d: Diff[T]) = d.apply(t1, t2)
 }
 
 case class Person(name: String, age: Int, in: Instant)

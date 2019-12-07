@@ -9,11 +9,10 @@ private[diffx] object Matching {
       diff: Diff[T],
       toIgnore: List[FieldPath]
   ): MatchingResults[T] = {
-    val matchedKeys = left.flatMap(
-      l =>
-        right.collectFirst {
-          case r if matcher.isSameObject(l, r) || diff(l, r, toIgnore).isIdentical => l -> r
-        }
+    val matchedKeys = left.flatMap(l =>
+      right.collectFirst {
+        case r if matcher.isSameObject(l, r) || diff(l, r, toIgnore).isIdentical => l -> r
+      }
     )
     MatchingResults(left.diff(matchedKeys.map(_._1)), right.diff(matchedKeys.map(_._2)), matchedKeys)
   }
