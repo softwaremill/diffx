@@ -1,35 +1,42 @@
 package com.softwaremill.diffx
 import acyclic.skipped
+import DiffResult._
 
 trait DiffResult {
   def isIdentical: Boolean
 
-  def show: String = showIndented(5)
+  def show: String = showIndented(indentLevel)
 
   private[diffx] def showIndented(indent: Int): String
 }
 
+object DiffResult {
+  private[diffx] final val indentLevel = 5
+}
+
 case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResultDifferent {
   override private[diffx] def showIndented(indent: Int): String = {
-    val showFields = fields.map(f => s"${i(indent)}${f._1}: ${f._2.showIndented(indent + 5)}")
+    val showFields = fields.map(f => s"${i(indent)}${f._1}: ${f._2.showIndented(indent + indentLevel)}")
     s"""$name(
-       |${showFields.mkString("\n")})""".stripMargin
+       |${showFields.mkString(",\n")})""".stripMargin
   }
 }
 
 case class DiffResultMap(fields: Map[DiffResult, DiffResult]) extends DiffResultDifferent {
   override private[diffx] def showIndented(indent: Int): String = {
-    val showFields = fields.map(f => s"${i(indent)}${f._1.showIndented(indent + 5)}: ${f._2.showIndented(indent + 5)}")
+    val showFields =
+      fields.map(f =>
+        s"${i(indent)}${f._1.showIndented(indent + indentLevel)}: ${f._2.showIndented(indent + indentLevel)}"
+      )
     s"""Map(
-       |${showFields.mkString("\n")})""".stripMargin
+       |${showFields.mkString(",\n")})""".stripMargin
   }
 }
 
 case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
   override private[diffx] def showIndented(indent: Int): String = {
-    val showFields = diffs.map(f => s"${i(indent)}$f")
-    s"""Set(
-       |${showFields.mkString("\n")})""".stripMargin
+    val showFields = diffs.map(f => s"${i(indent)}${f.showIndented(indent + indentLevel)}")
+    showFields.mkString("Set(\n", ",\n", ")")
   }
 }
 
