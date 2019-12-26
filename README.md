@@ -65,6 +65,21 @@ After that you will be able to use syntax such as:
 left must matchTo(right)
 ```
 
+## ZIO Test integration
+
+To use with [ZIO Test](https://zio.dev/docs/usecases/usecases_testing), add the following dependency:
+
+```scala
+"com.softwaremill.diffx" %% "diffx-ziotest" % "0.3.15"
+```
+
+Then, extend the `com.softwaremill.diffx.ziotest.ZIODiffMatcher` trait or `import com.softwaremill.diffx.ziotest.ZIODiffMatcher._`.
+After that you will be able to use syntax such as:
+
+```scala
+assertM(ZIO.effectTotal(left), matchTo(right))
+```
+
 ## Using directly
 
 Add the following dependency:

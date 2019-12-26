@@ -5,6 +5,7 @@ val v2_13 = "2.13.1"
 
 val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.0"
 val specs2Dependency = "org.specs2" %% "specs2-core" % "4.8.1"
+val ziotestDependency = "dev.zio" %% "zio-test" % "1.0.0-RC17"
 val smlTaggingDependency = "com.softwaremill.common" %% "tagging" % "2.2.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
@@ -55,6 +56,16 @@ lazy val specs2: Project = (project in file("specs2"))
   )
   .dependsOn(core)
 
+lazy val ziotest: Project = (project in file("ziotest"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "diffx-ziotest",
+    libraryDependencies ++= Seq(
+      ziotestDependency
+    )
+  )
+  .dependsOn(core)
+
 lazy val tagging: Project = (project in file("tagging"))
   .settings(commonSettings: _*)
   .settings(
@@ -85,6 +96,7 @@ lazy val rootProject = (project in file("."))
     core,
     scalatest,
     specs2,
+    ziotest,
     tagging,
     cats
   )
