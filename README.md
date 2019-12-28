@@ -84,7 +84,7 @@ Diff[T].apply(o1, o2)
 ## Customization
 
 If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that 
-type, and make sure it's in scope when any any `Diff` instances depending on that type are created.
+type, and make sure it's in scope when any `Diff` instances depending on that type are created.
 
 If there is already a typeclass for a particular type, but you would like to use another one, you wil have to override existing instance. Because of the "exporting" mechanism the top level typeclass is `Derived[Diff]` rather then `Diff` and that's the typeclass you need to override. 
 
