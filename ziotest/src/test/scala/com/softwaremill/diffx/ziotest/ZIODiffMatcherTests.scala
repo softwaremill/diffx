@@ -10,11 +10,12 @@ object ZIODiffMatcherTests extends ZIODiffMatcher {
       testM("the Configs are correct") {
         assertM(ZIO.effectTotal(left), matchTo(right))
       }
-    ) @@ ignore // comment @@ ignore if you want the test to run
+    ) //@@ ignore // comment @@ ignore if you want the test to run
 }
 
 object ZIODiffMatcherSuites
-  extends DefaultRunnableSpec(
-    suite("ZIODiffMatcherSuites")(
-      ZIODiffMatcherTests.suites
-    ))
+    extends DefaultRunnableSpec(
+      suite("ZIODiffMatcherSuites")(
+        ZIODiffMatcherTests.suites
+      )
+    )

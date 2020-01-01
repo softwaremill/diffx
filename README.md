@@ -77,7 +77,7 @@ Then, extend the `com.softwaremill.diffx.ziotest.ZIODiffMatcher` trait or `impor
 After that you will be able to use syntax such as:
 
 ```scala
-assertM(ZIO.effectTotal(left), matchTo(right))
+assertM(ZIO.effect(left), matchTo(right))
 ```
 
 ## Using directly

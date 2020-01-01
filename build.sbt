@@ -5,7 +5,10 @@ val v2_13 = "2.13.1"
 
 val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.0"
 val specs2Dependency = "org.specs2" %% "specs2-core" % "4.8.1"
-val ziotestDependency = "dev.zio" %% "zio-test" % "1.0.0-RC17"
+val zioVersion = "1.0.0-RC17"
+val ziotestDependency = "dev.zio" %% "zio-test" % zioVersion
+val ziotestSbtDependency = "dev.zio" %% "zio-test-sbt" % zioVersion
+
 val smlTaggingDependency = "com.softwaremill.common" %% "tagging" % "2.2.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
@@ -31,7 +34,7 @@ lazy val core: Project = (project in file("core"))
       val sourceDir = (baseDirectory in Compile).value / "src" / "main"
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-        case _                       => sourceDir / "scala-2.13-"
+        case _ => sourceDir / "scala-2.13-"
       }
     }
   )
@@ -60,8 +63,10 @@ lazy val ziotest: Project = (project in file("ziotest"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-ziotest",
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
     libraryDependencies ++= Seq(
-      ziotestDependency
+      ziotestDependency,
+      ziotestSbtDependency
     )
   )
   .dependsOn(core)
