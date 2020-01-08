@@ -4,7 +4,7 @@ val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
 
 val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.0"
-val specs2Dependency = "org.specs2" %% "specs2-core" % "4.8.2"
+val specs2Dependency = "org.specs2" %% "specs2-core" % "4.8.3"
 val smlTaggingDependency = "com.softwaremill.common" %% "tagging" % "2.2.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
