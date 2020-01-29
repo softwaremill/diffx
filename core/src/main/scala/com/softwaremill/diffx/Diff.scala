@@ -24,6 +24,9 @@ object Diff extends DiffInstances {
 
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
+  /** Create a Diff instance using [[Object#equals]] */
+  def useEquals[T]: Derived[Diff[T]] = Derived(Diff.fallback[T])
+
   // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
   implicit def anyDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 
