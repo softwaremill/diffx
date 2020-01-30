@@ -424,6 +424,18 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
     }
   }
+
+  "Diff.useEquals" - {
+    "Uses Object.equals instance for comparison" in {
+      val a = new HasCustomEquals("aaaa")
+      val z = new HasCustomEquals("zzzz")
+      val not = new HasCustomEquals("not")
+      val diffInstance = Diff.useEquals[HasCustomEquals]
+
+      diffInstance.apply(a, z) shouldBe Identical(a)
+      diffInstance.apply(a, not) shouldBe DiffResultValue(a, not)
+    }
+  }
 }
 
 case class Person(name: String, age: Int, in: Instant)
@@ -437,6 +449,15 @@ sealed trait Parent
 case class Bar(s: String, i: Int) extends Parent
 
 case class Foo(bar: Bar, b: List[Int], parent: Option[Parent]) extends Parent
+
+class HasCustomEquals(val s: String) {
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case o: HasCustomEquals => this.s.length == o.s.length
+      case _                  => false
+    }
+  }
+}
 
 sealed trait TsDirection
 

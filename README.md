@@ -98,6 +98,26 @@ The final code looks as follows:
 
 `implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))`
 
+And here's an example customizing the `Diff` instance for a child class of a sealed trait
+
+```
+sealed trait Parent
+case class A(id: String, name: String) extends Parent
+case class B(id: String, name: String) extends Parent
+
+implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore(_.id))
+
+val a1: Parent = A("1", "X")
+val a2: Parent = A("2", "X")
+
+Diff[Parent].apply(a1, a2) // Reports no difference
+```
+
+You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits
+after macro expansion.
+If you get warnings from Magnolia which looks like `magnolia: using fallback derivation for TYPE`,
+you can use the [Silencer](https://github.com/ghik/silencer) compiler plugin to silent the warning
+with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback derivation.*$"`
 
 ## Ignoring
 
