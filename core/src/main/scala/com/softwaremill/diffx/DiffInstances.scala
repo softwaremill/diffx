@@ -2,6 +2,8 @@ package com.softwaremill.diffx
 import acyclic.skipped
 import com.softwaremill.diffx.Matching._
 
+import scala.collection.immutable.ListMap
+
 trait DiffInstances extends DiffMagnoliaDerivation {
   implicit def diffForNumeric[T: Numeric]: Derived[Diff[T]] =
     Derived((left: T, right: T, _: List[FieldPath]) => {
@@ -62,13 +64,14 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       val indexes = Range(0, Math.max(left.size, right.size))
       val leftAsMap = left.toList.lift
       val rightAsMap = right.toList.lift
-      val differences = indexes.map { index =>
+      val differences = ListMap(indexes.map { index =>
         index.toString -> (ddot.apply(leftAsMap(index), rightAsMap(index), toIgnore) match {
           case DiffResultValue(Some(v), None) => DiffResultAdditional(v)
           case DiffResultValue(None, Some(v)) => DiffResultMissing(v)
           case d                              => d
         })
-      }.toMap
+      }: _*)
+
       if (differences.values.forall(_.isIdentical)) {
         Identical(left)
       } else {

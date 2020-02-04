@@ -1,8 +1,8 @@
 package com.softwaremill.diffx
 import acyclic.skipped
-
 import magnolia._
 
+import scala.collection.immutable.ListMap
 import scala.language.experimental.macros
 
 trait DiffMagnoliaDerivation extends LowPriority {
@@ -11,7 +11,7 @@ trait DiffMagnoliaDerivation extends LowPriority {
   def combine[T](ctx: CaseClass[Typeclass, T]): Derived[Diff[T]] =
     Derived(new Diff[T] {
       override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult = {
-        val map = ctx.parameters.map { p =>
+        val map = ListMap(ctx.parameters.map { p =>
           val lType = p.dereference(left)
           val pType = p.dereference(right)
           if (toIgnore.contains(List(p.label))) {
@@ -21,7 +21,7 @@ trait DiffMagnoliaDerivation extends LowPriority {
               if (toIgnore.exists(_.headOption.exists(h => h == p.label))) toIgnore.map(_.drop(1)) else Nil
             p.label -> p.typeclass.value(lType, pType, nestedIgnore)
           }
-        }.toMap
+        }: _*)
         if (map.values.forall(p => p.isIdentical)) {
           Identical(left)
         } else {

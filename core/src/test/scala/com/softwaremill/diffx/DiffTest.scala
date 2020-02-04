@@ -6,6 +6,8 @@ import java.util.UUID
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
+import scala.collection.immutable.ListMap
+
 class DiffTest extends AnyFreeSpec with Matchers {
   private val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -239,6 +241,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
         implicit val om: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
         implicit val dd: Derived[Diff[List[Person]]] = new Derived(Diff[Set[Person]].contramap(_.toSet))
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
+      }
+
+      "should preserve order of elements" in {
+        val l1 = List(1, 2, 3, 4, 5, 6)
+        val l2 = List(1, 2, 3, 4, 5, 7)
+        compare(l1, l2) shouldBe DiffResultObject(
+          "List",
+          ListMap(
+            "0" -> Identical(1),
+            "1" -> Identical(2),
+            "2" -> Identical(3),
+            "3" -> Identical(4),
+            "4" -> Identical(5),
+            "5" -> DiffResultValue(6, 7)
+          )
+        )
       }
     }
     "sets" - {
