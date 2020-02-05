@@ -36,7 +36,7 @@ The library is published for Scala 2.12 and 2.13.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.17"
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.17" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -55,7 +55,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.17"
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.17" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -129,7 +129,7 @@ the `Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick, 
 instance of the `Diff` typeclass into the implicit scope. The whole process looks as follows:
 
 ```scala
-implicit modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
+implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ``` 
 
 ## Tagging support
