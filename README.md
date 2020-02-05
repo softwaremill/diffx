@@ -26,8 +26,8 @@ The library is published for Scala 2.12 and 2.13.
 
 - human-readable case class diffs
 - support for popular testing frameworks
-- OTB collections support
-- OTB non-case class support
+- OOTB collections support
+- OOTB non-case class support
 - smaller compilation overhead compared to shapless based solutions (thanks to magnolia <3)
 - programmer friendly and type safe api for partial ignore
 
