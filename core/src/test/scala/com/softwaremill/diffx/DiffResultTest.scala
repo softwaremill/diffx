@@ -29,6 +29,14 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
            |     Set(
            |          b))""".stripMargin
     }
+
+    "it should show null" in {
+      val output = DiffResultSet(List(Identical(null), DiffResultValue(null, null))).show
+      output shouldBe
+        s"""Set(
+          |     null,
+          |     ${red("null")} -> ${green("null")})""".stripMargin
+    }
   }
 
   "diff map output" - {

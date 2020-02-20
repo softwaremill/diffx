@@ -47,23 +47,23 @@ trait DiffResultDifferent extends DiffResult {
 }
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
-  override def showIndented(indent: Int): String = showChange(left.toString, right.toString)
+  override def showIndented(indent: Int): String = showChange(s"$left", s"$right")
 }
 
 case class Identical[T](value: T) extends DiffResult {
   override def isIdentical: Boolean = true
 
-  override def showIndented(indent: Int): String = value.toString
+  override def showIndented(indent: Int): String = s"$value"
 }
 
 case class DiffResultMissing[T](value: T) extends DiffResultDifferent {
   override def showIndented(indent: Int): String = {
-    red(value.toString)
+    red(s"$value")
   }
 }
 
 case class DiffResultAdditional[T](value: T) extends DiffResultDifferent {
   override def showIndented(indent: Int): String = {
-    green(value.toString)
+    green(s"$value")
   }
 }
