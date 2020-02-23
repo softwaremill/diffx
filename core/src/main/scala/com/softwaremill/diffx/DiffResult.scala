@@ -2,7 +2,7 @@ package com.softwaremill.diffx
 import acyclic.skipped
 import DiffResult._
 
-trait DiffResult {
+trait DiffResult extends Product with Serializable {
   def isIdentical: Boolean
 
   def show: String = showIndented(indentLevel)
@@ -37,6 +37,12 @@ case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
   override private[diffx] def showIndented(indent: Int): String = {
     val showFields = diffs.map(f => s"${i(indent)}${f.showIndented(indent + indentLevel)}")
     showFields.mkString("Set(\n", ",\n", ")")
+  }
+}
+
+case class DiffResultString(diffs: List[DiffResult]) extends DiffResultDifferent {
+  override private[diffx] def showIndented(indent: Int): String = {
+    s""""${diffs.map(_.showIndented(indent)).mkString("\n")}""""
   }
 }
 

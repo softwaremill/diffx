@@ -87,4 +87,6 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       ddk: Diff[K],
       matcher: ObjectMatcher[K]
   ): Derived[Diff[C[K, V]]] = Derived(new DiffForMap[K, V, C](matcher, ddk, ddot))
+
+  implicit def diffForString: Derived[Diff[String]] = Derived(new DiffForString)
 }

@@ -31,7 +31,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       compare(p1, p2) shouldBe DiffResultObject(
         "Person",
         Map(
-          "name" -> DiffResultValue(p1.name, p2.name),
+          "name" -> DiffResultString(List(DiffResultValue(p1.name, p2.name))),
           "age" -> DiffResultValue(p1.age, p2.age),
           "in" -> Identical(instant)
         )
@@ -61,7 +61,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "second" -> DiffResultObject(
             "Person",
             Map(
-              "name" -> DiffResultValue(p2.name, p1.name),
+              "name" -> DiffResultString(List(DiffResultValue(p2.name, p1.name))),
               "age" -> DiffResultValue(p2.age, p1.age),
               "in" -> Identical(instant)
             )
@@ -101,7 +101,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "first" -> DiffResultObject(
             "Person",
             Map(
-              "name" -> DiffResultValue(p1.name, p1p.name),
+              "name" -> DiffResultString(List(DiffResultValue(p1.name, p1p.name))),
               "age" -> Identical(p1.age),
               "in" -> Identical(instant)
             )
@@ -131,7 +131,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
               "1" -> DiffResultObject(
                 "Person",
                 Map(
-                  "name" -> DiffResultValue(p2.name, p1.name),
+                  "name" -> DiffResultString(List(DiffResultValue(p2.name, p1.name))),
                   "age" -> DiffResultValue(p2.age, p1.age),
                   "in" -> Identical(instant)
                 )
@@ -206,7 +206,10 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "diff" in {
-        compare(List("a"), List("B")) shouldBe DiffResultObject("List", Map("0" -> DiffResultValue("a", "B")))
+        compare(List("a"), List("B")) shouldBe DiffResultObject(
+          "List",
+          Map("0" -> DiffResultString(List(DiffResultValue("a", "B"))))
+        )
       }
 
       "use ignored fields from elements" in {
@@ -380,7 +383,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
             Identical("first") -> DiffResultObject(
               "Person",
               Map(
-                "name" -> DiffResultValue(p1.name, p2.name),
+                "name" -> DiffResultString(List(DiffResultValue(p1.name, p2.name))),
                 "age" -> Identical(p1.age),
                 "in" -> Identical(p1.in)
               )
@@ -452,6 +455,43 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       diffInstance.apply(a, z) shouldBe Identical(a)
       diffInstance.apply(a, not) shouldBe DiffResultValue(a, not)
+    }
+  }
+
+  "strings" - {
+    "equal strings should be equal" in {
+      val left = "scalaIsAwesome"
+      val right = "scalaIsAwesome"
+
+      compare(left, right) shouldBe Identical(left)
+    }
+
+    "different strings should be different" in {
+      val left = "scalaIsAwesome"
+      val right = "diffxIsAwesome"
+
+      compare(left, right) shouldBe DiffResultString(List(DiffResultValue(left, right)))
+    }
+
+    "multiline strings should be compared line by line" in {
+      val left =
+        """first
+          |second
+          |third
+          |fourth""".stripMargin
+      val right =
+        """first
+          |sec???
+          |third""".stripMargin
+
+      compare(left, right) shouldBe DiffResultString(
+        List(
+          Identical("first"),
+          DiffResultValue("second", "sec???"),
+          Identical("third"),
+          DiffResultAdditional("fourth")
+        )
+      )
     }
   }
 }
