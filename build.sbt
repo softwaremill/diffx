@@ -71,7 +71,7 @@ lazy val cats: Project = (project in file("cats"))
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.1.0",
+      "org.typelevel" %% "cats-core" % "2.1.1",
       scalatestDependency % "test"
     )
   )
