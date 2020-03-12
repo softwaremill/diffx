@@ -77,6 +77,17 @@ lazy val cats: Project = (project in file("cats"))
   )
   .dependsOn(core)
 
+lazy val refined: Project = (project in file("refined"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "diffx-refined",
+    libraryDependencies ++= Seq(
+      "eu.timepit" %% "refined" % "0.9.13",
+      scalatestDependency % "test"
+    )
+  )
+  .dependsOn(core)
+
 lazy val rootProject = (project in file("."))
   .settings(commonSettings: _*)
   .settings(publishArtifact := false, name := "diffx")
@@ -86,5 +97,6 @@ lazy val rootProject = (project in file("."))
     scalatest,
     specs2,
     tagging,
-    cats
+    cats,
+    refined
   )
