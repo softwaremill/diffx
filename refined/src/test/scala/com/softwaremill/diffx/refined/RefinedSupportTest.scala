@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.refined
 
-import com.softwaremill.diffx.{Diff, DiffResultObject, DiffResultString, DiffResultValue, Identical}
+import com.softwaremill.diffx.{DiffResultObject, DiffResultString, DiffResultValue, Identical, _}
 import eu.timepit.refined.types.numeric.PosInt
 import eu.timepit.refined.auto._
 import eu.timepit.refined.types.string.NonEmptyString
@@ -16,8 +16,6 @@ class RefinedSupportTest extends AnyFlatSpec with Matchers {
       Map("posInt" -> Identical(1), "nonEmptyString" -> DiffResultString(List(DiffResultValue("foo", "bar"))))
     )
   }
-
-  private def compare[T](t1: T, t2: T)(implicit d: Diff[T]) = d.apply(t1, t2)
 }
 
 case class TestData(posInt: PosInt, nonEmptyString: NonEmptyString)
