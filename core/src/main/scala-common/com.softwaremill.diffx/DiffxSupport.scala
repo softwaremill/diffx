@@ -50,13 +50,19 @@ case class ConsoleColorConfig(
 )
 
 object ConsoleColorConfig {
-  implicit val default: ConsoleColorConfig =
+  val dark: ConsoleColorConfig =
     ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
+
+  val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
+
+  implicit val default: ConsoleColorConfig = dark
 
   def magenta(s: String): String = Console.MAGENTA + s + Console.RESET
   def green(s: String): String = Console.GREEN + s + Console.RESET
+  def blue(s: String): String = Console.BLUE + s + Console.RESET
   def cyan(s: String): String = Console.CYAN + s + Console.RESET
   def red(s: String): String = Console.RED + s + Console.RESET
+  def black(s: String): String = Console.BLACK + s + Console.RESET
 }
 
 trait DiffxOptionSupport {
