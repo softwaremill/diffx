@@ -55,7 +55,13 @@ object ConsoleColorConfig {
 
   val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
 
-  implicit val default: ConsoleColorConfig = dark
+  val envDriven: ConsoleColorConfig = ConsoleColorConfig(
+    default = Option(System.getenv("DIFFX_DEFAULT_COLOR")).map(toColor).getOrElse(dark.default),
+    left = Option(System.getenv("DIFFX_LEFT_COLOR")).map(toColor).getOrElse(dark.left),
+    right = Option(System.getenv("DIFFX_RIGHT_COLOR")).map(toColor).getOrElse(dark.right),
+    arrow = Option(System.getenv("DIFFX_ARROW_COLOR")).map(toColor).getOrElse(dark.arrow)
+  )
+  implicit val default: ConsoleColorConfig = envDriven
 
   def magenta(s: String): String = Console.MAGENTA + s + Console.RESET
   def green(s: String): String = Console.GREEN + s + Console.RESET
@@ -63,6 +69,8 @@ object ConsoleColorConfig {
   def cyan(s: String): String = Console.CYAN + s + Console.RESET
   def red(s: String): String = Console.RED + s + Console.RESET
   def black(s: String): String = Console.BLACK + s + Console.RESET
+
+  private def toColor(color: String) = { s: String => color + s + Console.RESET }
 }
 
 trait DiffxOptionSupport {
