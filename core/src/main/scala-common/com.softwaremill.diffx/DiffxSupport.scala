@@ -34,12 +34,29 @@ trait DiffxEitherSupport {
 }
 
 trait DiffxConsoleSupport {
-  def red(s: String): String = Console.RED + s + Console.RESET
+  def leftColor(s: String)(implicit c: ConsoleColorConfig): String = c.left(s)
+  def rightColor(s: String)(implicit c: ConsoleColorConfig): String = c.right(s)
+  def defaultColor(s: String)(implicit c: ConsoleColorConfig): String = c.default(s)
+  def arrowColor(s: String)(implicit c: ConsoleColorConfig): String = c.arrow(s)
+  def showChange(l: String, r: String)(implicit c: ConsoleColorConfig): String =
+    leftColor(l) + arrowColor(" -> ") + rightColor(r)
+}
+
+case class ConsoleColorConfig(
+    left: String => String,
+    right: String => String,
+    default: String => String,
+    arrow: String => String
+)
+
+object ConsoleColorConfig {
+  implicit val default: ConsoleColorConfig =
+    ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
+
+  def magenta(s: String): String = Console.MAGENTA + s + Console.RESET
   def green(s: String): String = Console.GREEN + s + Console.RESET
-  def blue(s: String): String = Console.BLUE + s + Console.RESET
-  def pad(s: Any, i: Int = 5): String = (" " * (i - s"$s".length)) + s
-  def arrow(l: String, r: String): String = l + " -> " + r
-  def showChange(l: String, r: String): String = red(l) + " -> " + green(r)
+  def cyan(s: String): String = Console.CYAN + s + Console.RESET
+  def red(s: String): String = Console.RED + s + Console.RESET
 }
 
 trait DiffxOptionSupport {
