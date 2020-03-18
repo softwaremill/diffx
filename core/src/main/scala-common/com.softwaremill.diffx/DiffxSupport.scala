@@ -55,11 +55,14 @@ object ConsoleColorConfig {
 
   val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
 
+  val noColors: ConsoleColorConfig =
+    ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
+
   val envDriven: ConsoleColorConfig = ConsoleColorConfig(
-    default = Option(System.getenv("DIFFX_DEFAULT_COLOR")).map(toColor).getOrElse(dark.default),
-    left = Option(System.getenv("DIFFX_LEFT_COLOR")).map(toColor).getOrElse(dark.left),
-    right = Option(System.getenv("DIFFX_RIGHT_COLOR")).map(toColor).getOrElse(dark.right),
-    arrow = Option(System.getenv("DIFFX_ARROW_COLOR")).map(toColor).getOrElse(dark.arrow)
+    default = Option(System.getenv("DIFFX_DEFAULT_COLOR")).map(toColor).getOrElse(noColors.default),
+    left = Option(System.getenv("DIFFX_LEFT_COLOR")).map(toColor).getOrElse(noColors.left),
+    right = Option(System.getenv("DIFFX_RIGHT_COLOR")).map(toColor).getOrElse(noColors.right),
+    arrow = Option(System.getenv("DIFFX_ARROW_COLOR")).map(toColor).getOrElse(noColors.arrow)
   )
   implicit val default: ConsoleColorConfig = envDriven
 

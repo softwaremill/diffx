@@ -5,7 +5,7 @@ import org.scalatest.matchers.should.Matchers
 
 class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport {
   implicit val colorConfig: ConsoleColorConfig =
-    ConsoleColorConfig.dark.copy(default = identity, arrow = identity, right = identity, left = identity)
+    ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
 
   "diff set output" - {
     "it should show a simple difference" in {
