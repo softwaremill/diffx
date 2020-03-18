@@ -50,14 +50,10 @@ case class ConsoleColorConfig(
 )
 
 object ConsoleColorConfig {
-  val dark: ConsoleColorConfig =
-    ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
-
+  val dark: ConsoleColorConfig = ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
   val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
-
   val noColors: ConsoleColorConfig =
     ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
-
   val envDriven: ConsoleColorConfig = ConsoleColorConfig(
     default = Option(System.getenv("DIFFX_DEFAULT_COLOR")).map(toColor).getOrElse(noColors.default),
     left = Option(System.getenv("DIFFX_LEFT_COLOR")).map(toColor).getOrElse(noColors.left),
@@ -66,12 +62,12 @@ object ConsoleColorConfig {
   )
   implicit val default: ConsoleColorConfig = envDriven
 
-  def magenta(s: String): String = Console.MAGENTA + s + Console.RESET
-  def green(s: String): String = Console.GREEN + s + Console.RESET
-  def blue(s: String): String = Console.BLUE + s + Console.RESET
-  def cyan(s: String): String = Console.CYAN + s + Console.RESET
-  def red(s: String): String = Console.RED + s + Console.RESET
-  def black(s: String): String = Console.BLACK + s + Console.RESET
+  def magenta: String => String = toColor(Console.MAGENTA)
+  def green: String => String = toColor(Console.GREEN)
+  def blue: String => String = toColor(Console.BLUE)
+  def cyan: String => String = toColor(Console.CYAN)
+  def red: String => String = toColor(Console.RED)
+  def black: String => String = toColor(Console.BLACK)
 
   private def toColor(color: String) = { s: String => color + s + Console.RESET }
 }
