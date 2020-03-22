@@ -12,6 +12,7 @@ The library is published for Scala 2.12 and 2.13.
 
 ## Table of contents
 - [goals of the project](#goals-of-the-project)
+- [colors](#colors)
 - integrations
   - [scalatest](#scalatest-integration)
   - [specs2](#specs2-integration)
@@ -30,6 +31,18 @@ The library is published for Scala 2.12 and 2.13.
 - OOTB non-case class support
 - smaller compilation overhead compared to shapless based solutions (thanks to magnolia <3)
 - programmer friendly and type safe api for partial ignore
+
+## Colors
+
+When running tests through sbt, default diffx's colors work well on both dark and light backgrounds. 
+Unfortunately Intellij Idea forces the default color to red when displaying test's error. 
+This means that it is impossible to print something with the standard default color (either white or black depending on the color scheme).
+
+To have better colors an external information about desired theme is required.
+Specify environment variable `DIFFX_COLOR_THEME` and set it to either `light` or `dark`.
+I had to specify it in `/etc/environment` rather than home profile for Intellij Idea to picked it up.
+
+If anyone has an idea how this could be improved, I am open for suggestions. 
 
 ## Scalatest integration
 

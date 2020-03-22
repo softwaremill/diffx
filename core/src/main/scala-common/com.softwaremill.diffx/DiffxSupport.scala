@@ -52,14 +52,13 @@ case class ConsoleColorConfig(
 object ConsoleColorConfig {
   val dark: ConsoleColorConfig = ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
   val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
-  val noColors: ConsoleColorConfig =
-    ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
-  val envDriven: ConsoleColorConfig = ConsoleColorConfig(
-    default = Option(System.getenv("DIFFX_DEFAULT_COLOR")).map(toColor).getOrElse(noColors.default),
-    left = Option(System.getenv("DIFFX_LEFT_COLOR")).map(toColor).getOrElse(noColors.left),
-    right = Option(System.getenv("DIFFX_RIGHT_COLOR")).map(toColor).getOrElse(noColors.right),
-    arrow = Option(System.getenv("DIFFX_ARROW_COLOR")).map(toColor).getOrElse(noColors.arrow)
-  )
+  val normal: ConsoleColorConfig =
+    ConsoleColorConfig(default = identity, arrow = red, right = green, left = red)
+  val envDriven: ConsoleColorConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {
+    case Some("light") => light
+    case Some("dark")  => dark
+    case _             => normal
+  }
   implicit val default: ConsoleColorConfig = envDriven
 
   def magenta: String => String = toColor(Console.MAGENTA)
