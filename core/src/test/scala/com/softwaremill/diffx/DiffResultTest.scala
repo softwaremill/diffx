@@ -4,13 +4,16 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport {
+  implicit val colorConfig: ConsoleColorConfig =
+    ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
+
   "diff set output" - {
     "it should show a simple difference" in {
       val output = DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show
       output shouldBe
         s"""Set(
           |     a,
-          |     ${red("1")} -> ${green("2")})""".stripMargin
+          |     1 -> 2)""".stripMargin
     }
 
     "it should show an indented difference" in {
@@ -18,7 +21,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       output shouldBe
         s"""Set(
            |     a,
-           |     ${red("1")} -> ${green("2")})""".stripMargin
+           |     1 -> 2)""".stripMargin
     }
 
     "it should show a nested list difference" in {
@@ -35,7 +38,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       output shouldBe
         s"""Set(
           |     null,
-          |     ${red("null")} -> ${green("null")})""".stripMargin
+          |     null -> null)""".stripMargin
     }
   }
 
@@ -45,8 +48,8 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
         DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3))).show
       output shouldBe
         s"""Map(
-           |     a: ${red("1")} -> ${green("2")},
-           |     ${red("b")}: ${red("3")})""".stripMargin
+           |     a: 1 -> 2,
+           |     b: 3)""".stripMargin
     }
 
     "it should show an indented diff" in {
@@ -55,8 +58,8 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
           .showIndented(5)
       output shouldBe
         s"""Map(
-           |     a: ${red("1")} -> ${green("2")},
-           |     ${red("b")}: ${red("3")})""".stripMargin
+           |     a: 1 -> 2,
+           |     b: 3)""".stripMargin
     }
 
     "it should show a nested diff" in {
@@ -65,7 +68,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       output shouldBe
         s"""Map(
            |     a: Map(
-           |          b: ${red("1")} -> ${green("2")}))""".stripMargin
+           |          b: 1 -> 2))""".stripMargin
     }
   }
 }

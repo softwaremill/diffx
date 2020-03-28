@@ -34,12 +34,41 @@ trait DiffxEitherSupport {
 }
 
 trait DiffxConsoleSupport {
-  def red(s: String): String = Console.RED + s + Console.RESET
-  def green(s: String): String = Console.GREEN + s + Console.RESET
-  def blue(s: String): String = Console.BLUE + s + Console.RESET
-  def pad(s: Any, i: Int = 5): String = (" " * (i - s"$s".length)) + s
-  def arrow(l: String, r: String): String = l + " -> " + r
-  def showChange(l: String, r: String): String = red(l) + " -> " + green(r)
+  def leftColor(s: String)(implicit c: ConsoleColorConfig): String = c.left(s)
+  def rightColor(s: String)(implicit c: ConsoleColorConfig): String = c.right(s)
+  def defaultColor(s: String)(implicit c: ConsoleColorConfig): String = c.default(s)
+  def arrowColor(s: String)(implicit c: ConsoleColorConfig): String = c.arrow(s)
+  def showChange(l: String, r: String)(implicit c: ConsoleColorConfig): String =
+    leftColor(l) + arrowColor(" -> ") + rightColor(r)
+}
+
+case class ConsoleColorConfig(
+    left: String => String,
+    right: String => String,
+    default: String => String,
+    arrow: String => String
+)
+
+object ConsoleColorConfig {
+  val dark: ConsoleColorConfig = ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
+  val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
+  val normal: ConsoleColorConfig =
+    ConsoleColorConfig(default = identity, arrow = red, right = green, left = red)
+  val envDriven: ConsoleColorConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {
+    case Some("light") => light
+    case Some("dark")  => dark
+    case _             => normal
+  }
+  implicit val default: ConsoleColorConfig = envDriven
+
+  def magenta: String => String = toColor(Console.MAGENTA)
+  def green: String => String = toColor(Console.GREEN)
+  def blue: String => String = toColor(Console.BLUE)
+  def cyan: String => String = toColor(Console.CYAN)
+  def red: String => String = toColor(Console.RED)
+  def black: String => String = toColor(Console.BLACK)
+
+  private def toColor(color: String) = { s: String => color + s + Console.RESET }
 }
 
 trait DiffxOptionSupport {
