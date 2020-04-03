@@ -71,4 +71,18 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
            |          b: 1 -> 2))""".stripMargin
     }
   }
+
+  "diff object output" - {
+    "it should show an indented diff with plus and minus signs" in {
+      val colorConfigWithPlusMinus: ConsoleColorConfig =
+        ConsoleColorConfig(default = identity, arrow = identity, right = s => "+" + s, left = s => "-" + s)
+
+      val output = DiffResultObject("List", Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234)))
+        .showIndented(5)(colorConfigWithPlusMinus)
+      output shouldBe
+        s"""List(
+           |     0: -1234 -> +123,
+           |     1: +1234)""".stripMargin
+    }
+  }
 }

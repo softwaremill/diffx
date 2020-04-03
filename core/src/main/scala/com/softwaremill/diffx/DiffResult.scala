@@ -64,12 +64,12 @@ case class Identical[T](value: T) extends DiffResult {
 
 case class DiffResultMissing[T](value: T) extends DiffResultDifferent {
   override def showIndented(indent: Int)(implicit c: ConsoleColorConfig): String = {
-    leftColor(s"$value")
+    rightColor(s"$value")
   }
 }
 
 case class DiffResultAdditional[T](value: T) extends DiffResultDifferent {
   override def showIndented(indent: Int)(implicit c: ConsoleColorConfig): String = {
-    rightColor(s"$value")
+    leftColor(s"$value")
   }
 }
