@@ -42,7 +42,7 @@ case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
 
 case class DiffResultString(diffs: List[DiffResult]) extends DiffResultDifferent {
   override private[diffx] def showIndented(indent: Int)(implicit c: ConsoleColorConfig): String = {
-    s""""${diffs.map(_.showIndented(indent)).mkString("\n")}""""
+    s"${diffs.map(_.showIndented(indent)).mkString("\n")}"
   }
 }
 
