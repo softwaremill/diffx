@@ -16,6 +16,7 @@ The library is published for Scala 2.12 and 2.13.
 - integrations
   - [scalatest](#scalatest-integration)
   - [specs2](#specs2-integration)
+  - [utest](#utest-integration)
 - [direct usage](#using-directly)
 - [customization](#customization)
 - [ignoring](#ignoring)
@@ -76,6 +77,21 @@ After that you will be able to use syntax such as:
 
 ```scala
 left must matchTo(right)
+```
+
+## Utest integration
+
+To use with utest, add following dependency:
+
+```scala
+"com.softwaremill.diffx" %% "diffx-utest" % "0.3.22" % Test
+```
+
+Then, mixin `DiffxSupoport` trait or add `import com.softwaremill.diffx.specs2.DiffMatcher._` to your test code.
+To assert using diffx use `assertEquals` as follows:
+
+```scala
+assertEqual(left, right)
 ```
 
 ## Using directly
