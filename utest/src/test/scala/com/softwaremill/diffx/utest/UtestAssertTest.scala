@@ -2,7 +2,7 @@ package com.softwaremill.diffx.utest
 
 import utest._
 
-object UtestAssertTest extends TestSuite with DiffxSupport {
+object UtestAssertTest extends TestSuite with DiffxAssertions {
   val tests = Tests {
 
     // uncomment to run

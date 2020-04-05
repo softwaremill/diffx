@@ -3,7 +3,7 @@ package com.softwaremill.diffx.utest
 import com.softwaremill.diffx.{Diff, DiffResultDifferent}
 import utest.AssertionError
 
-trait DiffxSupport {
+trait DiffxAssertions {
 
   def assertEqual[T: Diff](t1: T, t2: T): Unit = {
     val result = Diff.compare(t1, t2)
@@ -14,4 +14,4 @@ trait DiffxSupport {
   }
 }
 
-object DiffxSupport extends DiffxSupport
+object DiffxAssertions extends DiffxAssertions

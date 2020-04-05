@@ -87,7 +87,7 @@ To use with utest, add following dependency:
 "com.softwaremill.diffx" %% "diffx-utest" % "0.3.22" % Test
 ```
 
-Then, mixin `DiffxSupoport` trait or add `import com.softwaremill.diffx.utest.DiffxSupport._` to your test code.
+Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
 To assert using diffx use `assertEquals` as follows:
 
 ```scala
