@@ -1,7 +1,7 @@
 package com.softwaremill.diffx
 import acyclic.skipped
 
-trait Diff[T] { outer =>
+trait Diff[-T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
   def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
 
@@ -9,7 +9,7 @@ trait Diff[T] { outer =>
     outer(f(left), f(right), toIgnore)
   }
 
-  def ignore[U](path: T => U): Diff[T] = macro IgnoreMacro.ignoreMacro[T, U]
+  def ignore[S <: T, U](path: S => U): Diff[S] = macro IgnoreMacro.ignoreMacro[S, U]
 
   def ignoreUnsafe(fields: String*): Diff[T] = new Diff[T] {
     override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =

@@ -20,6 +20,9 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "identity" in {
       compare(1, 1) shouldBe Identical(1)
     }
+    "contravariant" in {
+      compare(Some(1), Option(1)) shouldBe Identical(1)
+    }
   }
 
   "products" - {
@@ -528,3 +531,10 @@ object TsDirection {
 case class KeyModel(id: UUID, name: String)
 
 case class MyLookup(map: Map[KeyModel, String])
+
+trait SomeTrait {
+  def name: String
+}
+
+case class P22(name: String, age: Int) extends SomeTrait
+case class P33(name: String, aaa: Int) extends SomeTrait

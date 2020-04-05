@@ -27,7 +27,7 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   }
 
   it should "allow calling ignore multiple times" in {
-    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name).ignore(_.age)
+    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore[Person, String](_.name).ignore[Person, Int](_.age)
     compare(p1, p2) shouldBe Identical(p1)
   }
 }
