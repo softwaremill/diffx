@@ -55,6 +55,17 @@ lazy val specs2: Project = (project in file("specs2"))
   )
   .dependsOn(core)
 
+lazy val utest: Project = (project in file("utest"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "diffx-utests",
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "utest" % "0.7.2"
+    ),
+    testFrameworks += new TestFramework("utest.runner.Framework")
+  )
+  .dependsOn(core)
+
 lazy val tagging: Project = (project in file("tagging"))
   .settings(commonSettings: _*)
   .settings(
@@ -98,5 +109,6 @@ lazy val rootProject = (project in file("."))
     specs2,
     tagging,
     cats,
-    refined
+    refined,
+    utest
   )
