@@ -49,7 +49,7 @@ If anyone has an idea how this could be improved, I am open for suggestions.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.21" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.22" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -68,7 +68,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.21" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.22" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -83,7 +83,7 @@ left must matchTo(right)
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.3.21"
+"com.softwaremill.diffx" %% "diffx-core" % "0.3.22"
 ```
 
 Then call:
@@ -150,7 +150,7 @@ implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 To use with softwaremill-tagging library, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.21"
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.22"
 ```
 
 And then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
