@@ -20,6 +20,9 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "identity" in {
       compare(1, 1) shouldBe Identical(1)
     }
+    "contravariant" in {
+      compare(Some(1), Option(1)) shouldBe Identical(1)
+    }
   }
 
   "products" - {
