@@ -15,7 +15,9 @@ lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acycli
   scalafmtOnCompile := true,
   crossScalaVersions := Seq(v2_12, v2_13),
   libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5")),
-  scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git"))
+  scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
+  // sbt-release
+  releaseCrossBuild := true
 )
 
 lazy val core = crossProject(JVMPlatform, JSPlatform)
