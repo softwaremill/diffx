@@ -60,7 +60,7 @@ lazy val utest: Project = (project in file("utest"))
   .settings(
     name := "diffx-utests",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "utest" % "0.7.2"
+      "com.lihaoyi" %% "utest" % "0.7.4"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
