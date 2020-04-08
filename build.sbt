@@ -1,4 +1,6 @@
 import com.softwaremill.PublishTravis.publishTravisSettings
+import sbtcrossproject.CrossPlugin.autoImport.CrossType
+import sbtcrossproject.crossProject
 
 val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
@@ -13,10 +15,14 @@ lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acycli
   scalafmtOnCompile := true,
   crossScalaVersions := Seq(v2_12, v2_13),
   libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5")),
-  scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git"))
+  scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
+  // sbt-release
+  releaseCrossBuild := true
 )
 
-lazy val core: Project = (project in file("core"))
+lazy val core = crossProject(JVMPlatform, JSPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("core"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-core",
@@ -24,10 +30,9 @@ lazy val core: Project = (project in file("core"))
       "com.propensive" %% "magnolia" % "0.14.1",
       scalatestDependency % "test"
     ),
-    unmanagedSourceDirectories in Compile += (baseDirectory in Compile).value / "src" / "main" / "scala-common",
     unmanagedSourceDirectories in Compile += {
       // sourceDirectory returns a platform-scoped directory, e.g. /.jvm
-      val sourceDir = (baseDirectory in Compile).value / "src" / "main"
+      val sourceDir = (baseDirectory in Compile).value / ".." / "src" / "main"
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
         case _                       => sourceDir / "scala-2.13-"
@@ -35,7 +40,11 @@ lazy val core: Project = (project in file("core"))
     }
   )
 
-lazy val scalatest: Project = (project in file("scalatest"))
+lazy val coreJVM = core.jvm
+lazy val coreJS = core.js
+
+lazy val scalatest = crossProject(JVMPlatform, JSPlatform)
+  .in(file("scalatest"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-scalatest",
@@ -45,7 +54,11 @@ lazy val scalatest: Project = (project in file("scalatest"))
   )
   .dependsOn(core)
 
-lazy val specs2: Project = (project in file("specs2"))
+lazy val scalatestJVM = scalatest.jvm
+lazy val scalatestJS = scalatest.js
+
+lazy val specs2 = crossProject(JVMPlatform, JSPlatform)
+  .in(file("specs2"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-specs2",
@@ -55,7 +68,11 @@ lazy val specs2: Project = (project in file("specs2"))
   )
   .dependsOn(core)
 
-lazy val utest: Project = (project in file("utest"))
+lazy val specs2JVM = specs2.jvm
+lazy val specs2JS = specs2.js
+
+lazy val utest = crossProject(JVMPlatform, JSPlatform)
+  .in(file("utest"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-utests",
@@ -66,7 +83,11 @@ lazy val utest: Project = (project in file("utest"))
   )
   .dependsOn(core)
 
-lazy val tagging: Project = (project in file("tagging"))
+lazy val utestJVM = utest.jvm
+lazy val utestJS = utest.js
+
+lazy val tagging = crossProject(JVMPlatform, JSPlatform)
+  .in(file("tagging"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-tagging",
@@ -77,7 +98,11 @@ lazy val tagging: Project = (project in file("tagging"))
   )
   .dependsOn(core)
 
-lazy val cats: Project = (project in file("cats"))
+lazy val taggingJVM = tagging.jvm
+lazy val taggingJS = tagging.js
+
+lazy val cats = crossProject(JVMPlatform, JSPlatform)
+  .in(file("cats"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-cats",
@@ -88,7 +113,11 @@ lazy val cats: Project = (project in file("cats"))
   )
   .dependsOn(core)
 
-lazy val refined: Project = (project in file("refined"))
+lazy val catsJVM = cats.jvm
+lazy val catsJS = cats.js
+
+lazy val refined = crossProject(JVMPlatform, JSPlatform)
+  .in(file("refined"))
   .settings(commonSettings: _*)
   .settings(
     name := "diffx-refined",
@@ -99,16 +128,27 @@ lazy val refined: Project = (project in file("refined"))
   )
   .dependsOn(core)
 
-lazy val rootProject = (project in file("."))
+lazy val refinedJVM = refined.jvm
+lazy val refinedJS = refined.js
+
+lazy val rootProject = project
+  .in(file("."))
   .settings(commonSettings: _*)
   .settings(publishArtifact := false, name := "diffx")
   .settings(publishTravisSettings)
   .aggregate(
-    core,
-    scalatest,
-    specs2,
-    tagging,
-    cats,
-    refined,
-    utest
+    coreJVM,
+    coreJS,
+    scalatestJVM,
+    scalatestJS,
+    specs2JVM,
+    specs2JS,
+    utestJVM,
+    utestJS,
+    refinedJVM,
+    refinedJS,
+    taggingJVM,
+    taggingJS,
+    catsJVM,
+    catsJS
   )
