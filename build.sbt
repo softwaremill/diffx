@@ -27,7 +27,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-core",
     libraryDependencies ++= Seq(
-      "com.propensive" %% "magnolia" % "0.14.3",
+      "com.propensive" %% "magnolia" % "0.14.4",
       scalatestDependency % "test"
     ),
     unmanagedSourceDirectories in Compile += {
