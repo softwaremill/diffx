@@ -50,7 +50,7 @@ If anyone has an idea how this could be improved, I am open for suggestions.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.26" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.27" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -69,7 +69,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.26" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.27" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -84,7 +84,7 @@ left must matchTo(right)
 To use with utest, add following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.3.26" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.3.27" % Test
 ```
 
 Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
@@ -99,7 +99,7 @@ assertEqual(left, right)
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.3.26"
+"com.softwaremill.diffx" %% "diffx-core" % "0.3.27"
 ```
 
 Then call:
@@ -166,7 +166,7 @@ implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 To use with softwaremill-tagging library, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.26"
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.27"
 ```
 
 And then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
