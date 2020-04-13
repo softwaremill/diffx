@@ -12,15 +12,15 @@ The library is published for Scala 2.12 and 2.13.
 
 ## Table of contents
 - [goals of the project](#goals-of-the-project)
+- [teaser](#teaser)
 - [colors](#colors)
 - integrations
   - [scalatest](#scalatest-integration)
   - [specs2](#specs2-integration)
   - [utest](#utest-integration)
-- [direct usage](#using-directly)
-- [customization](#customization)
+  - [other](#other-3rd-party-libraries-support)
 - [ignoring](#ignoring)
-- [tagging support](#tagging-support)
+- [customization](#customization)
 - [similar projects](#similar-projects)
 - [commercial support](#commercial-support)
 
@@ -93,7 +93,7 @@ When running tests through sbt, default diffx's colors work well on both dark an
 Unfortunately Intellij Idea forces the default color to red when displaying test's error. 
 This means that it is impossible to print something with the standard default color (either white or black depending on the color scheme).
 
-To have better colors external information about the desired theme is required.
+To have better colors, external information about the desired theme is required.
 Specify environment variable `DIFFX_COLOR_THEME` and set it to either `light` or `dark`.
 I had to specify it in `/etc/environment` rather than home profile for Intellij Idea to picked it up.
 
@@ -158,6 +158,22 @@ def utestExample = {
   assertEqual(left, right)
 }
 ```
+
+## Ignoring
+
+Fields can be excluded from comparision by calling the `ignore` method on the `Diff` instance.
+Since `Diff` instances are immutable, the `ignore` method creates a copy of the instance with modified logic.
+You can use this instance explicitly.
+If you still would like to use it implicitly, you first need to summon the instance of the `Diff` typeclass using
+the `Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick, later you will be able to put your modified
+instance of the `Diff` typeclass into the implicit scope. The whole process looks as follows:
+
+```scala
+case class Person(name:String, age:Int)
+implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,String](_.name)
+// modifiedDiff: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@59f6ec89
+``` 
+
 ## Customization
 
 If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that 
@@ -176,7 +192,8 @@ The final code looks as follows:
 ```scala
 def nelExample = {
     import cats.data.NonEmptyList
-    implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
+    implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
+        Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
 }
 ```
 
@@ -189,7 +206,7 @@ case class B(id: String, name: String) extends ABParent
 
 implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore[A, String](_.id))
 // diffA: Derived[Diff[A]] = Derived(
-//   com.softwaremill.diffx.Diff$$anon$1@4f5b504c
+//   com.softwaremill.diffx.Diff$$anon$1@4851d81c
 // )
 
 val a1: ABParent = A("1", "X")
@@ -207,38 +224,25 @@ If you get warnings from Magnolia which looks like `magnolia: using fallback der
 you can use the [Silencer](https://github.com/ghik/silencer) compiler plugin to silent the warning
 with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback derivation.*$"`
 
-## Ignoring
+## Other 3rd party libraries support
 
-Fields can be excluded from comparision by calling the `ignore` method on the `Diff` instance.
-Since `Diff` instances are immutable, the `ignore` method creates a copy of the instance with modified logic.
-You can use this instance explicitly.
-If you still would like to use it implicitly, you first need to summon the instance of the `Diff` typeclass using
-the `Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick, later you will be able to put your modified
-instance of the `Diff` typeclass into the implicit scope. The whole process looks as follows:
+- [com.softwaremill.common.tagging](https://github.com/softwaremill/scala-common)
+    ```scala
+    "com.softwaremill.diffx" %% "diffx-tagging" % "0.3.28-SNAPSHOT"
+    ```
+- [eu.timepit.refined](https://github.com/fthomas/refined)
+    ```scala
+    "com.softwaremill.diffx" %% "diffx-refined" % "0.3.28-SNAPSHOT"    
+    ```
+- [org.typelevel.cats](https://github.com/typelevel/cats)
+    ```scala
+    "com.softwaremill.diffx" %% "diffx-cats" % "0.3.28-SNAPSHOT"    
+    ```
 
-```scala
-case class Person(name:String, age:Int)
-implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,String](_.name)
-// modifiedDiff: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@61519f07
-``` 
-
-## Tagging support
-
-To use with softwaremill-tagging library, add the following dependency:
-
-```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.3.28-SNAPSHOT"
-```
-
-And then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
+Then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
 
 Diffx should be able to work with any other tagging library. I decided to create this module in order to check
 if any future changes won't break this integration.
-
-If you want to use diffx with other tagging library you need to provide a way for creating `Diff` type class for tagged types:
-```scala
-implicit def taggedDiff[T: Diff, U]: Derived[Diff[T @@ U]] = Derived(Diff[T].contramap[T @@ U](identity))
-```
 
 ## Similar projects
 
