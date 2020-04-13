@@ -1,6 +1,7 @@
+import com.softwaremill.PublishTravis
 import com.softwaremill.PublishTravis.publishTravisSettings
-import sbtcrossproject.CrossPlugin.autoImport.CrossType
-import sbtcrossproject.crossProject
+import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
+import sbtrelease.ReleaseStateTransformations._
 
 val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
@@ -131,11 +132,49 @@ lazy val refined = crossProject(JVMPlatform, JSPlatform)
 lazy val refinedJVM = refined.jvm
 lazy val refinedJS = refined.js
 
+lazy val docs = project
+  .in(file("generated-docs")) // important: it must not be docs/
+  .settings(commonSettings)
+  .settings(publishArtifact := false, name := "docs", libraryDependencies += "org.typelevel" %% "cats-core" % "2.1.1")
+  .dependsOn(coreJVM, scalatestJVM, specs2JVM, utestJVM, refinedJVM, taggingJVM)
+  .enablePlugins(MdocPlugin)
+  .settings(
+    mdocIn := file("docs-sources"),
+    moduleName := "diffx-docs",
+    mdocVariables := Map(
+      "VERSION" -> version.value
+    ),
+    mdocOut := file(".")
+  )
+
 lazy val rootProject = project
   .in(file("."))
   .settings(commonSettings: _*)
   .settings(publishArtifact := false, name := "diffx")
   .settings(publishTravisSettings)
+  .settings(releaseProcess := {
+    if (PublishTravis.isCommitRelease.value) {
+      Seq(
+        checkSnapshotDependencies,
+        inquireVersions,
+        runClean,
+        runTest,
+        setReleaseVersion,
+        releaseStepInputTask(docs / mdoc),
+        stageChanges("README.md"),
+        commitReleaseVersion,
+        tagRelease,
+        setNextVersion,
+        commitNextVersion,
+        pushChanges
+      )
+    } else {
+      Seq(
+        publishArtifacts,
+        releaseStepCommand("sonatypeBundleRelease")
+      )
+    }
+  })
   .aggregate(
     coreJVM,
     coreJS,
@@ -150,5 +189,13 @@ lazy val rootProject = project
     taggingJVM,
     taggingJS,
     catsJVM,
-    catsJS
+    catsJS,
+    docs
   )
+
+def stageChanges(fileName: String): ReleaseStep = { s: State =>
+  val settings = Project.extract(s)
+  val vcs = settings.get(releaseVcs).get
+  vcs.add(fileName) !! s.log
+  s
+}
