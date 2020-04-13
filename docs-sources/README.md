@@ -203,19 +203,17 @@ with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback d
     ```scala
     "com.softwaremill.diffx" %% "diffx-tagging" % "@VERSION@"
     ```
+    `com.softwaremill.diffx.tagging.DiffTaggingSupport`
 - [eu.timepit.refined](https://github.com/fthomas/refined)
     ```scala
     "com.softwaremill.diffx" %% "diffx-refined" % "@VERSION@"    
     ```
+    `com.softwaremill.diffx.refined.RefinedSupport`
 - [org.typelevel.cats](https://github.com/typelevel/cats)
     ```scala
     "com.softwaremill.diffx" %% "diffx-cats" % "@VERSION@"    
     ```
-
-Then extend `com.softwaremill.diffx.tagging.DiffTaggingSupport` trait or `import com.softwaremill.diffx.tagging.DiffTaggingSupport._`
-
-Diffx should be able to work with any other tagging library. I decided to create this module in order to check
-if any future changes won't break this integration.
+    `com.softwaremill.diffx.cats.DiffCatsInstances`
 
 ## Similar projects
 
