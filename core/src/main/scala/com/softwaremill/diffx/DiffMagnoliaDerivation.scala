@@ -8,7 +8,7 @@ import scala.language.experimental.macros
 trait DiffMagnoliaDerivation extends LowPriority {
   type Typeclass[T] = Derived[Diff[T]]
 
-  def combine[T](ctx: CaseClass[Typeclass, T]): Derived[Diff[T]] =
+  def combine[T](ctx: ReadOnlyCaseClass[Typeclass, T]): Derived[Diff[T]] =
     Derived(new Diff[T] {
       override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult = {
         val map = ListMap(ctx.parameters.map { p =>
