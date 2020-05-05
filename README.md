@@ -37,7 +37,7 @@ The library is published for Scala 2.12 and 2.13.
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.3.28"
+"com.softwaremill.diffx" %% "diffx-core" % "0.3.29-SNAPSHOT"
 ```
 
 ```scala
@@ -104,19 +104,17 @@ If anyone has an idea how this could be improved, I am open for suggestions.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.28" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.29-SNAPSHOT" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
 After that you will be able to use syntax such as:
 
 ```scala
-def scalatestExample = {
-    import org.scalatest.matchers.should.Matchers._
-    import com.softwaremill.diffx.scalatest.DiffMatcher._
+import org.scalatest.matchers.should.Matchers._
+import com.softwaremill.diffx.scalatest.DiffMatcher._
 
-    left should matchTo(right)
-}
+left should matchTo(right)
 ```
 
 Giving you nice error messages:
@@ -126,19 +124,17 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.28" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.29-SNAPSHOT" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
 After that you will be able to use syntax such as:
 
 ```scala
-def specs2Example = {
-    import org.specs2.matcher.MustMatchers.{left => _, right => _, _}
-    import com.softwaremill.diffx.specs2.DiffMatcher._
+import org.specs2.matcher.MustMatchers.{left => _, right => _, _}
+import com.softwaremill.diffx.specs2.DiffMatcher._
 
-    left must matchTo(right)
-}
+left must matchTo(right)
 ```
 
 ## Utest integration
@@ -146,17 +142,15 @@ def specs2Example = {
 To use with utest, add following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.3.28" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.3.29-SNAPSHOT" % Test
 ```
 
 Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
 To assert using diffx use `assertEquals` as follows:
 
 ```scala
-def utestExample = {
-  import com.softwaremill.diffx.utest.DiffxAssertions._
-  assertEqual(left, right)
-}
+import com.softwaremill.diffx.utest.DiffxAssertions._
+assertEqual(left, right)
 ```
 
 ## Ignoring
@@ -171,7 +165,6 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 ```scala
 case class Person(name:String, age:Int)
 implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,String](_.name)
-// modifiedDiff: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@525ad81b
 ``` 
 
 ## Customization
@@ -190,11 +183,9 @@ Diffx already has an instance of a typeclass for a list. One more thing to do is
 The final code looks as follows:
 
 ```scala
-def nelExample = {
-    import cats.data.NonEmptyList
-    implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
-        Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
-}
+import cats.data.NonEmptyList
+implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
+    Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
 ```
 
 And here's an example customizing the `Diff` instance for a child class of a sealed trait
@@ -205,17 +196,15 @@ case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
 implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore[A, String](_.id))
-// diffA: Derived[Diff[A]] = Derived(
-//   com.softwaremill.diffx.Diff$$anon$1@81532d3
-// )
-
+```
+```scala
 val a1: ABParent = A("1", "X")
 // a1: ABParent = A("1", "X")
 val a2: ABParent = A("2", "X")
 // a2: ABParent = A("2", "X")
 
-compare(a1, a2) // Reports no difference
-// res1: DiffResult = Identical(A("1", "X"))
+compare(a1, a2)
+// res5: DiffResult = Identical(A("1", "X"))
 ```
 
 You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits
@@ -228,17 +217,17 @@ with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback d
 
 - [com.softwaremill.common.tagging](https://github.com/softwaremill/scala-common)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-tagging" % "0.3.28"
+    "com.softwaremill.diffx" %% "diffx-tagging" % "0.3.29-SNAPSHOT"
     ```
     `com.softwaremill.diffx.tagging.DiffTaggingSupport`
 - [eu.timepit.refined](https://github.com/fthomas/refined)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-refined" % "0.3.28"    
+    "com.softwaremill.diffx" %% "diffx-refined" % "0.3.29-SNAPSHOT"    
     ```
     `com.softwaremill.diffx.refined.RefinedSupport`
 - [org.typelevel.cats](https://github.com/typelevel/cats)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-cats" % "0.3.28"    
+    "com.softwaremill.diffx" %% "diffx-cats" % "0.3.29-SNAPSHOT"    
     ```
     `com.softwaremill.diffx.cats.DiffCatsInstances`
 

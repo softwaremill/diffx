@@ -90,13 +90,11 @@ To use with scalatest, add the following dependency:
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
 After that you will be able to use syntax such as:
 
-```scala mdoc
-def scalatestExample = {
-    import org.scalatest.matchers.should.Matchers._
-    import com.softwaremill.diffx.scalatest.DiffMatcher._
+```scala mdoc:compile-only
+import org.scalatest.matchers.should.Matchers._
+import com.softwaremill.diffx.scalatest.DiffMatcher._
 
-    left should matchTo(right)
-}
+left should matchTo(right)
 ```
 
 Giving you nice error messages:
@@ -112,13 +110,11 @@ To use with specs2, add the following dependency:
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
 After that you will be able to use syntax such as:
 
-```scala mdoc
-def specs2Example = {
-    import org.specs2.matcher.MustMatchers.{left => _, right => _, _}
-    import com.softwaremill.diffx.specs2.DiffMatcher._
+```scala mdoc:compile-only
+import org.specs2.matcher.MustMatchers.{left => _, right => _, _}
+import com.softwaremill.diffx.specs2.DiffMatcher._
 
-    left must matchTo(right)
-}
+left must matchTo(right)
 ```
 
 ## Utest integration
@@ -132,11 +128,9 @@ To use with utest, add following dependency:
 Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
 To assert using diffx use `assertEquals` as follows:
 
-```scala
-def utestExample = {
-  import com.softwaremill.diffx.utest.DiffxAssertions._
-  assertEqual(left, right)
-}
+```scala mdoc:compile-only
+import com.softwaremill.diffx.utest.DiffxAssertions._
+assertEqual(left, right)
 ```
 
 ## Ignoring
@@ -148,7 +142,7 @@ If you still would like to use it implicitly, you first need to summon the insta
 the `Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick, later you will be able to put your modified
 instance of the `Diff` typeclass into the implicit scope. The whole process looks as follows:
 
-```scala mdoc
+```scala mdoc:compile-only
 case class Person(name:String, age:Int)
 implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,String](_.name)
 ``` 
@@ -168,27 +162,26 @@ Diffx already has an instance of a typeclass for a list. One more thing to do is
 
 The final code looks as follows:
 
-```scala mdoc
-def nelExample = {
-    import cats.data.NonEmptyList
-    implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
-        Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
-}
+```scala mdoc:nest
+import cats.data.NonEmptyList
+implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
+    Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
 ```
 
 And here's an example customizing the `Diff` instance for a child class of a sealed trait
 
-```scala mdoc
+```scala mdoc:silent
 sealed trait ABParent
 case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
 implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore[A, String](_.id))
-
+```
+```scala mdoc
 val a1: ABParent = A("1", "X")
 val a2: ABParent = A("2", "X")
 
-compare(a1, a2) // Reports no difference
+compare(a1, a2)
 ```
 
 You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits
