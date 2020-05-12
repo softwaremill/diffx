@@ -24,8 +24,8 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       }
     })
 
-  implicit def diffForSet[T: ObjectMatcher, C[W] <: scala.collection.Set[W]](
-      implicit ddt: Diff[T],
+  implicit def diffForSet[T: ObjectMatcher, C[W] <: scala.collection.Set[W]](implicit
+      ddt: Diff[T],
       matcher: ObjectMatcher[T]
   ): Derived[Diff[C[T]]] =
     Derived((left: C[T], right: C[T], toIgnore: List[FieldPath]) => {
@@ -57,8 +57,8 @@ trait DiffInstances extends DiffMagnoliaDerivation {
     }
   }
 
-  implicit def diffForIterable[T, C[W] <: Iterable[W]](
-      implicit ddot: Diff[Option[T]]
+  implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
+      ddot: Diff[Option[T]]
   ): Derived[Diff[C[T]]] =
     Derived((left: C[T], right: C[T], toIgnore: List[FieldPath]) => {
       val indexes = Range(0, Math.max(left.size, right.size))
@@ -82,8 +82,8 @@ trait DiffInstances extends DiffMagnoliaDerivation {
       }
     })
 
-  implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](
-      implicit ddot: Diff[Option[V]],
+  implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
+      ddot: Diff[Option[V]],
       ddk: Diff[K],
       matcher: ObjectMatcher[K]
   ): Derived[Diff[C[K, V]]] = Derived(new DiffForMap[K, V, C](matcher, ddk, ddot))
