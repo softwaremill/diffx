@@ -6,8 +6,8 @@ import scala.collection.Factory
 import com.softwaremill.diffx.DiffxSupport._
 
 package object diffx extends DiffxSupport {
-  implicit def traversableDiffxFunctor[F[_], A](
-      implicit fac: Factory[A, F[A]],
+  implicit def traversableDiffxFunctor[F[_], A](implicit
+      fac: Factory[A, F[A]],
       ev: F[A] => Iterable[A]
   ): DiffxFunctor[F, A] =
     new DiffxFunctor[F, A] {}
