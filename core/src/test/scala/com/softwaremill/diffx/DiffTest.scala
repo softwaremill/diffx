@@ -360,7 +360,6 @@ class DiffTest extends AnyFreeSpec with Matchers {
         )
       }
     }
-
     "maps" - {
       "identical" in {
         val m1 = Map("a" -> 1)
@@ -445,6 +444,23 @@ class DiffTest extends AnyFreeSpec with Matchers {
             )
           )
         )
+      }
+    }
+    "ranges" - {
+      "identical" in {
+        val r1 = 0 until 100
+        val r2 = 0 until 100
+        compare(r1, r2) shouldBe Identical(r1)
+      }
+      "dif" in {
+        val r1 = 0 until 100
+        val r2 = 0 until 99
+        compare(r1, r2) shouldBe DiffResultValue(r1, r2)
+      }
+      "inclusive vs exclusive" in {
+        val r1 = 0 until 100
+        val r2 = 0 to 100
+        compare(r1, r2) shouldBe DiffResultValue(r1, r2)
       }
     }
   }
