@@ -1,7 +1,5 @@
-import com.softwaremill.PublishTravis
 import com.softwaremill.PublishTravis.publishTravisSettings
 import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
-import sbtrelease.ReleaseStateTransformations._
 
 val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
@@ -30,7 +28,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= Seq(
       "com.propensive" %% "magnolia" % "0.16.0",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-        scalatestDependency % Test
+      scalatestDependency % Test
     ),
     unmanagedSourceDirectories in Compile += {
       // sourceDirectory returns a platform-scoped directory, e.g. /.jvm
@@ -153,28 +151,8 @@ lazy val rootProject = project
   .settings(commonSettings: _*)
   .settings(publishArtifact := false, name := "diffx")
   .settings(publishTravisSettings)
-  .settings(releaseProcess := {
-    if (PublishTravis.isCommitRelease.value) {
-      Seq(
-        checkSnapshotDependencies,
-        inquireVersions,
-        runClean,
-        runTest,
-        setReleaseVersion,
-        releaseStepInputTask(docs / mdoc),
-        stageChanges("README.md"),
-        commitReleaseVersion,
-        tagRelease,
-        setNextVersion,
-        commitNextVersion,
-        pushChanges
-      )
-    } else {
-      Seq(
-        publishArtifacts,
-        releaseStepCommand("sonatypeBundleRelease")
-      )
-    }
+  .settings(beforeCommitSteps := {
+    Seq(releaseStepInputTask(docs / mdoc), Release.stageChanges("README.md"))
   })
   .aggregate(
     coreJVM,
@@ -193,10 +171,3 @@ lazy val rootProject = project
     catsJS,
     docs
   )
-
-def stageChanges(fileName: String): ReleaseStep = { s: State =>
-  val settings = Project.extract(s)
-  val vcs = settings.get(releaseVcs).get
-  vcs.add(fileName) !! s.log
-  s
-}
