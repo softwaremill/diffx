@@ -4,7 +4,7 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
 
-val scalatestDependency = "org.scalatest" %% "scalatest" % "3.1.2"
+val scalatestDependency = "org.scalatest" %% "scalatest" % "3.2.0"
 val specs2Dependency = "org.specs2" %% "specs2-core" % "4.10.0"
 val smlTaggingDependency = "com.softwaremill.common" %% "tagging" % "2.2.1"
 
