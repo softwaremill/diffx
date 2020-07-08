@@ -4,9 +4,9 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
 
-val scalatestDependency = "org.scalatest" %% "scalatest" % "3.2.0"
-val specs2Dependency = "org.specs2" %% "specs2-core" % "4.10.0"
-val smlTaggingDependency = "com.softwaremill.common" %% "tagging" % "2.2.1"
+val scalatestVersion = "3.2.0"
+val specs2Version = "4.10.0"
+val smlTaggingVersion = "2.2.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
   organization := "com.softwaremill.diffx",
@@ -28,7 +28,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies ++= Seq(
       "com.propensive" %% "magnolia" % "0.16.0",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      scalatestDependency % Test
+      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     ),
     unmanagedSourceDirectories in Compile += {
       // sourceDirectory returns a platform-scoped directory, e.g. /.jvm
@@ -49,7 +51,9 @@ lazy val scalatest = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-scalatest",
     libraryDependencies ++= Seq(
-      scalatestDependency
+      "org.scalatest" %% "scalatest-matchers-core" % scalatestVersion,
+      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
@@ -63,7 +67,7 @@ lazy val specs2 = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-specs2",
     libraryDependencies ++= Seq(
-      specs2Dependency
+      "org.specs2" %% "specs2-core" % specs2Version
     )
   )
   .dependsOn(core)
@@ -92,8 +96,9 @@ lazy val tagging = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-tagging",
     libraryDependencies ++= Seq(
-      smlTaggingDependency,
-      scalatestDependency % "test"
+      "com.softwaremill.common" %% "tagging" % smlTaggingVersion,
+      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
@@ -108,7 +113,8 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     name := "diffx-cats",
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % "2.1.1",
-      scalatestDependency % "test"
+      "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
@@ -123,7 +129,8 @@ lazy val refined = crossProject(JVMPlatform, JSPlatform)
     name := "diffx-refined",
     libraryDependencies ++= Seq(
       "eu.timepit" %% "refined" % "0.9.14",
-      scalatestDependency % "test"
+      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
