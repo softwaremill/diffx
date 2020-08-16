@@ -26,7 +26,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-core",
     libraryDependencies ++= Seq(
-      "com.propensive" %% "magnolia" % "0.16.0",
+      "com.propensive" %% "magnolia" % "0.17.0",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
