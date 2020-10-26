@@ -1,7 +1,6 @@
 package com.softwaremill.diffx.cats
 
 import cats.data._
-import cats.instances.int._
 import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
