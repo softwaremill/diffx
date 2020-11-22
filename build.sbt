@@ -141,7 +141,14 @@ lazy val refinedJS = refined.js
 lazy val docs = project
   .in(file("generated-docs")) // important: it must not be docs/
   .settings(commonSettings)
-  .settings(publishArtifact := false, name := "docs", libraryDependencies += "org.typelevel" %% "cats-core" % "2.2.0")
+  .settings(
+    publishArtifact := false,
+    name := "docs",
+    libraryDependencies ++= Seq(
+      "org.typelevel" %% "cats-core" % "2.2.0",
+      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
+    )
+  )
   .dependsOn(coreJVM, scalatestJVM, specs2JVM, utestJVM, refinedJVM, taggingJVM)
   .enablePlugins(MdocPlugin)
   .settings(
