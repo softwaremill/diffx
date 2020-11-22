@@ -12,3 +12,4 @@ project/boot/
 project/plugins/project/
 
 .idea*
+.bsp
