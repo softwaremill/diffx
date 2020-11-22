@@ -32,10 +32,9 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
       right: C[K, V],
       toIgnore: List[FieldPath]
   ): List[(DiffResult, DiffResult)] = {
-    matchedKeys.map {
-      case (lKey, rKey) =>
-        val result = diffKey.apply(lKey, rKey)
-        result -> diffValue.apply(left.get(lKey), right.get(rKey), toIgnore)
+    matchedKeys.map { case (lKey, rKey) =>
+      val result = diffKey.apply(lKey, rKey)
+      result -> diffValue.apply(left.get(lKey), right.get(rKey), toIgnore)
     }.toList
   }
 

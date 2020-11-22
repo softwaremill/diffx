@@ -19,8 +19,7 @@ object IgnoreMacro {
      }"""
   }
 
-  /**
-    * Converts path to list of strings
+  /** Converts path to list of strings
     */
   def ignoredFromPathMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
       path: c.Expr[T => U]
@@ -31,8 +30,7 @@ object IgnoreMacro {
     case class TermPathElement(term: c.TermName, xargs: c.Tree*) extends PathElement
     case class FunctorPathElement(functor: c.Tree, method: c.TermName, xargs: c.Tree*) extends PathElement
 
-    /**
-      * _.a.b.each.c => List(TPE(a), TPE(b), FPE(functor, each/at/eachWhere, xargs), TPE(c))
+    /** _.a.b.each.c => List(TPE(a), TPE(b), FPE(functor, each/at/eachWhere, xargs), TPE(c))
       */
     @tailrec
     def collectPathElements(tree: c.Tree, acc: List[PathElement]): List[PathElement] = {
@@ -63,8 +61,8 @@ object IgnoreMacro {
       case _                       => c.abort(c.enclosingPosition, s"$ShapeInfo, got: ${path.tree}")
     }
 
-    c.Expr[List[String]](q"${pathEls.collect {
-      case TermPathElement(c) => c.decodedName.toString
+    c.Expr[List[String]](q"${pathEls.collect { case TermPathElement(c) =>
+      c.decodedName.toString
     }}")
   }
 
