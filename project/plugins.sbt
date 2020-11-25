@@ -3,4 +3,4 @@ addSbtPlugin("com.softwaremill.sbt-softwaremill" % "sbt-softwaremill-publish" % 
 addSbtPlugin("com.softwaremill.sbt-softwaremill" % "sbt-softwaremill-extra" % "1.9.14")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.3.1")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.0.0")
-addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.12")
+addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.2.13")
