@@ -112,7 +112,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.2.0",
+      "org.typelevel" %% "cats-core" % "2.3.0",
       "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -145,7 +145,7 @@ lazy val docs = project
     publishArtifact := false,
     name := "docs",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.2.0",
+      "org.typelevel" %% "cats-core" % "2.3.0",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
     )
   )
