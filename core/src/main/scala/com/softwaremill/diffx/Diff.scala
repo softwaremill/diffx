@@ -1,5 +1,6 @@
 package com.softwaremill.diffx
 import acyclic.skipped
+import magnolia.Magnolia
 
 trait Diff[-T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
@@ -19,7 +20,7 @@ trait Diff[-T] { outer =>
     }
 }
 
-object Diff extends DiffInstances {
+object Diff extends MiddlePriorityDiff {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
@@ -27,10 +28,35 @@ object Diff extends DiffInstances {
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
   /** Create a Diff instance using [[Object#equals]] */
-  def useEquals[T]: Derived[Diff[T]] = Derived(Diff.fallback[T])
+  def useEquals[T]: Diff[T] = Diff.fallback[T]
 
+  def derived[T]: Diff[T] = macro Magnolia.gen[T]
+
+  implicit val diffForString: Diff[String] = new DiffForString
+  implicit val diffForRange: Diff[Range] = Diff.fallback[Range]
+  implicit def diffForNumeric[T: Numeric]: Diff[T] = numeric
+  implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
+      ddot: Diff[Option[V]],
+      ddk: Diff[K],
+      matcher: ObjectMatcher[K]
+  ): Diff[C[K, V]] = new DiffForMap[K, V, C](matcher, ddk, ddot)
+  implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = optional
+  implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
+      ddt: Diff[T],
+      matcher: ObjectMatcher[T]
+  ): Diff[C[T]] = set[T, C]
+}
+
+trait MiddlePriorityDiff extends DiffInstances with LowPriorityDiff {
+
+  implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
+      ddot: Diff[Option[T]]
+  ): Diff[C[T]] = iterable
+}
+
+trait LowPriorityDiff {
   // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
-  implicit def anyDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
+  implicit def derivedDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 
   // Implicit conversion
   implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
