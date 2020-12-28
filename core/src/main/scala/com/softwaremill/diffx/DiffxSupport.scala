@@ -1,5 +1,4 @@
 package com.softwaremill.diffx
-import acyclic.skipped
 
 import scala.annotation.compileTimeOnly
 import com.softwaremill.diffx.DiffxSupport._

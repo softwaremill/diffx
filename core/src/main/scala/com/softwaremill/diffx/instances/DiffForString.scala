@@ -1,7 +1,8 @@
-package com.softwaremill.diffx
-import acyclic.skipped
+package com.softwaremill.diffx.instances
 
-class DiffForString extends Diff[String] {
+import com.softwaremill.diffx._
+
+private[diffx] class DiffForString extends Diff[String] {
   override def apply(left: String, right: String, toIgnore: List[FieldPath]): DiffResult = {
     val leftLines = left.split("\n").toList
     val rightLines = right.split("\n").toList

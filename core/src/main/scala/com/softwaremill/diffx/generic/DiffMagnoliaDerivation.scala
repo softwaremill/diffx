@@ -2,7 +2,6 @@ package com.softwaremill.diffx.generic
 
 import com.softwaremill.diffx.{Diff, DiffResultObject, DiffResultValue, FieldPath, Identical}
 import magnolia._
-import acyclic.skipped
 
 import scala.collection.immutable.ListMap
 

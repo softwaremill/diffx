@@ -1,5 +1,4 @@
 package com.softwaremill.diffx
-import acyclic.skipped
 import DiffResult._
 
 trait DiffResult extends Product with Serializable {

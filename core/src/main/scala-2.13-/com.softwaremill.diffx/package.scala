@@ -1,5 +1,4 @@
 package com.softwaremill
-import acyclic.skipped
 
 import scala.annotation.compileTimeOnly
 import scala.collection.TraversableLike
