@@ -13,6 +13,7 @@ The library is published for Scala 2.12 and 2.13.
 ## Table of contents
 - [goals of the project](#goals-of-the-project)
 - [teaser](#teaser)
+- [derivation](#derivation)
 - [colors](#colors)
 - integrations
   - [scalatest](#scalatest-integration)
@@ -66,6 +67,29 @@ Will result in:
 
 ![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
 
+
+## Derivation
+
+Diffx supports auto and semi-auto derivation.
+To use auto derivation add following import
+
+`import com.softwaremill.diffx.generic.auto._`
+
+or 
+
+extend trait
+
+`com.softwaremill.diffx.generic.DiffDerivation`
+
+
+For semi-auto derivation you don't need any additional import, just define your instances using:
+```scala mdoc:compile-only
+case class Product(name: String)
+case class Basket(products: List[Product])
+
+val productDiff = Diff.derived[Product]
+val basketDiff = Diff.derived[Basket]
+```
 
 ## Colors
 
