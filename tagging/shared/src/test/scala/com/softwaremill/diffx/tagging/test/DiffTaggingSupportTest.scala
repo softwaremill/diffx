@@ -6,6 +6,7 @@ import com.softwaremill.tagging._
 import com.softwaremill.tagging.@@
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.softwaremill.diffx.generic.auto._
 
 class DiffTaggingSupportTest extends AnyFlatSpec with Matchers {
   it should "work for tagged types" in {

@@ -57,7 +57,7 @@ val left: Foo = Foo(
     Some(right)
 )
  
-
+import com.softwaremill.diffx.generic.auto._
 import com.softwaremill.diffx._
 compare(left, right)
 ```
@@ -175,7 +175,7 @@ sealed trait ABParent
 case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
-implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore[A, String](_.id))
+implicit val diffA: Diff[A] = Derived[Diff[A]].ignore[A, String](_.id)
 ```
 ```scala mdoc
 val a1: ABParent = A("1", "X")
