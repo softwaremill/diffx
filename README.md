@@ -13,6 +13,7 @@ The library is published for Scala 2.12 and 2.13.
 ## Table of contents
 - [goals of the project](#goals-of-the-project)
 - [teaser](#teaser)
+- [derivation](#derivation)
 - [colors](#colors)
 - integrations
   - [scalatest](#scalatest-integration)
@@ -37,7 +38,7 @@ The library is published for Scala 2.12 and 2.13.
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.3.30"
+"com.softwaremill.diffx" %% "diffx-core" % "0.4.0"
 ```
 
 ```scala
@@ -63,7 +64,7 @@ val left: Foo = Foo(
 //   Some(Foo(Bar("asdf", 5), List(123, 1234), Some(Bar("asdf", 5))))
 // )
  
-
+import com.softwaremill.diffx.generic.auto._
 import com.softwaremill.diffx._
 compare(left, right)
 // res0: DiffResult = DiffResultObject(
@@ -87,6 +88,29 @@ Will result in:
 ![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
 
 
+## Derivation
+
+Diffx supports auto and semi-auto derivation.
+To use auto derivation add following import
+
+`import com.softwaremill.diffx.generic.auto._`
+
+or 
+
+extend trait
+
+`com.softwaremill.diffx.generic.DiffDerivation`
+
+
+For semi-auto derivation you don't need any additional import, just define your instances using:
+```scala
+case class Product(name: String)
+case class Basket(products: List[Product])
+
+val productDiff = Diff.derived[Product]
+val basketDiff = Diff.derived[Basket]
+```
+
 ## Colors
 
 When running tests through sbt, default diffx's colors work well on both dark and light backgrounds. 
@@ -104,7 +128,7 @@ If anyone has an idea how this could be improved, I am open for suggestions.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.3.30" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.4.0" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -124,7 +148,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.3.30" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.4.0" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -142,7 +166,7 @@ left must matchTo(right)
 To use with utest, add following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.3.30" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.4.0" % Test
 ```
 
 Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
@@ -169,13 +193,11 @@ implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,St
 
 ## Customization
 
-If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that 
+If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that
 type, and make sure it's in scope when any `Diff` instances depending on that type are created.
 
-If there is already a typeclass for a particular type, but you would like to use another one, you wil have to override existing instance. Because of the "exporting" mechanism the top level typeclass is `Derived[Diff]` rather then `Diff` and that's the typeclass you need to override. 
-
-To understand it better, consider following example with `NonEmptyList` from cats.
-`NonEmptyList` is implemented as case class so diffx will create a `Derived[Diff[NonEmptyList]]` typeclass instance using magnolia derivation.
+Consider following example with `NonEmptyList` from cats. `NonEmptyList` is implemented as case class so diffx
+will create a `Diff[NonEmptyList]` typeclass instance using magnolia derivation.
 
 Obviously that's not what we usually want. In most of the cases we would like `NonEmptyList` to be compared as a list.
 Diffx already has an instance of a typeclass for a list. One more thing to do is to use that typeclass by converting `NonEmptyList` to list which can be done using `contramap` method.
@@ -184,18 +206,18 @@ The final code looks as follows:
 
 ```scala
 import cats.data.NonEmptyList
-implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
-    Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
+implicit def nelDiff[T: Diff]: Diff[NonEmptyList[T]] = 
+    Diff[List[T]].contramap[NonEmptyList[T]](_.toList)
 ```
 
-And here's an example customizing the `Diff` instance for a child class of a sealed trait
+And here's an example of customizing the `Diff` instance for a child class of a sealed trait
 
 ```scala
 sealed trait ABParent
 case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
-implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore[A, String](_.id))
+implicit val diffA: Diff[A] = Derived[Diff[A]].ignore[A, String](_.id)
 ```
 ```scala
 val a1: ABParent = A("1", "X")
@@ -204,8 +226,11 @@ val a2: ABParent = A("2", "X")
 // a2: ABParent = A("2", "X")
 
 compare(a1, a2)
-// res5: DiffResult = Identical(A("1", "X"))
+// res6: DiffResult = Identical(A("1", "X"))
 ```
+
+As you can see instead of summoning bare instance of `Diff` for given `A` we summoned `Derived[Diff[A]]`.
+This is required in order to workaround self reference error.
 
 You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits
 after macro expansion.
@@ -217,17 +242,17 @@ with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback d
 
 - [com.softwaremill.common.tagging](https://github.com/softwaremill/scala-common)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-tagging" % "0.3.30"
+    "com.softwaremill.diffx" %% "diffx-tagging" % "0.4.0"
     ```
     `com.softwaremill.diffx.tagging.DiffTaggingSupport`
 - [eu.timepit.refined](https://github.com/fthomas/refined)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-refined" % "0.3.30"    
+    "com.softwaremill.diffx" %% "diffx-refined" % "0.4.0"    
     ```
     `com.softwaremill.diffx.refined.RefinedSupport`
 - [org.typelevel.cats](https://github.com/typelevel/cats)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-cats" % "0.3.30"    
+    "com.softwaremill.diffx" %% "diffx-cats" % "0.4.0"    
     ```
     `com.softwaremill.diffx.cats.DiffCatsInstances`
 
