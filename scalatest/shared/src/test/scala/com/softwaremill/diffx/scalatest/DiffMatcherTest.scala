@@ -2,6 +2,7 @@ package com.softwaremill.diffx.scalatest
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.softwaremill.diffx.generic.auto._
 
 class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMatcher {
   val right: Foo = Foo(

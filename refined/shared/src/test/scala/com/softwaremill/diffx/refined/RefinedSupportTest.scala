@@ -6,6 +6,7 @@ import eu.timepit.refined.auto._
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.softwaremill.diffx.generic.auto._
 
 class RefinedSupportTest extends AnyFlatSpec with Matchers {
   it should "work for refined types" in {

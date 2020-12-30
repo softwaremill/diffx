@@ -1,5 +1,6 @@
-package com.softwaremill.diffx
+package com.softwaremill.diffx.test
 
+import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 

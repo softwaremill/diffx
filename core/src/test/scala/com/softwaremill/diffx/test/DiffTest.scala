@@ -1,11 +1,12 @@
-package com.softwaremill.diffx
+package com.softwaremill.diffx.test
 
-import java.time.Instant
-import java.util.UUID
-
+import com.softwaremill.diffx.generic.auto._
+import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
+import java.time.Instant
+import java.util.UUID
 import scala.collection.immutable.ListMap
 
 class DiffTest extends AnyFreeSpec with Matchers {
@@ -165,8 +166,8 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
       "diff" in {
         compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
-          "com.softwaremill.diffx.TsDirection.Outgoing",
-          "com.softwaremill.diffx.TsDirection.Incoming"
+          "com.softwaremill.diffx.test.TsDirection.Outgoing",
+          "com.softwaremill.diffx.test.TsDirection.Incoming"
         )
       }
     }
@@ -181,7 +182,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
         Map(
           "bar" -> DiffResultObject("Bar", Map("s" -> Identical("asdf"), "i" -> DiffResultValue(66, 5))),
           "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234))),
-          "parent" -> DiffResultValue("com.softwaremill.diffx.Foo", "com.softwaremill.diffx.Bar")
+          "parent" -> DiffResultValue("com.softwaremill.diffx.test.Foo", "com.softwaremill.diffx.test.Bar")
         )
       )
     }
@@ -245,7 +246,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
         implicit val om: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
-        implicit val dd: Derived[Diff[List[Person]]] = new Derived(Diff[Set[Person]].contramap(_.toSet))
+        implicit val dd: Diff[List[Person]] = Diff[Set[Person]].contramap(_.toSet)
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
       }
 
@@ -284,8 +285,8 @@ class DiffTest extends AnyFreeSpec with Matchers {
         val p2m = p2.copy(age = 33, in = Instant.now())
         val d = Diff[Person].ignoreUnsafe("age")
         implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
-        val ds: Derived[Diff[Set[Person]]] = Diff.diffForSet(im, Derived(d), implicitly[ObjectMatcher[Person]])
-        compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe DiffResultSet(
+        val ds: Diff[Set[Person]] = Diff.diffForSet(d, im)
+        compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
           List(
             Identical(p1),
             DiffResultObject(
@@ -315,16 +316,16 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "identical when products are identical using ignored" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
         val d = Diff[Person].ignoreUnsafe("age").ignoreUnsafe("in")
-        val ds: Derived[Diff[Set[Person]]] =
-          Diff.diffForSet(implicitly[ObjectMatcher[Person]], Derived(d), implicitly[ObjectMatcher[Person]])
-        compare(Set(p1, p2), Set(p1, p2m))(ds.value) shouldBe Identical(Set(p1, p2))
+        val ds: Diff[Set[Person]] =
+          Diff.diffForSet(d, implicitly[ObjectMatcher[Person]])
+        compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe Identical(Set(p1, p2))
       }
 
       "propagate ignore fields to elements" in {
         val p2m = p2.copy(in = Instant.now())
         implicit val im: ObjectMatcher[Person] = (left: Person, right: Person) => left.name == right.name
         val ds: Diff[Set[Person]] =
-          Diff.diffForSet(im, Derived[Diff[Person]], implicitly[ObjectMatcher[Person]]).value.ignoreUnsafe("age")
+          Diff.diffForSet(Diff[Person], im).ignoreUnsafe("age")
         compare(Set(p1, p2), Set(p1, p2m))(ds) shouldBe DiffResultSet(
           List(
             Identical(p1),
@@ -400,10 +401,8 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "maps by values" in {
-        type DD[T] = Derived[Diff[T]]
-
-        implicit def mapWithoutKeys[T, R: DD]: Derived[Diff[Map[T, R]]] =
-          new Derived(Diff[List[R]].contramap(_.values.toList))
+        implicit def mapWithoutKeys[T, R: Diff]: Diff[Map[T, R]] =
+          Diff[List[R]].contramap(_.values.toList)
 
         val person = Person("123", 11, Instant.now())
         compare(
@@ -421,9 +420,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "match values using object mapper" in {
-        implicit val om: ObjectMatcher[KeyModel] = new ObjectMatcher[KeyModel] {
-          override def isSameObject(left: KeyModel, right: KeyModel): Boolean = left.name == right.name
-        }
+        implicit val om: ObjectMatcher[KeyModel] = (left: KeyModel, right: KeyModel) => left.name == right.name
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
