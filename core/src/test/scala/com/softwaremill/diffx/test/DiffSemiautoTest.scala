@@ -10,8 +10,8 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
         |final case class P1(f1: String)
         |final case class P2(f1: P1)
         |
-        |implicit val p1 = Diff.derived[P1]
-        |implicit val p2 = Diff.derived[P2]
+        |implicit val p1: Diff[P1] = Diff.derived[P1]
+        |implicit val p2: Diff[P2] = Diff.derived[P2]
         |""".stripMargin)
   }
 
@@ -21,7 +21,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
                      |final case class P1(f1: String)
                      |final case class P2(f1: P1)
                      |
-                     |implicit val p2 = Diff.derived[P2]
+                     |implicit val p2: Diff[P2] = Diff.derived[P2]
                      |""".stripMargin)
   }
 
@@ -32,7 +32,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
                      |final case class P1(f1: String)
                      |final case class P2(f1: P1)
                      |
-                     |val p2 = Diff[P2]
+                     |val p2: Diff[P2] = Diff[P2]
                      |""".stripMargin)
   }
 }
