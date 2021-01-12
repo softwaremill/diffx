@@ -1,5 +1,4 @@
 package com.softwaremill.diffx
-import acyclic.skipped
 
 private[diffx] object Matching {
   private[diffx] def matching[T](

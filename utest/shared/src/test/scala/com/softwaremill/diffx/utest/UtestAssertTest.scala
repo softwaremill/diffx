@@ -1,6 +1,7 @@
 package com.softwaremill.diffx.utest
 
 import utest._
+import com.softwaremill.diffx.generic.auto._
 
 object UtestAssertTest extends TestSuite with DiffxAssertions {
   val tests = Tests {

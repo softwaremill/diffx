@@ -13,6 +13,7 @@ The library is published for Scala 2.12 and 2.13.
 ## Table of contents
 - [goals of the project](#goals-of-the-project)
 - [teaser](#teaser)
+- [derivation](#derivation)
 - [colors](#colors)
 - integrations
   - [scalatest](#scalatest-integration)
@@ -57,7 +58,7 @@ val left: Foo = Foo(
     Some(right)
 )
  
-
+import com.softwaremill.diffx.generic.auto._
 import com.softwaremill.diffx._
 compare(left, right)
 ```
@@ -66,6 +67,29 @@ Will result in:
 
 ![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
 
+
+## Derivation
+
+Diffx supports auto and semi-auto derivation.
+To use auto derivation add following import
+
+`import com.softwaremill.diffx.generic.auto._`
+
+or 
+
+extend trait
+
+`com.softwaremill.diffx.generic.DiffDerivation`
+
+
+For semi-auto derivation you don't need any additional import, just define your instances using:
+```scala mdoc:compile-only
+case class Product(name: String)
+case class Basket(products: List[Product])
+
+val productDiff = Diff.derived[Product]
+val basketDiff = Diff.derived[Basket]
+```
 
 ## Colors
 
@@ -149,13 +173,11 @@ implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,St
 
 ## Customization
 
-If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that 
+If you'd like to implement custom matching logic for the given type, create an implicit `Diff` instance for that
 type, and make sure it's in scope when any `Diff` instances depending on that type are created.
 
-If there is already a typeclass for a particular type, but you would like to use another one, you wil have to override existing instance. Because of the "exporting" mechanism the top level typeclass is `Derived[Diff]` rather then `Diff` and that's the typeclass you need to override. 
-
-To understand it better, consider following example with `NonEmptyList` from cats.
-`NonEmptyList` is implemented as case class so diffx will create a `Derived[Diff[NonEmptyList]]` typeclass instance using magnolia derivation.
+Consider following example with `NonEmptyList` from cats. `NonEmptyList` is implemented as case class so diffx
+will create a `Diff[NonEmptyList]` typeclass instance using magnolia derivation.
 
 Obviously that's not what we usually want. In most of the cases we would like `NonEmptyList` to be compared as a list.
 Diffx already has an instance of a typeclass for a list. One more thing to do is to use that typeclass by converting `NonEmptyList` to list which can be done using `contramap` method.
@@ -164,18 +186,18 @@ The final code looks as follows:
 
 ```scala mdoc:nest
 import cats.data.NonEmptyList
-implicit def nelDiff[T: Diff]: Derived[Diff[NonEmptyList[T]]] = 
-    Derived(Diff[List[T]].contramap[NonEmptyList[T]](_.toList))
+implicit def nelDiff[T: Diff]: Diff[NonEmptyList[T]] = 
+    Diff[List[T]].contramap[NonEmptyList[T]](_.toList)
 ```
 
-And here's an example customizing the `Diff` instance for a child class of a sealed trait
+And here's an example of customizing the `Diff` instance for a child class of a sealed trait
 
 ```scala mdoc:silent
 sealed trait ABParent
 case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
-implicit val diffA: Derived[Diff[A]] = Derived(Diff.gen[A].value.ignore[A, String](_.id))
+implicit val diffA: Diff[A] = Derived[Diff[A]].ignore[A, String](_.id)
 ```
 ```scala mdoc
 val a1: ABParent = A("1", "X")
@@ -183,6 +205,9 @@ val a2: ABParent = A("2", "X")
 
 compare(a1, a2)
 ```
+
+As you can see instead of summoning bare instance of `Diff` for given `A` we summoned `Derived[Diff[A]]`.
+This is required in order to workaround self reference error.
 
 You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits
 after macro expansion.

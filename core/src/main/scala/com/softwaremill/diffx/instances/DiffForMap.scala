@@ -1,7 +1,7 @@
-package com.softwaremill.diffx
-import acyclic.skipped
+package com.softwaremill.diffx.instances
 
 import com.softwaremill.diffx.Matching._
+import com.softwaremill.diffx._
 
 private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](
     matcher: ObjectMatcher[K],

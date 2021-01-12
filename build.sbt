@@ -8,7 +8,7 @@ val scalatestVersion = "3.2.3"
 val specs2Version = "4.10.5"
 val smlTaggingVersion = "2.2.1"
 
-lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ acyclicSettings ++ Seq(
+lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
   scalaVersion := v2_12,
   scalafmtOnCompile := true,
@@ -112,7 +112,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.3.0",
+      "org.typelevel" %% "cats-core" % "2.3.1",
       "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -128,7 +128,7 @@ lazy val refined = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.19",
+      "eu.timepit" %% "refined" % "0.9.20",
       "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -145,7 +145,7 @@ lazy val docs = project
     publishArtifact := false,
     name := "docs",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.3.0",
+      "org.typelevel" %% "cats-core" % "2.3.1",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
     )
   )

@@ -1,9 +1,11 @@
-package com.softwaremill.diffx
+package com.softwaremill.diffx.test
 
-import java.time.Instant
-
+import com.softwaremill.diffx._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.softwaremill.diffx.generic.auto._
+
+import java.time.Instant
 
 class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   val instant: Instant = Instant.now()
@@ -11,7 +13,7 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   val p2 = Person("p2", 11, instant)
 
   it should "allow importing and exporting implicits" in {
-    implicit val d: Diff[Person] = Derived[Diff[Person]].value.ignore(_.name)
+    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> Identical("p1"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
