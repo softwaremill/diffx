@@ -42,6 +42,21 @@ class DiffTest extends AnyFreeSpec with Matchers {
       )
     }
 
+    "difference between null and value" in {
+      compare(p1.copy(name = null), p2) shouldBe DiffResultObject(
+        "Person",
+        Map(
+          "name" -> DiffResultValue(null, p2.name),
+          "age" -> DiffResultValue(p1.age, p2.age),
+          "in" -> Identical(instant)
+        )
+      )
+    }
+
+    "two nulls should be equal" in {
+      compare(p1.copy(name = null), p1.copy(name = null)) shouldBe an[Identical[_]]
+    }
+
     "ignoring given fields" in {
       implicit val d: Diff[Person] = Derived[Diff[Person]].ignoreUnsafe("name").ignoreUnsafe("age")
       val p3 = p2.copy(in = Instant.now())
