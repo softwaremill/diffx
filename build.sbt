@@ -5,7 +5,7 @@ val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
 
 val scalatestVersion = "3.2.3"
-val specs2Version = "4.10.5"
+val specs2Version = "4.10.6"
 val smlTaggingVersion = "2.2.1"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
@@ -81,7 +81,7 @@ lazy val utest = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-utests",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "utest" % "0.7.5"
+      "com.lihaoyi" %% "utest" % "0.7.7"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
@@ -112,7 +112,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.3.1",
+      "org.typelevel" %% "cats-core" % "2.4.1",
       "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -145,7 +145,7 @@ lazy val docs = project
     publishArtifact := false,
     name := "docs",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.3.1",
+      "org.typelevel" %% "cats-core" % "2.4.1",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
     )
   )
