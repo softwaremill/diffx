@@ -10,7 +10,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
   "diff set output" - {
     "it should show a simple difference" in {
-      val output = DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show(renderIdentical = true)
+      val output = DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
           |     a,
@@ -19,7 +19,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
     "it should show an indented difference" in {
       val output =
-        DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show(renderIdentical = true)
+        DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -27,7 +27,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     }
 
     "it should show a nested list difference" in {
-      val output = DiffResultSet(List(Identical("a"), DiffResultSet(List(Identical("b"))))).show(renderIdentical = true)
+      val output = DiffResultSet(List(Identical("a"), DiffResultSet(List(Identical("b"))))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -36,11 +36,17 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     }
 
     "it should show null" in {
-      val output = DiffResultSet(List(Identical(null), DiffResultValue(null, null))).show(renderIdentical = true)
+      val output = DiffResultSet(List(Identical(null), DiffResultValue(null, null))).show()
       output shouldBe
         s"""Set(
           |     null,
           |     null -> null)""".stripMargin
+    }
+    "it shouldn't render identical elements" in {
+      val output = DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
+      output shouldBe
+        s"""Set(
+           |     1 -> 2)""".stripMargin
     }
   }
 
@@ -48,7 +54,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     "it should show a simple diff" in {
       val output =
         DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3)))
-          .show(renderIdentical = true)
+          .show()
       output shouldBe
         s"""Map(
            |     a: 1 -> 2,
@@ -58,7 +64,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     "it should show an indented diff" in {
       val output =
         DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3)))
-          .show(renderIdentical = true)
+          .show()
       output shouldBe
         s"""Map(
            |     a: 1 -> 2,
@@ -68,11 +74,27 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     "it should show a nested diff" in {
       val output =
         DiffResultMap(Map(Identical("a") -> DiffResultMap(Map(Identical("b") -> DiffResultValue(1, 2)))))
-          .show(renderIdentical = true)
+          .show()
       output shouldBe
         s"""Map(
            |     a: Map(
            |          b: 1 -> 2))""".stripMargin
+    }
+
+    "shouldn't render identical entries" in {
+      val output =
+        DiffResultMap(
+          Map(
+            Identical("a") -> DiffResultValue(1, 2),
+            DiffResultValue("b", "c") -> Identical(3),
+            Identical("d") -> Identical(4)
+          )
+        )
+          .show(renderIdentical = false)
+      output shouldBe
+        s"""Map(
+           |     a: 1 -> 2,
+           |     b -> c: 3)""".stripMargin
     }
   }
 
@@ -85,7 +107,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
         "List",
         Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> Identical(1234))
       )
-        .show(renderIdentical = true)(colorConfigWithPlusMinus)
+        .show()(colorConfigWithPlusMinus)
       output shouldBe
         s"""List(
            |     0: -1234 -> +123,

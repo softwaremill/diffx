@@ -16,7 +16,7 @@ trait DiffMatcher {
         okMessage = "",
         koMessage = diff.apply(left.value, right) match {
           case c: DiffResultDifferent =>
-            c.show
+            c.show()
           case _ =>
             ""
         },

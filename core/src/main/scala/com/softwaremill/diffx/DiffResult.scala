@@ -5,7 +5,7 @@ import DiffResult._
 trait DiffResult extends Product with Serializable {
   def isIdentical: Boolean
 
-  def show(renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String =
+  def show(renderIdentical: Boolean = true)(implicit c: ConsoleColorConfig): String =
     showIndented(indentLevel, renderIdentical)
 
   private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String
