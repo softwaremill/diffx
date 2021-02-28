@@ -79,7 +79,7 @@ lazy val utest = crossProject(JVMPlatform, JSPlatform)
   .in(file("utest"))
   .settings(commonSettings: _*)
   .settings(
-    name := "diffx-utests",
+    name := "diffx-utest",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "utest" % "0.7.7"
     ),
