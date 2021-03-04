@@ -1,5 +1,5 @@
 package com.softwaremill.diffx
-import com.softwaremill.diffx.generic.DiffMagnoliaDerivation
+import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
 import magnolia.Magnolia
 
@@ -31,7 +31,7 @@ object Diff extends MiddlePriorityDiff {
   /** Create a Diff instance using [[Object#equals]] */
   def useEquals[T]: Diff[T] = Diff.fallback[T]
 
-  def derived[T]: Diff[T] = macro Magnolia.gen[T]
+  def derived[T]: Derived[Diff[T]] = macro MagnoliaDerivedMacro.derivedGen[T]
 
   implicit val diffForString: Diff[String] = new DiffForString
   implicit val diffForRange: Diff[Range] = Diff.fallback[Range]
@@ -59,8 +59,11 @@ trait LowPriorityDiff {
   // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
   implicit def derivedDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 
-  // Implicit conversion
-  implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
+  implicit class RichDerivedDiff[T](val dd: Derived[Diff[T]]) {
+    def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
+
+    def ignore[S <: T, U](path: S => U): Derived[Diff[S]] = macro IgnoreMacro.derivedIgnoreMacro[S, U]
+  }
 }
 
 case class Derived[T](value: T)
