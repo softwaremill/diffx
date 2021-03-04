@@ -528,6 +528,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
       )
     }
   }
+  "either" - {
+    "equal rights should be identical" in {
+      val e1: Either[String, String] = Right("a")
+      compare(e1, e1) shouldBe Identical("a")
+
+    }
+    "equal lefts should be identical" in {
+      val e1: Either[String, String] = Left("a")
+      compare(e1, e1) shouldBe Identical("a")
+    }
+    "left and right should be different" in {
+      val e1: Either[String, String] = Left("a")
+      val e2: Either[String, String] = Right("a")
+      compare(e1, e2) shouldBe DiffResultValue(e1, e2)
+    }
+  }
 }
 
 case class Person(name: String, age: Int, in: Instant)

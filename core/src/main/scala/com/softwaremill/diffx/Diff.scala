@@ -34,7 +34,10 @@ object Diff extends MiddlePriorityDiff {
   def derived[T]: Derived[Diff[T]] = macro MagnoliaDerivedMacro.derivedGen[T]
 
   implicit val diffForString: Diff[String] = new DiffForString
-  implicit val diffForRange: Diff[Range] = Diff.fallback[Range]
+  implicit val diffForRange: Diff[Range] = Diff.useEquals[Range]
+  implicit val diffForChar: Diff[Char] = Diff.useEquals[Char]
+  implicit val diffForBoolean: Diff[Boolean] = Diff.useEquals[Boolean]
+
   implicit def diffForNumeric[T: Numeric]: Diff[T] = new DiffForNumeric[T]
   implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
       ddot: Diff[Option[V]],
@@ -46,6 +49,8 @@ object Diff extends MiddlePriorityDiff {
       ddt: Diff[T],
       matcher: ObjectMatcher[T]
   ): Diff[C[T]] = new DiffForSet[T, C](ddt, matcher)
+  implicit def diffForEither[L, R](implicit ld: Diff[L], rd: Diff[R]): Diff[Either[L, R]] =
+    new DiffForEither[L, R](ld, rd)
 }
 
 trait MiddlePriorityDiff extends DiffMagnoliaDerivation with LowPriorityDiff {
