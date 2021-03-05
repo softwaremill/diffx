@@ -39,8 +39,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
         case _                       => sourceDir / "scala-2.13-"
       }
-    }
+    },
+    boilerplateSource in Compile := baseDirectory.value.getParentFile / "src" / "main" / "boilerplate"
   )
+  .enablePlugins(spray.boilerplate.BoilerplatePlugin)
 
 lazy val coreJVM = core.jvm
 lazy val coreJS = core.js

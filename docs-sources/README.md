@@ -71,16 +71,6 @@ Will result in:
 ## Derivation
 
 Diffx supports auto and semi-auto derivation.
-To use auto derivation add following import
-
-`import com.softwaremill.diffx.generic.auto._`
-
-or 
-
-extend trait
-
-`com.softwaremill.diffx.generic.DiffDerivation`
-
 
 For semi-auto derivation you don't need any additional import, just define your instances using:
 ```scala mdoc:compile-only
@@ -90,6 +80,19 @@ case class Basket(products: List[Product])
 val productDiff = Diff.derived[Product]
 val basketDiff = Diff.derived[Basket]
 ```
+
+To use auto derivation add following import
+
+`import com.softwaremill.diffx.generic.auto._`
+
+or
+
+extend trait
+
+`com.softwaremill.diffx.generic.DiffDerivation`
+
+**Auto derivation will have a huge impact on compilation times**, because of that it is recommended to use `semi-auto` derivation.
+
 
 ## Colors
 
