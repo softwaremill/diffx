@@ -1,0 +1,21 @@
+package com.softwaremill.diffx
+
+trait TupleInstances {
+
+  [2..#def dTuple1[[#T1#]](implicit [#d1: Diff[T1]#]): Diff[Tuple1[[#T1#]]] = new Diff[Tuple1[[#T1#]]] {
+      override def apply(
+          left: ([#T1#]),
+          right: ([#T1#]),
+          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+      ): DiffResult = {
+        val results = List([#"_1" -> d1.apply(left._1, right._1)#]).toMap
+        if (results.values.forall(_.isIdentical)) {
+          Identical(left)
+        } else {
+          DiffResultObject("Tuple1", results)
+        }
+      }
+    }
+    #
+    ]
+}

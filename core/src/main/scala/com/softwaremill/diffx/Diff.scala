@@ -21,7 +21,7 @@ trait Diff[-T] { outer =>
     }
 }
 
-object Diff extends MiddlePriorityDiff {
+object Diff extends MiddlePriorityDiff with TupleInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
