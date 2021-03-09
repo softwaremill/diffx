@@ -2,13 +2,12 @@ package com.softwaremill.diffx
 
 import scala.annotation.tailrec
 import scala.reflect.macros.blackbox
-import scala.reflect.macros.whitebox
 
 object IgnoreMacro {
   private val ShapeInfo = "Path must have shape: _.field1.field2.each.field3.(...)"
 
   def derivedIgnoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
-      c: whitebox.Context
+      c: blackbox.Context
   )(path: c.Expr[T => U]): c.Tree = applyDerivedIgnored[T, U](c)(ignoredFromPathMacro(c)(path))
 
   private def applyDerivedIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
