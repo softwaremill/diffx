@@ -77,8 +77,8 @@ For semi-auto derivation you don't need any additional import, just define your 
 case class Product(name: String)
 case class Basket(products: List[Product])
 
-val productDiff = Diff.derived[Product]
-val basketDiff = Diff.derived[Basket]
+implicit val productDiff = Diff.derived[Product]
+implicit val basketDiff = Diff.derived[Basket]
 ```
 
 To use auto derivation add following import
