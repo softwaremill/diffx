@@ -6,7 +6,7 @@ val v2_13 = "2.13.1"
 
 val scalatestVersion = "3.2.6"
 val specs2Version = "4.10.6"
-val smlTaggingVersion = "2.2.1"
+val smlTaggingVersion = "2.3.0"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
