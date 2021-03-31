@@ -38,7 +38,7 @@ The library is published for Scala 2.12 and 2.13.
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.4.1"
+"com.softwaremill.diffx" %% "diffx-core" % "0.4.5"
 ```
 
 ```scala
@@ -91,25 +91,28 @@ Will result in:
 ## Derivation
 
 Diffx supports auto and semi-auto derivation.
-To use auto derivation add following import
-
-`import com.softwaremill.diffx.generic.auto._`
-
-or 
-
-extend trait
-
-`com.softwaremill.diffx.generic.DiffDerivation`
-
 
 For semi-auto derivation you don't need any additional import, just define your instances using:
 ```scala
 case class Product(name: String)
 case class Basket(products: List[Product])
 
-val productDiff = Diff.derived[Product]
-val basketDiff = Diff.derived[Basket]
+implicit val productDiff = Diff.derived[Product]
+implicit val basketDiff = Diff.derived[Basket]
 ```
+
+To use auto derivation add following import
+
+`import com.softwaremill.diffx.generic.auto._`
+
+or
+
+extend trait
+
+`com.softwaremill.diffx.generic.DiffDerivation`
+
+**Auto derivation will have a huge impact on compilation times**, because of that it is recommended to use `semi-auto` derivation.
+
 
 ## Colors
 
@@ -128,7 +131,7 @@ If anyone has an idea how this could be improved, I am open for suggestions.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.4.1" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.4.5" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -148,7 +151,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.4.1" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.4.5" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -166,7 +169,7 @@ left must matchTo(right)
 To use with utest, add following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.4.1" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.4.5" % Test
 ```
 
 Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
@@ -242,17 +245,17 @@ with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback d
 
 - [com.softwaremill.common.tagging](https://github.com/softwaremill/scala-common)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-tagging" % "0.4.1"
+    "com.softwaremill.diffx" %% "diffx-tagging" % "0.4.5"
     ```
     `com.softwaremill.diffx.tagging.DiffTaggingSupport`
 - [eu.timepit.refined](https://github.com/fthomas/refined)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-refined" % "0.4.1"    
+    "com.softwaremill.diffx" %% "diffx-refined" % "0.4.5"    
     ```
     `com.softwaremill.diffx.refined.RefinedSupport`
 - [org.typelevel.cats](https://github.com/typelevel/cats)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-cats" % "0.4.1"    
+    "com.softwaremill.diffx" %% "diffx-cats" % "0.4.5"    
     ```
     `com.softwaremill.diffx.cats.DiffCatsInstances`
 

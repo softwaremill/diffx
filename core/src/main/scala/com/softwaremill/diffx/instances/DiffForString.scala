@@ -3,12 +3,8 @@ package com.softwaremill.diffx.instances
 import com.softwaremill.diffx._
 
 private[diffx] class DiffForString extends Diff[String] {
-  override def apply(left: String, right: String, toIgnore: List[FieldPath]): DiffResult = {
-    if ((left == null && right != null) || (left != null && right == null)) {
-      DiffResultValue(left, right)
-    } else if (right == null && left == null) {
-      Identical(null)
-    } else {
+  override def apply(left: String, right: String, toIgnore: List[FieldPath]): DiffResult = nullGuard(left, right) {
+    (left, right) =>
       val leftLines = left.split("\n").toList
       val rightLines = right.split("\n").toList
       val leftAsMap = leftLines.lift
@@ -32,6 +28,5 @@ private[diffx] class DiffForString extends Diff[String] {
       } else {
         DiffResultString(partialResults)
       }
-    }
   }
 }

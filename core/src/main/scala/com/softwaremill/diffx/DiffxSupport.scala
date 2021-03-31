@@ -7,6 +7,16 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with Diff
   type FieldPath = List[String]
 
   def compare[T](left: T, right: T)(implicit d: Diff[T]): DiffResult = d.apply(left, right)
+
+  private[diffx] def nullGuard[T](left: T, right: T)(compareNotNull: (T, T) => DiffResult): DiffResult = {
+    if ((left == null && right != null) || (left != null && right == null)) {
+      DiffResultValue(left, right)
+    } else if (left == null && right == null) {
+      Identical(null)
+    } else {
+      compareNotNull(left, right)
+    }
+  }
 }
 
 object DiffxSupport {

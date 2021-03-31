@@ -4,9 +4,9 @@ import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
 val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
 
-val scalatestVersion = "3.2.3"
+val scalatestVersion = "3.2.6"
 val specs2Version = "4.10.6"
-val smlTaggingVersion = "2.2.1"
+val smlTaggingVersion = "2.3.0"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
@@ -39,8 +39,10 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
         case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
         case _                       => sourceDir / "scala-2.13-"
       }
-    }
+    },
+    boilerplateSource in Compile := baseDirectory.value.getParentFile / "src" / "main" / "boilerplate"
   )
+  .enablePlugins(spray.boilerplate.BoilerplatePlugin)
 
 lazy val coreJVM = core.jvm
 lazy val coreJS = core.js
@@ -79,7 +81,7 @@ lazy val utest = crossProject(JVMPlatform, JSPlatform)
   .in(file("utest"))
   .settings(commonSettings: _*)
   .settings(
-    name := "diffx-utests",
+    name := "diffx-utest",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %% "utest" % "0.7.7"
     ),
@@ -112,7 +114,7 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.4.1",
+      "org.typelevel" %% "cats-core" % "2.5.0",
       "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -128,7 +130,7 @@ lazy val refined = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.20",
+      "eu.timepit" %% "refined" % "0.9.22",
       "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -145,7 +147,7 @@ lazy val docs = project
     publishArtifact := false,
     name := "docs",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.4.1",
+      "org.typelevel" %% "cats-core" % "2.5.0",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
     )
   )

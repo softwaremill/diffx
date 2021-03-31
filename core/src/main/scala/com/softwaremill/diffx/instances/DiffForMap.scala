@@ -12,7 +12,7 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
       left: C[K, V],
       right: C[K, V],
       toIgnore: List[FieldPath]
-  ): DiffResult = {
+  ): DiffResult = nullGuard(left, right) { (left, right) =>
     val MatchingResults(unMatchedLeftKeys, unMatchedRightKeys, matchedKeys) =
       matching[K](left.keySet, right.keySet, matcher, diffKey, toIgnore)
     val leftDiffs = this.leftDiffs(left, unMatchedLeftKeys, unMatchedRightKeys)
