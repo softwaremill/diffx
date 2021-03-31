@@ -26,9 +26,19 @@ class DiffTest extends AnyFreeSpec with Matchers {
     }
   }
 
+  "options" - {
+    "nullable" in {
+      compare(Option.empty[Int], null: Option[Int]) shouldBe DiffResultValue(Option.empty[Int], null)
+    }
+  }
+
   "products" - {
     "identity" in {
       compare(p1, p1) shouldBe Identical(p1)
+    }
+
+    "nullable" in {
+      compare(p1, null) shouldBe DiffResultValue(p1, null)
     }
 
     "diff" in {
@@ -191,6 +201,10 @@ class DiffTest extends AnyFreeSpec with Matchers {
       compare(left, left) shouldBe an[Identical[_]]
     }
 
+    "nullable" in {
+      compare[TsDirection](TsDirection.Outgoing, null: TsDirection) shouldBe DiffResultValue(TsDirection.Outgoing, null)
+    }
+
     "diff" in {
       compare(left, right) shouldBe DiffResultObject(
         "Foo",
@@ -222,6 +236,10 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "list" - {
       "identical" in {
         compare(List("a"), List("a")) shouldBe Identical(List("a"))
+      }
+
+      "nullable" in {
+        compare(List.empty[Int], null: List[Int]) shouldBe DiffResultValue(List.empty, null)
       }
 
       "diff" in {
@@ -284,6 +302,10 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "sets" - {
       "identity" in {
         compare(Set(1), Set(1)) shouldBe an[Identical[_]]
+      }
+
+      "nullable" in {
+        compare(Set.empty[Int], null: Set[Int]) shouldBe DiffResultValue(Set.empty[Int], null)
       }
 
       "diff" in {
@@ -382,6 +404,10 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "identical" in {
         val m1 = Map("a" -> 1)
         compare(m1, m1) shouldBe an[Identical[_]]
+      }
+
+      "nullable" in {
+        compare(Map.empty[Int, Int], null: Map[Int, Int]) shouldBe DiffResultValue(Map.empty[Int, Int], null)
       }
 
       "simple diff" in {
