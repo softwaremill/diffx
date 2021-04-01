@@ -83,7 +83,7 @@ lazy val utest = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-utest",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "utest" % "0.7.7"
+      "com.lihaoyi" %% "utest" % "0.7.8"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
