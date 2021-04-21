@@ -130,7 +130,7 @@ lazy val refined = crossProject(JVMPlatform, JSPlatform)
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.23",
+      "eu.timepit" %% "refined" % "0.9.24",
       "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
