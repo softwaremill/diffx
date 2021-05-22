@@ -5,7 +5,7 @@ val v2_12 = "2.12.8"
 val v2_13 = "2.13.1"
 
 val scalatestVersion = "3.2.9"
-val specs2Version = "4.11.0"
+val specs2Version = "4.12.0"
 val smlTaggingVersion = "2.3.0"
 
 lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
