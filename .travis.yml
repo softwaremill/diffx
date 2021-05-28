@@ -27,4 +27,4 @@ deploy:
     skip_cleanup: true
     on:
       all_branches: true
-      condition: $TRAVIS_SCALA_VERSION = "2.12.8" && $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?
+      condition: $TRAVIS_SCALA_VERSION = "2.12.14" && $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+(\.[0-9]+)?
