@@ -7,16 +7,16 @@ trait Diff[-T] { outer =>
   def apply(left: T, right: T, context: DiffContext): DiffResult
 
   def contramap[R](f: R => T): Diff[R] =
-    (left: R, right: R, toIgnore: DiffContext) => {
-      outer(f(left), f(right), toIgnore)
+    (left: R, right: R, context: DiffContext) => {
+      outer(f(left), f(right), context)
     }
 
   def modify[S <: T, U](path: S => U)(diff: Diff[U]): Diff[S] = macro ModifyMacro.modifyMacro[S, U]
 
   def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
     new Diff[T] {
-      override def apply(left: T, right: T, toIgnore: DiffContext): DiffResult =
-        outer.apply(left, right, toIgnore.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty)))
+      override def apply(left: T, right: T, context: DiffContext): DiffResult =
+        outer.apply(left, right, context.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty)))
     }
 }
 
