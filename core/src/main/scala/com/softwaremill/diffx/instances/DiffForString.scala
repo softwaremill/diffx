@@ -3,7 +3,7 @@ package com.softwaremill.diffx.instances
 import com.softwaremill.diffx._
 
 private[diffx] class DiffForString extends Diff[String] {
-  override def apply(left: String, right: String, toIgnore: List[FieldPath]): DiffResult = nullGuard(left, right) {
+  override def apply(left: String, right: String, context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
       val leftLines = left.split("\n").toList
       val rightLines = right.split("\n").toList

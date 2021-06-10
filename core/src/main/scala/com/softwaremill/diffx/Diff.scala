@@ -1,30 +1,29 @@
 package com.softwaremill.diffx
 import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
-import magnolia.Magnolia
 
 trait Diff[-T] { outer =>
-  def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
-  def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
+  def apply(left: T, right: T): DiffResult = apply(left, right, DiffContext.Empty)
+  def apply(left: T, right: T, context: DiffContext): DiffResult
 
   def contramap[R](f: R => T): Diff[R] =
-    (left: R, right: R, toIgnore: List[FieldPath]) => {
+    (left: R, right: R, toIgnore: DiffContext) => {
       outer(f(left), f(right), toIgnore)
     }
 
-  def ignore[S <: T, U](path: S => U): Diff[S] = macro IgnoreMacro.ignoreMacro[S, U]
+  def modify[S <: T, U](path: S => U)(diff: Diff[U]): Diff[S] = macro ModifyMacro.modifyMacro[S, U]
 
-  def ignoreUnsafe(fields: String*): Diff[T] =
+  def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
     new Diff[T] {
-      override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
-        outer.apply(left, right, toIgnore ++ List(fields.toList))
+      override def apply(left: T, right: T, toIgnore: DiffContext): DiffResult =
+        outer.apply(left, right, toIgnore.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty)))
     }
 }
 
 object Diff extends MiddlePriorityDiff with TupleInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
-  def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
+  def identical[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical(left)
 
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
@@ -67,7 +66,7 @@ trait LowPriorityDiff {
   implicit class RichDerivedDiff[T](val dd: Derived[Diff[T]]) {
     def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
 
-    def ignore[S <: T, U](path: S => U): Derived[Diff[S]] = macro IgnoreMacro.derivedIgnoreMacro[S, U]
+    def modify[S <: T, U](path: S => U)(diff: Diff[U]): Derived[Diff[S]] = macro ModifyMacro.derivedModifyMacro[S, U]
   }
 }
 

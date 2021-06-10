@@ -11,13 +11,13 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
   override def apply(
       left: C[K, V],
       right: C[K, V],
-      toIgnore: List[FieldPath]
+      context: DiffContext
   ): DiffResult = nullGuard(left, right) { (left, right) =>
     val MatchingResults(unMatchedLeftKeys, unMatchedRightKeys, matchedKeys) =
-      matching[K](left.keySet, right.keySet, matcher, diffKey, toIgnore)
+      matching[K](left.keySet, right.keySet, matcher, diffKey, context)
     val leftDiffs = this.leftDiffs(left, unMatchedLeftKeys, unMatchedRightKeys)
     val rightDiffs = this.rightDiffs(right, unMatchedLeftKeys, unMatchedRightKeys)
-    val matchedDiffs = this.matchedDiffs(matchedKeys, left, right, toIgnore)
+    val matchedDiffs = this.matchedDiffs(matchedKeys, left, right, context)
     val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
     if (diffs.forall(p => p._1.isIdentical && p._2.isIdentical)) {
       Identical(left)
@@ -30,11 +30,11 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
       matchedKeys: scala.collection.Set[(K, K)],
       left: C[K, V],
       right: C[K, V],
-      toIgnore: List[FieldPath]
+      context: DiffContext
   ): List[(DiffResult, DiffResult)] = {
     matchedKeys.map { case (lKey, rKey) =>
       val result = diffKey.apply(lKey, rKey)
-      result -> diffValue.apply(left.get(lKey), right.get(rKey), toIgnore)
+      result -> diffValue.apply(left.get(lKey), right.get(rKey), context)
     }.toList
   }
 

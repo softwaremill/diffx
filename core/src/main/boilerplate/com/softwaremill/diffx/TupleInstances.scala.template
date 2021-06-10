@@ -6,7 +6,7 @@ trait TupleInstances {
       override def apply(
           left: ([#T1#]),
           right: ([#T1#]),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List([#"_1" -> d1.apply(left._1, right._1)#]).toMap
         if (results.values.forall(_.isIdentical)) {

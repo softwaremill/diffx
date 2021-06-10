@@ -5,10 +5,10 @@ import com.softwaremill.diffx._
 
 private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T], matcher: ObjectMatcher[T])
     extends Diff[C[T]] {
-  override def apply(left: C[T], right: C[T], toIgnore: List[FieldPath]): DiffResult = nullGuard(left, right) {
+  override def apply(left: C[T], right: C[T], context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
       val MatchingResults(unMatchedLeftInstances, unMatchedRightInstances, matchedInstances) =
-        matching[T](left.toSet, right.toSet, matcher, dt, toIgnore)
+        matching[T](left.toSet, right.toSet, matcher, dt, context)
       val leftDiffs = unMatchedLeftInstances
         .diff(unMatchedRightInstances)
         .map(DiffResultAdditional(_))
@@ -17,7 +17,7 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
         .diff(unMatchedLeftInstances)
         .map(DiffResultMissing(_))
         .toList
-      val matchedDiffs = matchedInstances.map { case (l, r) => dt(l, r, toIgnore) }.toList
+      val matchedDiffs = matchedInstances.map { case (l, r) => dt(l, r, context) }.toList
       diffResultSet(left, leftDiffs, rightDiffs, matchedDiffs)
   }
 

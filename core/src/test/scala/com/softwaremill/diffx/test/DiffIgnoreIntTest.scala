@@ -13,7 +13,7 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   val p2 = Person("p2", 11, instant)
 
   it should "allow importing and exporting implicits" in {
-    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
+    implicit val d: Diff[Person] = Derived[Diff[Person]].modify[Person, String](_.name)(Diff.identical[String])
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> Identical("p1"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
@@ -21,7 +21,7 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   }
 
   it should "allow importing and exporting implicits using macro on derived instance" in {
-    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
+    implicit val d: Diff[Person] = Derived[Diff[Person]].modify[Person, String](_.name)(Diff.identical)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> Identical("p1"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
@@ -29,7 +29,10 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
   }
 
   it should "allow calling ignore multiple times" in {
-    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore[Person, String](_.name).ignore[Person, Int](_.age)
+    implicit val d: Diff[Person] =
+      Derived[Diff[Person]]
+        .modify[Person, String](_.name)(Diff.identical)
+        .modify[Person, Int](_.age)(Diff.identical)
     compare(p1, p2) shouldBe Identical(p1)
   }
 }
