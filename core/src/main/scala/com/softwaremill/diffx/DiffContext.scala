@@ -9,11 +9,9 @@ case class DiffContext(overrides: Tree, path: FieldPath) {
     overrides match {
       case Tree.Leaf(_) => throw new IllegalStateException(s"Expected node, got leaf at $path")
       case Tree.Node(tries) =>
-        val currentPath = path :+ label
         tries.get(label) match {
           case Some(Tree.Leaf(v)) => Some(v)
-          case Some(Tree.Node(_)) => None
-          case None               => None
+          case _                  => None
         }
     }
   }
@@ -32,7 +30,7 @@ case class DiffContext(overrides: Tree, path: FieldPath) {
 
 object DiffContext {
   val Empty: DiffContext = DiffContext(Tree.Node(Map.empty), List.empty)
-  def atPath(path: FieldPath, diff: Diff[_]) = DiffContext(Tree.fromList(path, diff), List.empty)
+  def atPath(path: FieldPath, diff: Diff[_]): DiffContext = DiffContext(Tree.fromList(path, diff), List.empty)
 }
 
 sealed trait Tree {
