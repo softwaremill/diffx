@@ -51,11 +51,12 @@ lazy val core = (projectMatrix in file("core"))
   .settings(
     name := "diffx-core",
     libraryDependencies ++= Seq(
-      "com.propensive" %% "magnolia" % "0.17.0",
+      "com.propensive" %%% "magnolia" % "0.17.0",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
-      "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
-      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
+      "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test,
+      "io.github.cquiroz" %%% "scala-java-time" % "2.2.2" % Test
     ),
     versionSpecificScalaSources
   )
@@ -71,9 +72,9 @@ lazy val scalatest = (projectMatrix in file("scalatest"))
   .settings(
     name := "diffx-scalatest",
     libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest-matchers-core" % scalatestVersion,
-      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
-      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
+      "org.scalatest" %%% "scalatest-matchers-core" % scalatestVersion,
+      "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
@@ -89,7 +90,7 @@ lazy val specs2 = (projectMatrix in file("specs2"))
   .settings(
     name := "diffx-specs2",
     libraryDependencies ++= Seq(
-      "org.specs2" %% "specs2-core" % specs2Version
+      "org.specs2" %%% "specs2-core" % specs2Version
     )
   )
   .dependsOn(core)
@@ -105,7 +106,7 @@ lazy val utest = (projectMatrix in file("utest"))
   .settings(
     name := "diffx-utest",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "utest" % "0.7.10"
+      "com.lihaoyi" %%% "utest" % "0.7.10"
     ),
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
@@ -122,9 +123,9 @@ lazy val tagging = (projectMatrix in file("tagging"))
   .settings(
     name := "diffx-tagging",
     libraryDependencies ++= Seq(
-      "com.softwaremill.common" %% "tagging" % smlTaggingVersion,
-      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
-      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
+      "com.softwaremill.common" %%% "tagging" % smlTaggingVersion,
+      "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
@@ -140,9 +141,9 @@ lazy val cats = (projectMatrix in file("cats"))
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.6.1",
-      "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
-      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
+      "org.typelevel" %%% "cats-core" % "2.6.1",
+      "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
@@ -158,9 +159,9 @@ lazy val refined = (projectMatrix in file("refined"))
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %% "refined" % "0.9.26",
-      "org.scalatest" %% "scalatest-flatspec" % scalatestVersion % Test,
-      "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
+      "eu.timepit" %%% "refined" % "0.9.26",
+      "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
+      "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
   )
   .dependsOn(core)
