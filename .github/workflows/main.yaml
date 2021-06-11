@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: coursier/cache-action@v5
-      - uses: olafurpg/setup-scala@v10
+      - uses: olafurpg/setup-scala@v12
         with:
           java-version: adopt@1.11
       - name: Run tests with sbt
@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v5
-      - uses: olafurpg/setup-scala@v10
+      - uses: olafurpg/setup-scala@v12
       - run: sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
