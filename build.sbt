@@ -14,7 +14,7 @@ val smlTaggingVersion = "2.3.0"
 lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
   scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
-//  ideSkipProject := (scalaVersion.value != scalaIdeaVersion),
+  ideSkipProject := (scalaVersion.value != scalaIdeaVersion) || thisProjectRef.value.project.contains("JS"),
   updateDocs := Def.taskDyn {
     val files1 =
       UpdateVersionInDocs(sLog.value, organization.value, version.value, List(file("docs-sources") / "README.md"))
