@@ -1,28 +1,53 @@
-import com.softwaremill.PublishTravis.publishTravisSettings
-import sbtcrossproject.CrossPlugin.autoImport.{CrossType, crossProject}
+import com.softwaremill.UpdateVersionInDocs
+import sbt.Def
+import sbt.Reference.display
 
-val v2_12 = "2.12.8"
-val v2_13 = "2.13.1"
+val scala212 = "2.12.13"
+val scala213 = "2.13.6"
+
+val scalaIdeaVersion = scala212 // the version for which to import sources into intellij
 
 val scalatestVersion = "3.2.9"
 val specs2Version = "4.12.0"
 val smlTaggingVersion = "2.3.0"
 
-lazy val commonSettings = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
+lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
-  scalaVersion := v2_12,
-  scalafmtOnCompile := true,
-  crossScalaVersions := Seq(v2_12, v2_13),
-  libraryDependencies ++= Seq(compilerPlugin("com.softwaremill.neme" %% "neme-plugin" % "0.0.5")),
   scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
-  // sbt-release
-  releaseCrossBuild := true
+//  ideSkipProject := (scalaVersion.value != scalaIdeaVersion),
+  updateDocs := Def.taskDyn {
+    val files1 =
+      UpdateVersionInDocs(sLog.value, organization.value, version.value, List(file("docs-sources") / "README.md"))
+    Def.task {
+      (docs.jvm(scala213) / mdoc).toTask("").value
+      files1 ++ Seq(file("generated-docs"), file("README.md"))
+    }
+  }.value
 )
 
-lazy val core = crossProject(JVMPlatform, JSPlatform)
-  .crossType(CrossType.Pure)
-  .in(file("core"))
-  .settings(commonSettings: _*)
+val compileDocs: TaskKey[Unit] = taskKey[Unit]("Compiles docs module throwing away its output")
+compileDocs := {
+  (docs.jvm(scala213) / mdoc).toTask(" --out target/sttp-docs").value
+}
+
+val versionSpecificScalaSources = {
+  Compile / unmanagedSourceDirectories := {
+    val current = (Compile / unmanagedSourceDirectories).value
+    val sv = (Compile / scalaVersion).value
+    val baseDirectory = (Compile / scalaSource).value
+    val suffixes = CrossVersion.partialVersion(sv) match {
+      case Some((2, 13)) => List("2", "2.13+")
+      case Some((2, _))  => List("2", "2.13-")
+      case Some((3, _))  => List("3")
+      case _             => Nil
+    }
+    val versionSpecificSources = suffixes.map(s => new File(baseDirectory.getAbsolutePath + "-" + s))
+    versionSpecificSources ++ current
+  }
+}
+
+lazy val core = (projectMatrix in file("core"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-core",
     libraryDependencies ++= Seq(
@@ -32,24 +57,17 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
       "org.scalatest" %% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion % Test
     ),
-    unmanagedSourceDirectories in Compile += {
-      // sourceDirectory returns a platform-scoped directory, e.g. /.jvm
-      val sourceDir = (baseDirectory in Compile).value / ".." / "src" / "main"
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-        case _                       => sourceDir / "scala-2.13-"
-      }
-    },
-    boilerplateSource in Compile := baseDirectory.value.getParentFile / "src" / "main" / "boilerplate"
+    versionSpecificScalaSources
   )
-  .enablePlugins(spray.boilerplate.BoilerplatePlugin)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
 
-lazy val coreJVM = core.jvm
-lazy val coreJS = core.js
-
-lazy val scalatest = crossProject(JVMPlatform, JSPlatform)
-  .in(file("scalatest"))
-  .settings(commonSettings: _*)
+lazy val scalatest = (projectMatrix in file("scalatest"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-scalatest",
     libraryDependencies ++= Seq(
@@ -59,13 +77,15 @@ lazy val scalatest = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
 
-lazy val scalatestJVM = scalatest.jvm
-lazy val scalatestJS = scalatest.js
-
-lazy val specs2 = crossProject(JVMPlatform, JSPlatform)
-  .in(file("specs2"))
-  .settings(commonSettings: _*)
+lazy val specs2 = (projectMatrix in file("specs2"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-specs2",
     libraryDependencies ++= Seq(
@@ -73,13 +93,15 @@ lazy val specs2 = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
 
-lazy val specs2JVM = specs2.jvm
-lazy val specs2JS = specs2.js
-
-lazy val utest = crossProject(JVMPlatform, JSPlatform)
-  .in(file("utest"))
-  .settings(commonSettings: _*)
+lazy val utest = (projectMatrix in file("utest"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-utest",
     libraryDependencies ++= Seq(
@@ -88,13 +110,15 @@ lazy val utest = crossProject(JVMPlatform, JSPlatform)
     testFrameworks += new TestFramework("utest.runner.Framework")
   )
   .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
 
-lazy val utestJVM = utest.jvm
-lazy val utestJS = utest.js
-
-lazy val tagging = crossProject(JVMPlatform, JSPlatform)
-  .in(file("tagging"))
-  .settings(commonSettings: _*)
+lazy val tagging = (projectMatrix in file("tagging"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-tagging",
     libraryDependencies ++= Seq(
@@ -104,13 +128,15 @@ lazy val tagging = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
 
-lazy val taggingJVM = tagging.jvm
-lazy val taggingJS = tagging.js
-
-lazy val cats = crossProject(JVMPlatform, JSPlatform)
-  .in(file("cats"))
-  .settings(commonSettings: _*)
+lazy val cats = (projectMatrix in file("cats"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
@@ -120,13 +146,15 @@ lazy val cats = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
 
-lazy val catsJVM = cats.jvm
-lazy val catsJS = cats.js
-
-lazy val refined = crossProject(JVMPlatform, JSPlatform)
-  .in(file("refined"))
-  .settings(commonSettings: _*)
+lazy val refined = (projectMatrix in file("refined"))
+  .settings(commonSettings)
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
@@ -136,12 +164,16 @@ lazy val refined = crossProject(JVMPlatform, JSPlatform)
     )
   )
   .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+//
 
-lazy val refinedJVM = refined.jvm
-lazy val refinedJS = refined.js
-
-lazy val docs = project
-  .in(file("generated-docs")) // important: it must not be docs/
+lazy val docs = (projectMatrix in file("generated-docs")) // important: it must not be docs/
+  .enablePlugins(MdocPlugin)
   .settings(commonSettings)
   .settings(
     publishArtifact := false,
@@ -149,11 +181,7 @@ lazy val docs = project
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-core" % "2.6.1",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
-    )
-  )
-  .dependsOn(coreJVM, scalatestJVM, specs2JVM, utestJVM, refinedJVM, taggingJVM)
-  .enablePlugins(MdocPlugin)
-  .settings(
+    ),
     mdocIn := file("docs-sources"),
     moduleName := "diffx-docs",
     mdocVariables := Map(
@@ -161,29 +189,28 @@ lazy val docs = project
     ),
     mdocOut := file(".")
   )
+  .dependsOn(core, scalatest, specs2, utest, refined, tagging)
+  .jvmPlatform(scalaVersions = List(scala213))
+
+val testJVM = taskKey[Unit]("Test JVM projects")
+val testJS = taskKey[Unit]("Test JS projects")
+
+val allAggregates =
+  core.projectRefs ++ scalatest.projectRefs ++
+    specs2.projectRefs ++ utest.projectRefs ++ cats.projectRefs ++
+    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs
+
+def filterProject(p: String => Boolean) =
+  ScopeFilter(inProjects(allAggregates.filter(pr => p(display(pr.project))): _*))
 
 lazy val rootProject = project
   .in(file("."))
-  .settings(commonSettings: _*)
-  .settings(publishArtifact := false, name := "diffx")
-  .settings(publishTravisSettings)
-  .settings(beforeCommitSteps := {
-    Seq(releaseStepInputTask(docs / mdoc), Release.stageChanges("README.md"))
-  })
-  .aggregate(
-    coreJVM,
-    coreJS,
-    scalatestJVM,
-    scalatestJS,
-    specs2JVM,
-    specs2JS,
-    utestJVM,
-    utestJS,
-    refinedJVM,
-    refinedJS,
-    taggingJVM,
-    taggingJS,
-    catsJVM,
-    catsJS,
-    docs
+  .settings(commonSettings)
+  .settings(
+    publishArtifact := false,
+    name := "diffx",
+    scalaVersion := scalaIdeaVersion,
+    testJVM := (Test / test).all(filterProject(p => !p.contains("JS") && !p.contains("Native"))).value,
+    testJS := (Test / test).all(filterProject(_.contains("JS"))).value
   )
+  .aggregate(allAggregates: _*)
