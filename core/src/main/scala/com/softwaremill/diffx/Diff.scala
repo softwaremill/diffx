@@ -32,6 +32,9 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
   /** Create a Diff instance using [[Object#equals]] */
   def useEquals[T]: Diff[T] = Diff.fallback[T]
 
+  def approximateNumericDiff[T: Numeric](epsilon: T): Diff[T] =
+    new ApproximateDiffForNumeric[T](epsilon)
+
   def derived[T]: Derived[Diff[T]] = macro MagnoliaDerivedMacro.derivedGen[T]
 
   implicit val diffForString: Diff[String] = new DiffForString
