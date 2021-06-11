@@ -56,7 +56,7 @@ lazy val core = (projectMatrix in file("core"))
       "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test,
-      "io.github.cquiroz" %%% "scala-java-time" % "2.2.2" % Test
+      "io.github.cquiroz" %%% "scala-java-time" % "2.3.0" % Test
     ),
     versionSpecificScalaSources
   )
