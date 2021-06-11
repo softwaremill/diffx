@@ -8,29 +8,28 @@ object ModifyMacro {
 
   def derivedModifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U])(diff: c.Expr[Diff[U]]): c.Tree =
-    applyDerivedModified[T, U](c)(modifiedFromPathMacro(c)(path), diff)
+  )(path: c.Expr[T => U]): c.Tree =
+    applyDerivedModified[T, U](c)(modifiedFromPathMacro(c)(path))
 
   private def applyDerivedModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
-      path: c.Expr[List[String]],
-      diff: c.Expr[Diff[U]]
+      path: c.Expr[List[String]]
   ): c.Tree = {
     import c.universe._
     q"""{
-      com.softwaremill.diffx.Derived(${c.prefix}.dd.value.modifyUnsafe($path:_*)($diff))
+      com.softwaremill.diffx.DerivedDiffLens(${c.prefix}.dd.value, $path)
      }"""
   }
 
   def modifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U])(diff: c.Expr[Diff[U]]): c.Tree = applyModified[T, U](c)(modifiedFromPathMacro(c)(path), diff)
+  )(path: c.Expr[T => U]): c.Tree = applyModified[T, U](c)(modifiedFromPathMacro(c)(path))
 
   private def applyModified[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[List[String]], diff: c.Expr[Diff[U]]): c.Tree = {
+  )(path: c.Expr[List[String]]): c.Tree = {
     import c.universe._
     q"""{
-      ${c.prefix}.modifyUnsafe($path:_*)($diff)
+      com.softwaremill.diffx.DiffLens(${c.prefix}, $path)
      }"""
   }
 

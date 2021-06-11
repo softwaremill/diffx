@@ -461,7 +461,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "ignore part of map's key using keys's diff specification" in {
-        implicit def dm: Diff[KeyModel] = Derived[Diff[KeyModel]].modify[KeyModel, UUID](_.id)(Diff.identical)
+        implicit def dm: Diff[KeyModel] = Derived[Diff[KeyModel]].modify[KeyModel, UUID](_.id).setTo(Diff.identical)
 
         val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
         val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))

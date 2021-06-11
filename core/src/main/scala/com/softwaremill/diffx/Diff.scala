@@ -11,7 +11,7 @@ trait Diff[-T] { outer =>
       outer(f(left), f(right), context)
     }
 
-  def modify[S <: T, U](path: S => U)(diff: Diff[U]): Diff[S] = macro ModifyMacro.modifyMacro[S, U]
+  def modify[S <: T, U](path: S => U): DiffLens[S, U] = macro ModifyMacro.modifyMacro[S, U]
 
   def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
     new Diff[T] {
@@ -24,6 +24,7 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def identical[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical(left)
+  def ignored[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical("<ignored>")
 
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
@@ -66,7 +67,7 @@ trait LowPriorityDiff {
   implicit class RichDerivedDiff[T](val dd: Derived[Diff[T]]) {
     def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
 
-    def modify[S <: T, U](path: S => U)(diff: Diff[U]): Derived[Diff[S]] = macro ModifyMacro.derivedModifyMacro[S, U]
+    def modify[S <: T, U](path: S => U): DerivedDiffLens[S, U] = macro ModifyMacro.derivedModifyMacro[S, U]
   }
 }
 
@@ -74,4 +75,17 @@ case class Derived[T](value: T)
 
 object Derived {
   def apply[T: Derived]: Derived[T] = implicitly[Derived[T]]
+}
+
+case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
+  def setTo(d: Diff[U]): Diff[T] = {
+    outer.modifyUnsafe(path: _*)(d)
+  }
+  def ignore(): Diff[T] = outer.modifyUnsafe(path: _*)(Diff.ignored)
+}
+case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
+  def setTo(d: Diff[U]): Derived[Diff[T]] = {
+    Derived(outer.modifyUnsafe(path: _*)(d))
+  }
+  def ignore(): Derived[Diff[T]] = Derived(outer.modifyUnsafe(path: _*)(Diff.ignored))
 }
