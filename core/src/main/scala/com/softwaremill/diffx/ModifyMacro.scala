@@ -15,9 +15,32 @@ object ModifyMacro {
       path: c.Expr[List[String]]
   ): c.Tree = {
     import c.universe._
-    q"""{
-      com.softwaremill.diffx.DerivedDiffLens(${c.prefix}.dd.value, $path)
-     }"""
+    q"""com.softwaremill.diffx.DerivedDiffLens(${c.prefix}.dd.value, $path)"""
+  }
+
+  def derivedIgnoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[T => U]): c.Tree =
+    applyIgnoredModified[T, U](c)(modifiedFromPathMacro(c)(path))
+
+  private def applyIgnoredModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+      path: c.Expr[List[String]]
+  ): c.Tree = {
+    import c.universe._
+    val lens = applyDerivedModified[T, U](c)(path)
+    q"""$lens.ignore()"""
+  }
+
+  def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[T => U]): c.Tree = applyIgnored[T, U](c)(modifiedFromPathMacro(c)(path))
+
+  private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[List[String]]): c.Tree = {
+    import c.universe._
+    val lens = applyModified[T, U](c)(path)
+    q"""$lens.ignore()"""
   }
 
   def modifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](

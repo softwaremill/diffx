@@ -47,8 +47,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
   }
 
   "should allow ignoring on derived diffs" in {
-    implicit val dACoproduct: Derived[Diff[ProductA]] =
-      Diff.derived[ProductA].modify[ProductA, String](_.id).setTo(Diff.identical)
+    implicit val dACoproduct: Derived[Diff[ProductA]] = Diff.derived[ProductA].ignore(_.id)
 
     Diff.compare[ProductA](ProductA("1"), ProductA("2")) shouldBe Identical(
       ProductA("1")

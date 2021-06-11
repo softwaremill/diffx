@@ -12,6 +12,7 @@ trait Diff[-T] { outer =>
     }
 
   def modify[S <: T, U](path: S => U): DiffLens[S, U] = macro ModifyMacro.modifyMacro[S, U]
+  def ignore[S <: T, U](path: S => U): Diff[S] = macro ModifyMacro.ignoreMacro[S, U]
 
   def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
     new Diff[T] {
@@ -24,7 +25,7 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def identical[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical(left)
-  def ignored[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical("<ignored>")
+  def ignored[T]: Diff[T] = (_: T, _: T, _: DiffContext) => DiffResult.Ignored
 
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
@@ -68,6 +69,7 @@ trait LowPriorityDiff {
     def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
 
     def modify[S <: T, U](path: S => U): DerivedDiffLens[S, U] = macro ModifyMacro.derivedModifyMacro[S, U]
+    def ignore[S <: T, U](path: S => U): Derived[Diff[S]] = macro ModifyMacro.derivedIgnoreMacro[S, U]
   }
 }
 

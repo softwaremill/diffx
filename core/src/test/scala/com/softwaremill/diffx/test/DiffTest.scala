@@ -69,13 +69,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
     "ignoring given fields" in {
       implicit val d: Diff[Person] =
-        Derived[Diff[Person]].modifyUnsafe("name")(Diff.identical).modifyUnsafe("age")(Diff.identical)
+        Derived[Diff[Person]].modifyUnsafe("name")(Diff.ignored).modifyUnsafe("age")(Diff.ignored)
       val p3 = p2.copy(in = Instant.now())
       compare(p1, p3) shouldBe DiffResultObject(
         "Person",
         Map(
-          "name" -> Identical(p1.name),
-          "age" -> Identical(p1.age),
+          "name" -> DiffResult.Ignored,
+          "age" -> DiffResult.Ignored,
           "in" -> DiffResultValue(p1.in, p3.in)
         )
       )
@@ -461,7 +461,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "ignore part of map's key using keys's diff specification" in {
-        implicit def dm: Diff[KeyModel] = Derived[Diff[KeyModel]].modify[KeyModel, UUID](_.id).setTo(Diff.identical)
+        implicit def dm: Diff[KeyModel] = Derived[Diff[KeyModel]].ignore(_.id)
 
         val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
         val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
