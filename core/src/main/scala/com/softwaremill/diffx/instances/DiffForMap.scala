@@ -13,8 +13,9 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
       right: C[K, V],
       context: DiffContext
   ): DiffResult = nullGuard(left, right) { (left, right) =>
+    val adjustedMatcher = context.getMatcherOverride[(K, V)].getOrElse(matcher)
     val MatchingResults(unMatchedLeftKeys, unMatchedRightKeys, matchedKeys) =
-      matching(left.toSet, right.toSet, matcher, diffKey.contramap[(K, V)](_._1), context)
+      matching(left.toSet, right.toSet, adjustedMatcher, diffKey.contramap[(K, V)](_._1), context)
 
     val leftDiffs = unMatchedLeftKeys
       .diff(unMatchedRightKeys)

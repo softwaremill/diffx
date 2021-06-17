@@ -53,6 +53,14 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
       ProductA("1")
     )
   }
+
+  "should allow modifying derived diffs" in {
+    implicit val dACoproduct: Derived[Diff[ProductA]] = Diff.derived[ProductA].modify[ProductA, String](_.id).ignore()
+
+    Diff.compare[ProductA](ProductA("1"), ProductA("2")) shouldBe Identical(
+      ProductA("1")
+    )
+  }
 }
 
 sealed trait ACoproduct

@@ -17,7 +17,17 @@ trait Diff[-T] { outer =>
   def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
     new Diff[T] {
       override def apply(left: T, right: T, context: DiffContext): DiffResult =
-        outer.apply(left, right, context.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty)))
+        outer.apply(left, right, context.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty, Tree.empty)))
+    }
+
+  def modifyMatcherUnsafe(path: String*)(matcher: ObjectMatcher[_]): Diff[T] =
+    new Diff[T] {
+      override def apply(left: T, right: T, context: DiffContext): DiffResult =
+        outer.apply(
+          left,
+          right,
+          context.merge(DiffContext(Tree.empty, List.empty, Tree.fromList(path.toList, matcher)))
+        )
     }
 }
 
@@ -88,10 +98,26 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
     outer.modifyUnsafe(path: _*)(d)
   }
   def ignore(): Diff[T] = outer.modifyUnsafe(path: _*)(Diff.ignored)
+
+  def withMapMatcher[K, V](m: ObjectMatcher[(K, V)])(implicit ev1: U <:< scala.collection.Map[K, V]): Diff[T] =
+    outer.modifyMatcherUnsafe(path: _*)(m)
+  def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Diff[T] =
+    outer.modifyMatcherUnsafe(path: _*)(m)
+  def withListMatcher[V](m: ObjectMatcher[(Int, V)])(implicit ev3: U <:< Iterable[V]): Diff[T] =
+    outer.modifyMatcherUnsafe(path: _*)(m)
 }
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
   def setTo(d: Diff[U]): Derived[Diff[T]] = {
     Derived(outer.modifyUnsafe(path: _*)(d))
   }
   def ignore(): Derived[Diff[T]] = Derived(outer.modifyUnsafe(path: _*)(Diff.ignored))
+
+  def withMapMatcher[K, V](m: ObjectMatcher[(K, V)])(implicit
+      ev1: U <:< scala.collection.mutable.Map[K, V]
+  ): Derived[Diff[T]] =
+    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
+  def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.mutable.Set[V]): Derived[Diff[T]] =
+    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
+  def withListMatcher[V](m: ObjectMatcher[(Int, V)])(implicit ev3: U <:< Iterable[V]): Derived[Diff[T]] =
+    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
 }
