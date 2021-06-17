@@ -44,15 +44,15 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
 
   implicit def diffForNumeric[T: Numeric]: Diff[T] = new DiffForNumeric[T]
   implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
-      ddot: Diff[Option[V]],
-      ddk: Diff[K],
-      matcher: ObjectMatcher[K]
-  ): Diff[C[K, V]] = new DiffForMap[K, V, C](matcher, ddk, ddot)
+      dv: Diff[V],
+      dk: Diff[K],
+      matcher: ObjectMatcher[(K, V)]
+  ): Diff[C[K, V]] = new DiffForMap[K, V, C](matcher, dk, dv)
   implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = new DiffForOption[T](ddt)
   implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
-      ddt: Diff[T],
+      dt: Diff[T],
       matcher: ObjectMatcher[T]
-  ): Diff[C[T]] = new DiffForSet[T, C](ddt, matcher)
+  ): Diff[C[T]] = new DiffForSet[T, C](dt, matcher)
   implicit def diffForEither[L, R](implicit ld: Diff[L], rd: Diff[R]): Diff[Either[L, R]] =
     new DiffForEither[L, R](ld, rd)
 }
@@ -60,8 +60,9 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
 trait MiddlePriorityDiff extends DiffMagnoliaDerivation with LowPriorityDiff {
 
   implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
-      ddot: Diff[Option[T]]
-  ): Diff[C[T]] = new DiffForIterable[T, C](ddot)
+      dt: Diff[T],
+      matcher: ObjectMatcher[(Int, T)]
+  ): Diff[C[T]] = new DiffForIterable[T, C](dt, matcher)
 }
 
 trait LowPriorityDiff {

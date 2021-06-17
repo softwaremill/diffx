@@ -284,6 +284,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
       }
 
+      "compare lists using object matcher comparator" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p2, p1))
+        implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
+        compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
+      }
+
       "should preserve order of elements" in {
         val l1 = List(1, 2, 3, 4, 5, 6)
         val l2 = List(1, 2, 3, 4, 5, 7)
@@ -296,6 +303,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
             "3" -> Identical(4),
             "4" -> Identical(5),
             "5" -> DiffResultValue(6, 7)
+          )
+        )
+      }
+
+      "should not use values when matching using default key strategy" in {
+        val l1 = List(1, 2, 3, 4, 5, 6)
+        val l2 = List(1, 2, 4, 5, 6)
+        compare(l1, l2) shouldBe DiffResultObject(
+          "List",
+          ListMap(
+            "0" -> Identical(1),
+            "1" -> Identical(2),
+            "2" -> DiffResultValue(3, 4),
+            "3" -> DiffResultValue(4, 5),
+            "4" -> DiffResultValue(5, 6),
+            "5" -> DiffResultAdditional(6)
           )
         )
       }
@@ -468,8 +491,32 @@ class DiffTest extends AnyFreeSpec with Matchers {
         compare(a1, a2) shouldBe Identical(a1)
       }
 
-      "match values using object mapper" in {
+      "match keys using object mapper" in {
         implicit val om: ObjectMatcher[KeyModel] = ObjectMatcher.by(_.name)
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+        val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+        compare(a1, a2) shouldBe DiffResultObject(
+          "MyLookup",
+          Map(
+            "map" -> DiffResultMap(
+              Map(
+                DiffResultObject(
+                  "KeyModel",
+                  Map(
+                    "id" -> DiffResultValue(uuid1, uuid2),
+                    "name" -> Identical("k1")
+                  )
+                ) -> Identical("val1")
+              )
+            )
+          )
+        )
+      }
+
+      "match map entries by values" in {
+        implicit val om: ObjectMatcher[(KeyModel, String)] = ObjectMatcher.byValue
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
