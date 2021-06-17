@@ -13,6 +13,7 @@ trait DiffResult extends Product with Serializable {
 
 object DiffResult {
   private[diffx] final val indentLevel = 5
+  val Ignored = Identical("<ignored>")
 }
 
 case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResultDifferent {

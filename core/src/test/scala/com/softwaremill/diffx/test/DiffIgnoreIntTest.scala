@@ -16,7 +16,7 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
-      Map("name" -> Identical("p1"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
+      Map("name" -> Identical("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
     )
   }
 
@@ -24,12 +24,14 @@ class DiffIgnoreIntTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
-      Map("name" -> Identical("p1"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
+      Map("name" -> Identical("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
     )
   }
 
   it should "allow calling ignore multiple times" in {
-    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore[Person, String](_.name).ignore[Person, Int](_.age)
+    implicit val d: Diff[Person] = Derived[Diff[Person]]
+      .ignore[Person, String](_.name)
+      .ignore[Person, Int](_.age)
     compare(p1, p2) shouldBe Identical(p1)
   }
 }

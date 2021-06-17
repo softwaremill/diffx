@@ -1,35 +1,39 @@
 package com.softwaremill.diffx
 import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
-import magnolia.Magnolia
 
 trait Diff[-T] { outer =>
-  def apply(left: T, right: T): DiffResult = apply(left, right, Nil)
-  def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult
+  def apply(left: T, right: T): DiffResult = apply(left, right, DiffContext.Empty)
+  def apply(left: T, right: T, context: DiffContext): DiffResult
 
   def contramap[R](f: R => T): Diff[R] =
-    (left: R, right: R, toIgnore: List[FieldPath]) => {
-      outer(f(left), f(right), toIgnore)
+    (left: R, right: R, context: DiffContext) => {
+      outer(f(left), f(right), context)
     }
 
-  def ignore[S <: T, U](path: S => U): Diff[S] = macro IgnoreMacro.ignoreMacro[S, U]
+  def modify[S <: T, U](path: S => U): DiffLens[S, U] = macro ModifyMacro.modifyMacro[S, U]
+  def ignore[S <: T, U](path: S => U): Diff[S] = macro ModifyMacro.ignoreMacro[S, U]
 
-  def ignoreUnsafe(fields: String*): Diff[T] =
+  def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
     new Diff[T] {
-      override def apply(left: T, right: T, toIgnore: List[FieldPath]): DiffResult =
-        outer.apply(left, right, toIgnore ++ List(fields.toList))
+      override def apply(left: T, right: T, context: DiffContext): DiffResult =
+        outer.apply(left, right, context.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty)))
     }
 }
 
 object Diff extends MiddlePriorityDiff with TupleInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
-  def identical[T]: Diff[T] = (left: T, _: T, _: List[FieldPath]) => Identical(left)
+  def identical[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical(left)
+  def ignored[T]: Diff[T] = (_: T, _: T, _: DiffContext) => DiffResult.Ignored
 
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
   /** Create a Diff instance using [[Object#equals]] */
   def useEquals[T]: Diff[T] = Diff.fallback[T]
+
+  def approximateNumericDiff[T: Numeric](epsilon: T): Diff[T] =
+    new ApproximateDiffForNumeric[T](epsilon)
 
   def derived[T]: Derived[Diff[T]] = macro MagnoliaDerivedMacro.derivedGen[T]
 
@@ -67,7 +71,8 @@ trait LowPriorityDiff {
   implicit class RichDerivedDiff[T](val dd: Derived[Diff[T]]) {
     def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
 
-    def ignore[S <: T, U](path: S => U): Derived[Diff[S]] = macro IgnoreMacro.derivedIgnoreMacro[S, U]
+    def modify[S <: T, U](path: S => U): DerivedDiffLens[S, U] = macro ModifyMacro.derivedModifyMacro[S, U]
+    def ignore[S <: T, U](path: S => U): Derived[Diff[S]] = macro ModifyMacro.derivedIgnoreMacro[S, U]
   }
 }
 
@@ -75,4 +80,17 @@ case class Derived[T](value: T)
 
 object Derived {
   def apply[T: Derived]: Derived[T] = implicitly[Derived[T]]
+}
+
+case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
+  def setTo(d: Diff[U]): Diff[T] = {
+    outer.modifyUnsafe(path: _*)(d)
+  }
+  def ignore(): Diff[T] = outer.modifyUnsafe(path: _*)(Diff.ignored)
+}
+case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
+  def setTo(d: Diff[U]): Derived[Diff[T]] = {
+    Derived(outer.modifyUnsafe(path: _*)(d))
+  }
+  def ignore(): Derived[Diff[T]] = Derived(outer.modifyUnsafe(path: _*)(Diff.ignored))
 }
