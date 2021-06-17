@@ -284,6 +284,14 @@ class DiffTest extends AnyFreeSpec with Matchers {
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
       }
 
+      "compare lists using object matcher comparator" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p2, p1))
+        implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
+        implicit val dd: Diff[List[Person]] = Diff.diffForIterable
+        compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
+      }
+
       "should preserve order of elements" in {
         val l1 = List(1, 2, 3, 4, 5, 6)
         val l2 = List(1, 2, 3, 4, 5, 7)

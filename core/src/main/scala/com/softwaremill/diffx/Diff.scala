@@ -60,8 +60,9 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
 trait MiddlePriorityDiff extends DiffMagnoliaDerivation with LowPriorityDiff {
 
   implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
-      ddot: Diff[Option[T]]
-  ): Diff[C[T]] = new DiffForIterable[T, C](ddot)
+      dt: Diff[T],
+      matcher: ObjectMatcher[(Int, T)]
+  ): Diff[C[T]] = new DiffForIterable[T, C](dt, matcher)
 }
 
 trait LowPriorityDiff {
