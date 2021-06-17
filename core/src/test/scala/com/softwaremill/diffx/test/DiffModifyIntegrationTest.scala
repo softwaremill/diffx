@@ -31,8 +31,8 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
   it should "allow calling ignore multiple times" in {
     implicit val d: Diff[Person] = Derived[Diff[Person]]
-      .ignore[Person, String](_.name)
-      .ignore[Person, Int](_.age)
+      .ignore(_.name)
+      .ignore(_.age)
     compare(p1, p2) shouldBe Identical(p1)
   }
 
@@ -40,7 +40,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p2, p1))
     implicit val orgDiff: Diff[Organization] = Derived[Diff[Organization]]
-      .modify[Organization, List[Person]](_.people)
+      .modify(_.people)
       .withListMatcher(
         ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
       )
@@ -49,7 +49,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
   it should "match map entries by values" in {
     implicit val lookupDiff: Diff[MyLookup] = Derived[Diff[MyLookup]]
-      .modify[MyLookup, Map[KeyModel, String]](_.map)
+      .modify(_.map)
       .withMapMatcher(
         ObjectMatcher.byValue[KeyModel, String]
       )
@@ -77,7 +77,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
   it should "use overrided object matcher when comparing set" in {
     implicit val lookupDiff: Diff[Startup] = Derived[Diff[Startup]]
-      .modify[Startup, Set[Person]](_.workers)
+      .modify(_.workers)
       .withSetMatcher[Person](ObjectMatcher.by(_.name))
     val p2m = p2.copy(age = 33)
     compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
