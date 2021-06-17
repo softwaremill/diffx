@@ -288,7 +288,6 @@ class DiffTest extends AnyFreeSpec with Matchers {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
         implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
-        implicit val dd: Diff[List[Person]] = Diff.diffForIterable
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
       }
 
@@ -304,6 +303,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
             "3" -> Identical(4),
             "4" -> Identical(5),
             "5" -> DiffResultValue(6, 7)
+          )
+        )
+      }
+
+      "should not use values when matching using default key strategy" in {
+        val l1 = List(1, 2, 3, 4, 5, 6)
+        val l2 = List(1, 2, 4, 5, 6)
+        compare(l1, l2) shouldBe DiffResultObject(
+          "List",
+          ListMap(
+            "0" -> Identical(1),
+            "1" -> Identical(2),
+            "2" -> DiffResultValue(3, 4),
+            "3" -> DiffResultValue(4, 5),
+            "4" -> DiffResultValue(5, 6),
+            "5" -> DiffResultAdditional(6)
           )
         )
       }

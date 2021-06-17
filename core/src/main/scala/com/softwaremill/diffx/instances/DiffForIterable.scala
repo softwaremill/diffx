@@ -19,7 +19,7 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
       val rightv2 = ListSet(keys.map(i => i -> rightAsMap(i)): _*).collect { case (k, Some(v)) => k -> v }
 
       val MatchingResults(unMatchedLeftInstances, unMatchedRightInstances, matchedInstances) =
-        matching(leftv2, rightv2, matcher, dt.contramap[(Int, T)](_._2), context)
+        matching(leftv2, rightv2, matcher)
       val leftDiffs = unMatchedLeftInstances
         .diff(unMatchedRightInstances)
         .collectFirst { case (k, v) => k -> DiffResultAdditional(v) }
