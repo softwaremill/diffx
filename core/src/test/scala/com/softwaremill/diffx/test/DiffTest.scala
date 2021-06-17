@@ -491,8 +491,32 @@ class DiffTest extends AnyFreeSpec with Matchers {
         compare(a1, a2) shouldBe Identical(a1)
       }
 
-      "match values using object mapper" in {
+      "match keys using object mapper" in {
         implicit val om: ObjectMatcher[KeyModel] = ObjectMatcher.by(_.name)
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+        val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+        compare(a1, a2) shouldBe DiffResultObject(
+          "MyLookup",
+          Map(
+            "map" -> DiffResultMap(
+              Map(
+                DiffResultObject(
+                  "KeyModel",
+                  Map(
+                    "id" -> DiffResultValue(uuid1, uuid2),
+                    "name" -> Identical("k1")
+                  )
+                ) -> Identical("val1")
+              )
+            )
+          )
+        )
+      }
+
+      "match map entries by values" in {
+        implicit val om: ObjectMatcher[(KeyModel, String)] = ObjectMatcher.byValue
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
