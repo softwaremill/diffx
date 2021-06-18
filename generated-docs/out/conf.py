@@ -101,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'diffxdoc'
+htmlhelp_basename = 'diffx-scaladoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -128,7 +128,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'diffx.tex', 'diffx Documentation',
+    (master_doc, 'diffx-scala.tex', 'diffx-scala Documentation',
      'SoftwareMill', 'manual'),
 ]
 
@@ -138,7 +138,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'diffx', 'diffx Documentation',
+    (master_doc, 'diffx-scala', 'diffx-scala Documentation',
      [author], 1)
 ]
 
@@ -149,8 +149,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'diffx', 'diffx Documentation',
-     author, 'diffx', 'One line description of project.',
+    (master_doc, 'diffx-scala', 'diffx-scala Documentation',
+     author, 'diffx-scala', 'One line description of project.',
      'Miscellaneous'),
 ]
 
