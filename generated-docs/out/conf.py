@@ -171,10 +171,3 @@ html_context = {
     'conf_py_path': '/docs-sources/', # Path in the checkout to the docs root
 }
 
-# app setup hook
-def setup(app):
-    app.add_config_value('recommonmark_config', {
-        'auto_toc_tree_section': 'Contents',
-        'enable_auto_doc_ref': False
-    }, True)
-    app.add_transform(AutoStructify)
