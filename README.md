@@ -1,6 +1,6 @@
 ![diffx](https://github.com/softwaremill/diffx/raw/master/banner.png)
 
-[![CI](https://github.com/softwaremill/diffx/workflows/CI/badge.svg)](https://github.com/softwaremill/diffx/actions?query=workflow%3A%22CI%22)
+[![Build Status](https://travis-ci.org/softwaremill/diffx.svg?branch=master)](https://travis-ci.org/softwaremill/diffx)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.softwaremill.diffx/diffx-core_2.13/badge.svg)](https://search.maven.org/search?q=g:com.softwaremill.diffx)
 [![Gitter](https://badges.gitter.im/softwaremill/diffx.svg)](https://gitter.im/softwaremill/diffx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/softwaremill/diffx&style=flat)](https://mergify.io)
@@ -38,7 +38,7 @@ The library is published for Scala 2.12 and 2.13.
 Add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-core" % "0.4.5"
+"com.softwaremill.diffx" %% "diffx-core" % "0.5.0"
 ```
 
 ```scala
@@ -51,7 +51,11 @@ val right: Foo = Foo(
     List(123, 1234),
     Some(Bar("asdf", 5))
 )
-// right: Foo = Foo(Bar("asdf", 5), List(123, 1234), Some(Bar("asdf", 5)))
+// right: Foo = Foo(
+//   bar = Bar(s = "asdf", i = 5),
+//   b = List(123, 1234),
+//   parent = Some(value = Bar(s = "asdf", i = 5))
+// )
 
 val left: Foo = Foo(
     Bar("asdf", 66),
@@ -59,26 +63,41 @@ val left: Foo = Foo(
     Some(right)
 )
 // left: Foo = Foo(
-//   Bar("asdf", 66),
-//   List(1234),
-//   Some(Foo(Bar("asdf", 5), List(123, 1234), Some(Bar("asdf", 5))))
+//   bar = Bar(s = "asdf", i = 66),
+//   b = List(1234),
+//   parent = Some(
+//     value = Foo(
+//       bar = Bar(s = "asdf", i = 5),
+//       b = List(123, 1234),
+//       parent = Some(value = Bar(s = "asdf", i = 5))
+//     )
+//   )
 // )
  
 import com.softwaremill.diffx.generic.auto._
 import com.softwaremill.diffx._
 compare(left, right)
 // res0: DiffResult = DiffResultObject(
-//   "Foo",
-//   ListMap(
+//   name = "Foo",
+//   fields = ListMap(
 //     "bar" -> DiffResultObject(
-//       "Bar",
-//       ListMap("s" -> Identical("asdf"), "i" -> DiffResultValue(66, 5))
+//       name = "Bar",
+//       fields = ListMap(
+//         "s" -> Identical(value = "asdf"),
+//         "i" -> DiffResultValue(left = 66, right = 5)
+//       )
 //     ),
 //     "b" -> DiffResultObject(
-//       "List",
-//       ListMap("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234))
+//       name = "List",
+//       fields = ListMap(
+//         "0" -> DiffResultValue(left = 1234, right = 123),
+//         "1" -> DiffResultMissing(value = 1234)
+//       )
 //     ),
-//     "parent" -> DiffResultValue("repl.MdocSession.App.Foo", "repl.MdocSession.App.Bar")
+//     "parent" -> DiffResultValue(
+//       left = "repl.MdocSession.App.Foo",
+//       right = "repl.MdocSession.App.Bar"
+//     )
 //   )
 // )
 ```
@@ -131,7 +150,7 @@ If anyone has an idea how this could be improved, I am open for suggestions.
 To use with scalatest, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.4.5" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.5.0" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
@@ -151,7 +170,7 @@ Giving you nice error messages:
 To use with specs2, add the following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.4.5" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.5.0" % Test
 ```
 
 Then, extend the `com.softwaremill.diffx.specs2.DiffMatcher` trait or `import com.softwaremill.diffx.specs2.DiffMatcher._`.
@@ -169,7 +188,7 @@ left must matchTo(right)
 To use with utest, add following dependency:
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.4.5" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.5.0" % Test
 ```
 
 Then, mixin `DiffxAssertions` trait or add `import com.softwaremill.diffx.utest.DiffxAssertions._` to your test code.
@@ -191,7 +210,7 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 
 ```scala
 case class Person(name:String, age:Int)
-implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,String](_.name)
+implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ``` 
 
 ## Customization
@@ -220,16 +239,16 @@ sealed trait ABParent
 case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
-implicit val diffA: Diff[A] = Derived[Diff[A]].ignore[A, String](_.id)
+implicit val diffA: Diff[A] = Derived[Diff[A]].ignore(_.id)
 ```
 ```scala
 val a1: ABParent = A("1", "X")
-// a1: ABParent = A("1", "X")
+// a1: ABParent = A(id = "1", name = "X")
 val a2: ABParent = A("2", "X")
-// a2: ABParent = A("2", "X")
+// a2: ABParent = A(id = "2", name = "X")
 
 compare(a1, a2)
-// res6: DiffResult = Identical(A("1", "X"))
+// res6: DiffResult = Identical(value = A(id = "1", name = "X"))
 ```
 
 As you can see instead of summoning bare instance of `Diff` for given `A` we summoned `Derived[Diff[A]]`.
@@ -245,17 +264,17 @@ with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback d
 
 - [com.softwaremill.common.tagging](https://github.com/softwaremill/scala-common)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-tagging" % "0.4.5"
+    "com.softwaremill.diffx" %% "diffx-tagging" % "0.5.0"
     ```
     `com.softwaremill.diffx.tagging.DiffTaggingSupport`
 - [eu.timepit.refined](https://github.com/fthomas/refined)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-refined" % "0.4.5"    
+    "com.softwaremill.diffx" %% "diffx-refined" % "0.5.0"    
     ```
     `com.softwaremill.diffx.refined.RefinedSupport`
 - [org.typelevel.cats](https://github.com/typelevel/cats)
     ```scala
-    "com.softwaremill.diffx" %% "diffx-cats" % "0.4.5"    
+    "com.softwaremill.diffx" %% "diffx-cats" % "0.5.0"    
     ```
     `com.softwaremill.diffx.cats.DiffCatsInstances`
 
