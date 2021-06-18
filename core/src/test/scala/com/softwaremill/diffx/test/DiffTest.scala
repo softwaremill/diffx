@@ -291,6 +291,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
       }
 
+      "compare lists using explicit object matcher comparator" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p2, p1))
+        implicit val orgDiff: Diff[Organization] = Derived[Diff[Organization]].modifyMatcherUnsafe("people")(
+          ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
+        )
+        compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
+      }
+
       "should preserve order of elements" in {
         val l1 = List(1, 2, 3, 4, 5, 6)
         val l2 = List(1, 2, 3, 4, 5, 7)
@@ -415,12 +424,17 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "set of products using instance matcher" in {
         val p2m = p2.copy(age = 33)
         implicit val im: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
-        compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
-            Identical(p1),
-            DiffResultObject(
-              "Person",
-              Map("name" -> Identical(p2.name), "age" -> DiffResultValue(p2.age, p2m.age), "in" -> Identical(p1.in))
+        compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
+          "Startup",
+          Map(
+            "workers" -> DiffResultSet(
+              List(
+                Identical(p1),
+                DiffResultObject(
+                  "Person",
+                  Map("name" -> Identical(p2.name), "age" -> DiffResultValue(p2.age, p2m.age), "in" -> Identical(p1.in))
+                )
+              )
             )
           )
         )
@@ -671,6 +685,8 @@ case class Person(name: String, age: Int, in: Instant)
 case class Family(first: Person, second: Person)
 
 case class Organization(people: List[Person])
+
+case class Startup(workers: Set[Person])
 
 sealed trait Parent
 

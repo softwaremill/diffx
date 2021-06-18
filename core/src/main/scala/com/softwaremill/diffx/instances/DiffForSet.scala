@@ -7,8 +7,9 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
     extends Diff[C[T]] {
   override def apply(left: C[T], right: C[T], context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
+      val adjustedMatcher = context.getMatcherOverride[T].getOrElse(matcher)
       val MatchingResults(unMatchedLeftInstances, unMatchedRightInstances, matchedInstances) =
-        matching[T](left.toSet, right.toSet, matcher, dt, context)
+        matching[T](left.toSet, right.toSet, adjustedMatcher, dt, context)
       val leftDiffs = unMatchedLeftInstances
         .diff(unMatchedRightInstances)
         .map(DiffResultAdditional(_))

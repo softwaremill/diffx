@@ -52,7 +52,7 @@ object ModifyMacro {
   )(path: c.Expr[List[String]]): c.Tree = {
     import c.universe._
     q"""{
-      com.softwaremill.diffx.DiffLens(${c.prefix}, $path)
+      com.softwaremill.diffx.DiffLens(${c.prefix}.d, $path)
      }"""
   }
 
