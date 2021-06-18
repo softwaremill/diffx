@@ -16,11 +16,10 @@ lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPubl
   scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
   ideSkipProject := (scalaVersion.value != scalaIdeaVersion) || thisProjectRef.value.project.contains("JS"),
   updateDocs := Def.taskDyn {
-    val files1 =
-      UpdateVersionInDocs(sLog.value, organization.value, version.value, List(file("docs-sources") / "README.md"))
+    val files1 = UpdateVersionInDocs(sLog.value, organization.value, version.value)
     Def.task {
       (docs.jvm(scala213) / mdoc).toTask("").value
-      files1 ++ Seq(file("README.md"))
+      files1 ++ Seq(file("generated-docs/out"))
     }
   }.value
 )
@@ -188,7 +187,7 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     mdocVariables := Map(
       "VERSION" -> version.value
     ),
-    mdocOut := file(".")
+    mdocOut := file("generated-docs/out")
   )
   .dependsOn(core, scalatest, specs2, utest, refined, tagging)
   .jvmPlatform(scalaVersions = List(scala213))
