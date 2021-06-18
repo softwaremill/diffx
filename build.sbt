@@ -20,7 +20,7 @@ lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPubl
       UpdateVersionInDocs(sLog.value, organization.value, version.value, List(file("docs-sources") / "README.md"))
     Def.task {
       (docs.jvm(scala213) / mdoc).toTask("").value
-      files1 ++ Seq(file("generated-docs"), file("README.md"))
+      files1 ++ Seq(file("README.md"))
     }
   }.value
 )
