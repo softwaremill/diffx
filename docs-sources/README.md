@@ -171,7 +171,7 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 
 ```scala mdoc:compile-only
 case class Person(name:String, age:Int)
-implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore[Person,String](_.name)
+implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
 ``` 
 
 ## Customization
@@ -200,7 +200,7 @@ sealed trait ABParent
 case class A(id: String, name: String) extends ABParent
 case class B(id: String, name: String) extends ABParent
 
-implicit val diffA: Diff[A] = Derived[Diff[A]].ignore[A, String](_.id)
+implicit val diffA: Diff[A] = Derived[Diff[A]].ignore(_.id)
 ```
 ```scala mdoc
 val a1: ABParent = A("1", "X")

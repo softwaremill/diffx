@@ -27,7 +27,7 @@ lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPubl
 
 val compileDocs: TaskKey[Unit] = taskKey[Unit]("Compiles docs module throwing away its output")
 compileDocs := {
-  (docs.jvm(scala213) / mdoc).toTask(" --out target/sttp-docs").value
+  (docs.jvm(scala213) / mdoc).toTask(" --out target/diffx-docs").value
 }
 
 val versionSpecificScalaSources = {
