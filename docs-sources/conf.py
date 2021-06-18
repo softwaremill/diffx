@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'diffx'
+project = 'diffx-scala'
 copyright = '2021, SoftwareMill'
 author = 'SoftwareMill'
 
