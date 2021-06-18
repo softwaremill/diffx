@@ -42,3 +42,9 @@ Development and maintenance of sttp client is sponsored by [SoftwareMill](https:
 [![](https://files.softwaremill.com/logo/logo.png "SoftwareMill")](https://softwaremill.com)
 
 # Table of contents
+
+```eval_rst
+.. toctree::
+   :maxdepth: 2
+   :caption: Getting started
+```
