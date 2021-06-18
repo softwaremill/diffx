@@ -14,8 +14,8 @@ class ModifyMacroTest extends AnyFlatSpec with Matchers {
   }
 
   it should "ignore fields in product wrapped with either" in {
-    ModifyMacro.modifiedFromPath[Either[Person, Person], String](_.eachRight.name) shouldBe List("name")
-    ModifyMacro.modifiedFromPath[Either[Person, Person], String](_.eachLeft.name) shouldBe List("name")
+    ModifyMacro.modifiedFromPath[Either[Person, Person], String](_.eachRight.name) shouldBe List("eachRight", "name")
+    ModifyMacro.modifiedFromPath[Either[Person, Person], String](_.eachLeft.name) shouldBe List("eachLeft", "name")
   }
 
   it should "ignore fields in product wrapped with option" in {

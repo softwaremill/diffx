@@ -9,8 +9,8 @@ private[diffx] class DiffForEither[L, R](ld: Diff[L], rd: Diff[R]) extends Diff[
       context: DiffContext
   ): DiffResult = {
     (left, right) match {
-      case (Left(v1), Left(v2))   => ld.apply(v1, v2, context)
-      case (Right(v1), Right(v2)) => rd.apply(v1, v2, context)
+      case (Left(v1), Left(v2))   => ld.apply(v1, v2, context.getNextStep("eachLeft"))
+      case (Right(v1), Right(v2)) => rd.apply(v1, v2, context.getNextStep("eachRight"))
       case (v1, v2)               => DiffResultValue(v1, v2)
     }
   }

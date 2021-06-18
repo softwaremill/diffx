@@ -97,10 +97,13 @@ object ModifyMacro {
       case q"($arg) => $pathBody " => collectPathElements(pathBody, Nil)
       case _                       => c.abort(c.enclosingPosition, s"$ShapeInfo, got: ${path.tree}")
     }
-
     c.Expr[List[String]](
-      q"(${pathEls.collect { case TermPathElement(c) =>
-        c.decodedName.toString
+      q"(${pathEls.collect {
+        case TermPathElement(c) => c.decodedName.toString
+        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachLeft" =>
+          method.decodedName.toString
+        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachRight" =>
+          method.decodedName.toString
       }})"
     )
   }
