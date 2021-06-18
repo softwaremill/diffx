@@ -2,9 +2,9 @@
 
 Welcome!
 
-[diffx](https://github.com/softwaremill/diffx) is an open-source library which aims to display differences between 
-complex structures in a way that they are easily noticeable. 
- 
+[diffx](https://github.com/softwaremill/diffx) is an open-source library which aims to display differences between
+complex structures in a way that they are easily noticeable.
+
 
 Here's a quick example of diffx in action:
 

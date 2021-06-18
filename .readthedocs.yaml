@@ -1,0 +1,11 @@
+# Required
+version: 2
+
+sphinx:
+   configuration: generated-docs/out/conf.py
+
+# Optionally set the version of Python and requirements required to build your docs
+python:
+   version: 3.7
+   install:
+   - requirements: generated-docs/out/requirements.txt
