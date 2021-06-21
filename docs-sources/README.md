@@ -187,7 +187,7 @@ Diffx already has an instance of a typeclass for a list. One more thing to do is
 
 The final code looks as follows:
 
-```scala mdoc:nest
+```scala
 import cats.data.NonEmptyList
 implicit def nelDiff[T: Diff]: Diff[NonEmptyList[T]] = 
     Diff[List[T]].contramap[NonEmptyList[T]](_.toList)

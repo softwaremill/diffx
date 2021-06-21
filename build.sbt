@@ -189,7 +189,7 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     ),
     mdocOut := file("generated-docs/out")
   )
-  .dependsOn(core, scalatest, specs2, utest, refined, tagging)
+  .dependsOn(core, scalatest, specs2, utest, refined, tagging, cats)
   .jvmPlatform(scalaVersions = List(scala213))
 
 val testJVM = taskKey[Unit]("Test JVM projects")

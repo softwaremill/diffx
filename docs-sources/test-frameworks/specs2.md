@@ -11,7 +11,7 @@ To use with specs2, add the following dependency:
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-specs2::@VERSION@" % Test
+ivy"com.softwaremill.diffx::diffx-specs2::@VERSION@"
 ```
 
 ## Usage

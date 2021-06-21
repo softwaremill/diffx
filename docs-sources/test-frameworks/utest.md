@@ -11,7 +11,7 @@ To use with utest, add following dependency:
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-utest::@VERSION@" % Test
+ivy"com.softwaremill.diffx::diffx-utest::@VERSION@"
 ```
 
 ## Usage

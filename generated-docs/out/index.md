@@ -70,8 +70,7 @@ compare(left, right)
 
 Will result in:
 
-![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
-
+![](https://github.com/softwaremill/diffx/blob/master/example.png?raw=true)
 
 `diffx` is available for Scala 2.12 and 2.13 both jvm and js.
 
@@ -96,4 +95,12 @@ Development and maintenance of sttp client is sponsored by [SoftwareMill](https:
    test-frameworks/scalatest
    test-frameworks/specs2
    test-frameworks/utest
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Integrations
+   
+   integrations/cats
+   integrations/tagging
+   integrations/refined
 ```

@@ -11,7 +11,7 @@ To use with scalatest, add the following dependency:
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-scalatest::@VERSION@" % Test
+ivy"com.softwaremill.diffx::diffx-scalatest::@VERSION@"
 ```
 
 ## Usage
