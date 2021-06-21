@@ -42,7 +42,8 @@ See the section on [test-frameworks](test-frameworks/summary.md) for a brief ove
 
 ## Sponsors
 
-Development and maintenance of sttp client is sponsored by [SoftwareMill](https://softwaremill.com), a software development and consulting company. We help clients scale their business through software. Our areas of expertise include backends, distributed systems, blockchain, machine learning and data analytics.
+Development and maintenance of diffx is sponsored by [SoftwareMill](https://softwaremill.com), 
+a software development and consulting company. We help clients scale their business through software. Our areas of expertise include backends, distributed systems, blockchain, machine learning and data analytics.
 
 [![](https://files.softwaremill.com/logo/logo.png "SoftwareMill")](https://softwaremill.com)
 
