@@ -2,9 +2,8 @@
 
 Welcome!
 
-[diffx](https://github.com/softwaremill/diffx) is an open-source library which aims to display differences between
+[diffx](https://github.com/softwaremill/diffx) is an open-source library which aims to display differences between 
 complex structures in a way that they are easily noticeable.
-
 
 Here's a quick example of diffx in action:
 
@@ -74,6 +73,13 @@ Will result in:
 ![example](https://github.com/softwaremill/diff-x/blob/master/example.png?raw=true)
 
 
+`diffx` is available for Scala 2.12 and 2.13 both jvm and js.
+
+The core of `diffx` comes in a single jar.
+
+To integrate with the test framework of your choice, you'll need to use one of the integration modules.
+See the section on [test-frameworks](test-frameworks/summary.md) for a brief overview of supported test frameworks.
+
 ## Sponsors
 
 Development and maintenance of sttp client is sponsored by [SoftwareMill](https://softwaremill.com), a software development and consulting company. We help clients scale their business through software. Our areas of expertise include backends, distributed systems, blockchain, machine learning and data analytics.
@@ -84,6 +90,10 @@ Development and maintenance of sttp client is sponsored by [SoftwareMill](https:
 
 ```eval_rst
 .. toctree::
-   :maxdepth: 2
-   :caption: Getting started
+   :maxdepth: 1
+   :caption: Test frameworks
+   
+   test-frameworks/scalatest
+   test-frameworks/specs2
+   test-frameworks/utest
 ```
