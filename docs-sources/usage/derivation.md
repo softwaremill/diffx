@@ -19,6 +19,6 @@ or
 
 extend trait
 
-`com.softwaremill.diffx.generic.DiffDerivation`
+`com.softwaremill.diffx.generic.AutoDerivation`
 
 **Auto derivation might have a huge impact on compilation times**, because of that it is recommended to use `semi-auto` derivation.
