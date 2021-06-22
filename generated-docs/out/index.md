@@ -105,4 +105,14 @@ a software development and consulting company. We help clients scale their busin
    integrations/cats
    integrations/tagging
    integrations/refined
+   
+.. toctree::
+   :maxdepth: 1
+   :caption: usage
+   
+   usage/derivation
+   usage/ignoring
+   usage/replacing
+   usage/extending
+   usage/output
 ```
