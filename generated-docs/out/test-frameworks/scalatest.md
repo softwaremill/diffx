@@ -42,5 +42,3 @@ val left: Foo = Foo(
 
 left should matchTo(right)
 ```
-
-###### TODO add info about misleading compilation error when using above syntax
