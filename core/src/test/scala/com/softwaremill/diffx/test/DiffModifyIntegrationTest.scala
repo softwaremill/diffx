@@ -33,7 +33,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]]
       .ignore(_.name)
       .ignore(_.age)
-    compare(p1, p2) shouldBe IdenticalValue(p1)
+    compare(p1, p2).isIdentical shouldBe true
   }
 
   it should "compare lists using explicit object matcher comparator" in {
@@ -44,7 +44,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
       .withListMatcher(
         ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
       )
-    compare(o1, o2) shouldBe IdenticalValue(Organization(List(p1, p2)))
+    compare(o1, o2).isIdentical shouldBe true
   }
 
   it should "ignore only on right" in {
@@ -54,12 +54,12 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
     implicit val wrapperDiff: Diff[Wrapper] = Derived[Diff[Wrapper]].ignore(_.e.eachRight.name)
 
-    compare(e1, e2) shouldBe IdenticalValue(e1)
+    compare(e1, e2).isIdentical shouldBe true
 
     val e3 = Wrapper(Left(p1))
     val e4 = Wrapper(Left(p1.copy(name = p1.name + "_modified")))
 
-    compare(e3, e4) should not be an[IdenticalValue[_]]
+    compare(e3, e4).isIdentical shouldBe false
   }
 
   it should "ignore only on left" in {
@@ -69,11 +69,11 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
     implicit val wrapperDiff: Diff[Wrapper] = Derived[Diff[Wrapper]].ignore(_.e.eachLeft.name)
 
-    compare(e1, e2) should not be an[IdenticalValue[_]]
+    compare(e1, e2).isIdentical shouldBe false
     val e3 = Wrapper(Left(p1))
     val e4 = Wrapper(Left(p1.copy(name = p1.name + "_modified")))
 
-    compare(e3, e4) shouldBe an[IdenticalValue[_]]
+    compare(e3, e4).isIdentical shouldBe true
   }
 
   it should "match map entries by values" in {
@@ -114,7 +114,14 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
       Map(
         "workers" -> DiffResultSet(
           List(
-            IdenticalValue(p1),
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p1.name),
+                "age" -> IdenticalValue(p1.age),
+                "in" -> IdenticalValue(p1.in)
+              )
+            ),
             DiffResultObject(
               "Person",
               Map(

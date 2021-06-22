@@ -761,7 +761,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
   "tuples" - {
     "tuple2" - {
       "equal tuples should be identical" in {
-        compare((1, 2), (1, 2)) shouldBe IdenticalValue((1, 2))
+        compare((1, 2), (1, 2)).isIdentical shouldBe true
       }
       "different first element should make them different" in {
         compare((1, 2), (3, 2)) shouldBe DiffResultObject(
@@ -778,7 +778,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
     }
     "tuple3" - {
       "equal tuples should be identical" in {
-        compare((1, 2, 3), (1, 2, 3)) shouldBe IdenticalValue((1, 2, 3))
+        compare((1, 2, 3), (1, 2, 3)).isIdentical shouldBe true
       }
       "different first element should make them different" in {
         compare((1, 2, 3), (4, 2, 3)) shouldBe DiffResultObject(
