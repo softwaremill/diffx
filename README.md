@@ -12,6 +12,13 @@ Pretty diffs for case classes.
 
 diffx documentation is available at [diffx-scala.readthedocs.io](https://diffx-scala.readthedocs.io).
 
+## Modifying documentation
+The documentation is typechecked using `mdoc`. The sources for the documentation exist in `docs-sources`. Don't modify the generated documentation in `generated-docs`, as these files will get overwritten!
+
+When generating documentation, it's best to set the version to the current one, so that the generated doc files don't include modifications with the current snapshot version.
+
+That is, in sbt run: `set version := "0.5.0"`, before running `mdoc` in `docs`.
+
 ## Copyright
 
 Copyright (C) 2019 SoftwareMill [https://softwaremill.com](https://softwaremill.com).
