@@ -10,7 +10,7 @@ Pretty diffs for case classes.
 
 ## Documentation
 
-diffx documentation is available at [diffx-scala.softwaremill.com](http://diffx-scala.softwaremill.com).
+diffx documentation is available at [diffx-scala.readthedocs.io](https://diffx-scala.readthedocs.io).
 
 ## Copyright
 
