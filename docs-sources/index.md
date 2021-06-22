@@ -40,6 +40,8 @@ The core of `diffx` comes in a single jar.
 To integrate with the test framework of your choice, you'll need to use one of the integration modules.
 See the section on [test-frameworks](test-frameworks/summary.md) for a brief overview of supported test frameworks.
 
+*Auto-derivation is used throughout the documentation for the sake of clarity. Head over to [derivation](usage/derivation.md) for more details*
+
 ## Tips and tricks
 
 You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits

@@ -79,6 +79,16 @@ The core of `diffx` comes in a single jar.
 To integrate with the test framework of your choice, you'll need to use one of the integration modules.
 See the section on [test-frameworks](test-frameworks/summary.md) for a brief overview of supported test frameworks.
 
+*Auto-derivation is used throughout the documentation for the sake of clarity. Head over to [derivation](usage/derivation.md) for more details*
+
+## Tips and tricks
+
+You may need to add `-Wmacros:after` Scala compiler option to make sure to check for unused implicits
+after macro expansion.
+If you get warnings from Magnolia which looks like `magnolia: using fallback derivation for TYPE`,
+you can use the [Silencer](https://github.com/ghik/silencer) compiler plugin to silent the warning
+with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback derivation.*$"`
+
 ## Sponsors
 
 Development and maintenance of diffx is sponsored by [SoftwareMill](https://softwaremill.com), 
@@ -106,7 +116,7 @@ a software development and consulting company. We help clients scale their busin
    integrations/tagging
    integrations/refined
    
-.. toctree::
+   .. toctree::
    :maxdepth: 1
    :caption: usage
    
@@ -114,5 +124,4 @@ a software development and consulting company. We help clients scale their busin
    usage/ignoring
    usage/replacing
    usage/extending
-   usage/output
 ```

@@ -3,7 +3,7 @@
 Diffx supports auto and semi-auto derivation.
 
 For semi-auto derivation you don't need any additional import, just define your instances using:
-```scala mdoc:compile-only
+```scala
 import com.softwaremill.diffx._
 case class Product(name: String)
 case class Basket(products: List[Product])
