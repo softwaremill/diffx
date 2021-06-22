@@ -16,9 +16,7 @@ To use auto derivation add following import
 
 `import com.softwaremill.diffx.generic.auto._`
 
-or
-
-extend trait
+or extend trait
 
 `com.softwaremill.diffx.generic.AutoDerivation`
 

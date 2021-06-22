@@ -18,7 +18,7 @@ ivy"com.softwaremill.diffx::diffx-tagging::@VERSION@"
 
 Assuming you have some tagged types in your hierarchy:
 
-```scala mdoc
+```scala mdoc:silent
 import com.softwaremill.tagging._
 sealed trait T1
 sealed trait T2

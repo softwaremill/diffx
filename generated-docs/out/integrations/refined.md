@@ -5,13 +5,13 @@ This module contains integration layer between [eu.timepit.refined](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-refined" % "0.5.0+22-d71a0664+20210622-1047-SNAPSHOT" % Test    
+"com.softwaremill.diffx" %% "diffx-refined" % "0.5.0+28-c6310335+20210622-1427-SNAPSHOT" % Test    
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-refined::0.5.0+22-d71a0664+20210622-1047-SNAPSHOT"
+ivy"com.softwaremill.diffx::diffx-refined::0.5.0+28-c6310335+20210622-1427-SNAPSHOT"
 ```
 
 ## Usage
@@ -26,9 +26,7 @@ import eu.timepit.refined.types.string.NonEmptyString
 case class TestData(posInt: PosInt, nonEmptyString: NonEmptyString)
 
 val t1 = TestData(1, "foo")
-// t1: TestData = TestData(posInt = 1, nonEmptyString = foo)
 val t2 = TestData(1, "bar")
-// t2: TestData = TestData(posInt = 1, nonEmptyString = bar)
 ```
 
 all you need to do is to put additional diffx implicits into current scope:

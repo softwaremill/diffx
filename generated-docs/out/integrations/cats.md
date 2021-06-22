@@ -5,13 +5,13 @@ This module contains integration layer between [org.typelevel.cats](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-cats" % "0.5.0+22-d71a0664+20210622-1047-SNAPSHOT" % Test    
+"com.softwaremill.diffx" %% "diffx-cats" % "0.5.0+28-c6310335+20210622-1427-SNAPSHOT" % Test    
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-cats::0.5.0+22-d71a0664+20210622-1047-SNAPSHOT"
+ivy"com.softwaremill.diffx::diffx-cats::0.5.0+28-c6310335+20210622-1427-SNAPSHOT"
 ```
 
 ## Usage
@@ -22,9 +22,7 @@ import cats.data._
 case class TestData(ints: NonEmptyList[String])
 
 val t1 = TestData(NonEmptyList.one("a"))
-// t1: TestData = TestData(ints = NonEmptyList(head = "a", tail = List()))
 val t2 = TestData(NonEmptyList.one("b"))
-// t2: TestData = TestData(ints = NonEmptyList(head = "b", tail = List()))
 ```
 
 all you need to do is to put additional diffx implicits into current scope:

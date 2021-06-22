@@ -18,7 +18,7 @@ ivy"com.softwaremill.diffx::diffx-refined::@VERSION@"
 
 Assuming you have some refined types in your hierarchy:
 
-```scala mdoc
+```scala mdoc:silent
 import eu.timepit.refined.types.numeric.PosInt
 import eu.timepit.refined.auto._
 import eu.timepit.refined.types.string.NonEmptyString

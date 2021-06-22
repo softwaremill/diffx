@@ -1,4 +1,4 @@
-# Supported test frameworks
+# summary
 
 Following test frameworks are supported by diffx:
 - [scalatest](scalatest.md)

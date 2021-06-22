@@ -8,7 +8,7 @@ import com.softwaremill.diffx.generic.auto._
 `diffx` does its best to show the difference in the most readable way, but obviously the default configuration won't 
 cover all the use-cases. Because of that, there are few ways how you can modify its output.
 
-## color & signs
+## colors & signs
 
 I found it confusing to use the terms `expected`/`actual` as there seems to be no golden rule whether to keep expected on the right side or on the left side.
 Because of that, diffx refers to the values that are compared as `left` and `right` value. 
@@ -19,8 +19,8 @@ By default, the difference is shown in the following form:
 
 which in terms of missing/additional values e.g. in collections looks as follows:
 
-`leftColor(additionalValue)` in case a value was present on the left-hand side and absent on the right side
-`rightColor(missingValue)` in case a value was absent on the left-hand side and present on the right side
+`leftColor(additionalValue)` in case the value was present on the left-hand side and absent on the right side
+`rightColor(missingValue)` in case the value was absent on the left-hand side and present on the right side
 
 
 Where, by default, `rightColor` is green and `leftColor` is red. 
@@ -31,7 +31,7 @@ One example of that would be to use some special characters instead of colors, w
 
 ````scala mdoc:compile-only
 val colorConfigWithPlusMinus: ConsoleColorConfig =
-ConsoleColorConfig(default = identity, arrow = identity, right = s => "+" + s, left = s => "-" + s)
+    ConsoleColorConfig(default = identity, arrow = identity, right = s => "+" + s, left = s => "-" + s)
 ````
 
 There are two predefined set of colors - light and dark theme. 

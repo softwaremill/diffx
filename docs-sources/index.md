@@ -94,6 +94,8 @@ a software development and consulting company. We help clients scale their busin
    usage/ignoring
    usage/replacing
    usage/extending
+   usage/sequences
+   usage/output
 ```
 
 ## Copyright

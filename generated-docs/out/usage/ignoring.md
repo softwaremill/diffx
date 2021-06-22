@@ -16,7 +16,9 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 
 ```scala
 case class Person(name:String, age:Int)
-implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
-``` 
+implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.age)
+// modifiedDiff: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@4d9d512a
 
-Ignoring is implemented using the replacement mechanic, head over to [replacing](replacing.md) section for more details.
+compare(Person("bob", 25), Person("bob", 30))
+// res1: DiffResult = Identical(value = Person(name = "bob", age = 25))
+```

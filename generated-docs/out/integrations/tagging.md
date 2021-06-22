@@ -5,13 +5,13 @@ This module contains integration layer between [com.softwaremill.common.tagging]
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.5.0+22-d71a0664+20210622-1047-SNAPSHOT"
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.5.0+28-c6310335+20210622-1427-SNAPSHOT"
 ```
 
 ## mill 
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-tagging::0.5.0+22-d71a0664+20210622-1047-SNAPSHOT"
+ivy"com.softwaremill.diffx::diffx-tagging::0.5.0+28-c6310335+20210622-1427-SNAPSHOT"
 ```
 
 ## Usage
@@ -25,9 +25,7 @@ sealed trait T2
 case class TestData(p1: Int @@ T1, p2: Int @@ T2)
 
 val t1 = TestData(1.taggedWith[T1], 1.taggedWith[T2])
-// t1: TestData = TestData(p1 = 1, p2 = 1)
 val t2 = TestData(1.taggedWith[T1], 3.taggedWith[T2])
-// t2: TestData = TestData(p1 = 1, p2 = 3)
 ```
 
 all you need to do is to put additional diffx implicits into current scope:

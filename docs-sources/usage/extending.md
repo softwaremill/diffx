@@ -12,10 +12,11 @@ All we need to do is to use that typeclass by converting `NonEmptyList` to list 
 
 The final code looks as follows:
 
-```scala
-import cats.data.NonEmptyList
+```scala mdoc:compile-only
+import com.softwaremill.diffx._
+import _root_.cats.data.NonEmptyList
 implicit def nelDiff[T: Diff]: Diff[NonEmptyList[T]] = 
     Diff[List[T]].contramap[NonEmptyList[T]](_.toList)
 ```
 
-*Note: There is a diffx-cats module, so you don't have to do this*
+*Note: There is a [diffx-cats](../integrations/cats.md) module, so you don't have to do this*
