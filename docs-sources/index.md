@@ -86,7 +86,7 @@ a software development and consulting company. We help clients scale their busin
    integrations/tagging
    integrations/refined
    
-   .. toctree::
+.. toctree::
    :maxdepth: 1
    :caption: usage
    

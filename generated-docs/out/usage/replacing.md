@@ -18,7 +18,7 @@ import com.softwaremill.diffx._
 implicit val diffPerson: Derived[Diff[Person]] = Diff.derived[Person].modify(_.weight)
         .setTo(Diff.approximate(epsilon=5))
 // diffPerson: Derived[Diff[Person]] = Derived(
-//   value = com.softwaremill.diffx.Diff$$anon$1@67a639a8
+//   value = com.softwaremill.diffx.Diff$$anon$1@3d1a9a96
 // )
 compare(Person(23, 60), Person(23, 62))
 // res0: DiffResult = Identical(value = Person(age = 23, weight = 60))
