@@ -24,6 +24,14 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "contravariant" in {
       compare(Some(1), Option(1)) shouldBe Identical(1)
     }
+    "approximate - identical" in {
+      val diff = Diff.approximateNumericDiff[Double](0.05)
+      diff(0.12, 0.14) shouldBe Identical(0.12)
+    }
+    "approximate - different" in {
+      val diff = Diff.approximateNumericDiff[Double](0.05)
+      diff(0.12, 0.19) shouldBe DiffResultValue(0.12, 0.19)
+    }
   }
 
   "options" - {
