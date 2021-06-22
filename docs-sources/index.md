@@ -50,6 +50,15 @@ If you get warnings from Magnolia which looks like `magnolia: using fallback der
 you can use the [Silencer](https://github.com/ghik/silencer) compiler plugin to silent the warning
 with the compiler option `"-P:silencer:globalFilters=^magnolia: using fallback derivation.*$"`
 
+## Similar projects
+
+There is a number of similar projects from which diffx draws inspiration.
+
+Below is a list of some of them, which I am aware of, with their main differences:
+- [xotai/diff](https://github.com/xdotai/diff) - based on shapeless, seems not to be activly developed anymore
+- [ratatool-diffy](https://github.com/spotify/ratatool/tree/master/ratatool-diffy) - the main purpose is to compare large data sets stored on gs or hdfs
+
+
 ## Sponsors
 
 Development and maintenance of diffx is sponsored by [SoftwareMill](https://softwaremill.com), 
@@ -86,3 +95,7 @@ a software development and consulting company. We help clients scale their busin
    usage/replacing
    usage/extending
 ```
+
+## Copyright
+
+Copyright (C) 2019 SoftwareMill [https://softwaremill.com](https://softwaremill.com).
