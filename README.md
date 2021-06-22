@@ -1,6 +1,6 @@
 ![diffx](https://github.com/softwaremill/diffx/raw/master/banner.png)
 
-[![Build Status](https://img.shields.io/github/workflow/status/softwaremill/diffx.svg?branch=master)](https://github.com/softwaremill/diffx/actions)
+[![Build Status](https://img.shields.io/github/workflow/status/softwaremill/diffx/CI/master)](https://github.com/softwaremill/diffx/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.softwaremill.diffx/diffx-core_2.13/badge.svg)](https://search.maven.org/search?q=g:com.softwaremill.diffx)
 [![Gitter](https://badges.gitter.im/softwaremill/diffx.svg)](https://gitter.im/softwaremill/diffx?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Mergify Status](https://img.shields.io/endpoint.svg?url=https://gh.mergify.io/badges/softwaremill/diffx&style=flat)](https://mergify.io)
