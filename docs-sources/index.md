@@ -76,6 +76,7 @@ a software development and consulting company. We help clients scale their busin
    test-frameworks/scalatest
    test-frameworks/specs2
    test-frameworks/utest
+   test-frameworks/munit
    test-frameworks/summary
    
 .. toctree::

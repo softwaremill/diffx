@@ -117,6 +117,22 @@ lazy val utest = (projectMatrix in file("utest"))
     scalaVersions = List(scala212, scala213)
   )
 
+lazy val munit = (projectMatrix in file("munit"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-munit",
+    libraryDependencies ++= Seq(
+      "org.scalameta" %%% "munit" % "0.7.26"
+    )
+  )
+  .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+
 lazy val tagging = (projectMatrix in file("tagging"))
   .settings(commonSettings)
   .settings(
@@ -189,7 +205,7 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     ),
     mdocOut := file("generated-docs/out")
   )
-  .dependsOn(core, scalatest, specs2, utest, refined, tagging, cats)
+  .dependsOn(core, scalatest, specs2, utest, refined, tagging, cats, munit)
   .jvmPlatform(scalaVersions = List(scala213))
 
 val testJVM = taskKey[Unit]("Test JVM projects")
@@ -198,7 +214,7 @@ val testJS = taskKey[Unit]("Test JS projects")
 val allAggregates =
   core.projectRefs ++ scalatest.projectRefs ++
     specs2.projectRefs ++ utest.projectRefs ++ cats.projectRefs ++
-    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs
+    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs ++ munit.projectRefs
 
 def filterProject(p: String => Boolean) =
   ScopeFilter(inProjects(allAggregates.filter(pr => p(display(pr.project))): _*))
