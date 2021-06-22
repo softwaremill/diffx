@@ -24,6 +24,14 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "contravariant" in {
       compare(Some(1), Option(1)) shouldBe Identical(1)
     }
+    "approximate - identical" in {
+      val diff = Diff.approximate[Double](0.05)
+      diff(0.12, 0.14) shouldBe Identical(0.12)
+    }
+    "approximate - different" in {
+      val diff = Diff.approximate[Double](0.05)
+      diff(0.12, 0.19) shouldBe DiffResultValue(0.12, 0.19)
+    }
   }
 
   "options" - {
@@ -287,7 +295,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "compare lists using object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
+        implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue(ObjectMatcher.by(_.name))
         compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
       }
 
