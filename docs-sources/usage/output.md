@@ -27,7 +27,7 @@ Where, by default, `rightColor` is green and `leftColor` is red.
 
 Colors can be customized providing an implicit instance of `ConsoleColorConfig` class.
 In fact `rightColor` and `leftColor` are functions `string => string` so they can be modified to do whatever you want with the output.
-One example of that would be to use some special characters instead of color, which might be useful on some environments like e.g. CI.
+One example of that would be to use some special characters instead of colors, which might be useful on some environments like e.g. CI.
 
 ````scala mdoc:compile-only
 val colorConfigWithPlusMinus: ConsoleColorConfig =
@@ -39,8 +39,7 @@ The default theme is dark, and it can be changed using environment variable - `D
 
 ## skipping identical
 
-In some cases it might be beneficial to skip rendering the identical fields, to do that simple set `showIgnored` to `false`
-when rendering output.
+In some cases it might be desired to skip rendering the identical fields, to do that simple set `showIgnored` to `false`.
 
 ```scala mdoc
 case class Person(name:String, age:Int)
