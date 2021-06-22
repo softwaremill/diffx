@@ -173,6 +173,15 @@ texinfo_documents = [
 
 highlight_language = 'scala'
 
+# configure edit on github: https://docs.readthedocs.io/en/latest/guides/vcs.html
+html_context = {
+    'display_github': True, # Integrate GitHub
+    'github_user': 'softwaremill', # Username
+    'github_repo': 'diffx', # Repo name
+    'github_version': 'master', # Version
+    'conf_py_path': '/docs-sources/', # Path in the checkout to the docs root
+}
+
 # app setup hook
 def setup(app):
     app.add_config_value('recommonmark_config', {
