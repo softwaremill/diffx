@@ -21,6 +21,4 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 ```scala mdoc:compile-only
 case class Person(name:String, age:Int)
 implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
-``` 
-
-Ignoring is implemented using the replacement mechanic, head over to [replacing](replacing.md) section for more details.
+```

@@ -1,6 +1,6 @@
 # replacing
 
-Sometimes you might want to compare some nested values using a different comparator but, 
+Sometimes you might want to compare some nested values using a different comparator but
 the type they share is not unique within that hierarchy.
 
 Consider following example:
@@ -13,9 +13,15 @@ in order to provide a different `Diff` typeclass for only that field. While in g
 very precise it might not always be practical or even possible. Fortunately, diffx comes with a mechanism which allows
 the replacement of nested diff instances:
 
-```scala mdoc
+```scala mdoc:silent
 import com.softwaremill.diffx._
 implicit val diffPerson: Derived[Diff[Person]] = Diff.derived[Person].modify(_.weight)
         .setTo(Diff.approximate(epsilon=5))
+```
+
+```scala mdoc
 compare(Person(23, 60), Person(23, 62))
 ```
+
+In fact, replacement is so powerful that ignoring is implemented as a replacement 
+with the `Diff.ignore` instance.
