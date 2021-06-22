@@ -8,6 +8,15 @@ import com.softwaremill.diffx.generic.auto._
 `diffx` does its best to show the difference in the most readable way, but obviously the default configuration won't 
 cover all the use-cases. Because of that, there are few ways how you can modify its output.
 
+## intellij idea
+
+If you are running tests using **IntelliJ IDEA**'s test runner, you will want
+to turn off the red text coloring it uses for test failure outputs because
+it interferes with difflicious' color outputs.
+
+In <b>File | Settings | Editor | Color Scheme | Console Colors | Console | Error Output</b>, uncheck the red foreground color.
+(Solution provided by Jacob Wang @jatcwang)
+
 ## colors & signs
 
 I found it confusing to use the terms `expected`/`actual` as there seems to be no golden rule whether to keep expected on the right side or on the left side.
