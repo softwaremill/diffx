@@ -34,6 +34,9 @@ val colorConfigWithPlusMinus: ConsoleColorConfig =
 ConsoleColorConfig(default = identity, arrow = identity, right = s => "+" + s, left = s => "-" + s)
 ````
 
+There are two predefined set of colors - light and dark theme. 
+The default theme is dark, and it can be changed using environment variable - `DIFFX_COLOR_THEME`(`light`/`dark`).
+
 ## skipping identical
 
 In some cases it might be beneficial to skip rendering the identical fields, to do that simple set `showIgnored` to `false`
