@@ -18,9 +18,10 @@ If you still would like to use it implicitly, you first need to summon the insta
 the `Derived` typeclass wrapper: `Derived[Diff[Person]]`. Thanks to that trick, later you will be able to put your modified
 instance of the `Diff` typeclass into the implicit scope. The whole process looks as follows:
 
-```scala mdoc
+```scala mdoc:silent
 case class Person(name:String, age:Int)
 implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.age)
-
+```
+```scala mdoc
 compare(Person("bob", 25), Person("bob", 30))
 ```
