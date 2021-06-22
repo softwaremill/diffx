@@ -8,7 +8,7 @@ private[diffx] class ApproximateDiffForNumeric[T: Numeric](epsilon: T) extends D
     if (numeric.lt(epsilon, numeric.abs(numeric.minus(left, right)))) {
       DiffResultValue(left, right)
     } else {
-      Identical(left)
+      IdenticalValue(left)
     }
   }
 }

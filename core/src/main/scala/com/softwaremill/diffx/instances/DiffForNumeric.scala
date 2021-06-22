@@ -8,7 +8,7 @@ private[diffx] class DiffForNumeric[T: Numeric] extends Diff[T] {
     if (!numeric.equiv(left, right)) {
       DiffResultValue(left, right)
     } else {
-      Identical(left)
+      IdenticalValue(left)
     }
   }
 }

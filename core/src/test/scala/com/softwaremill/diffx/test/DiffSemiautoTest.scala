@@ -1,7 +1,7 @@
 package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx.test.ACoproduct.ProductA
-import com.softwaremill.diffx.{Derived, Diff, Identical}
+import com.softwaremill.diffx.{Derived, Diff, IdenticalValue}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -41,7 +41,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
   "should work for coproducts" in {
     implicit val dACoproduct: Derived[Diff[ACoproduct]] = Diff.derived[ACoproduct]
 
-    Diff.compare[ACoproduct](ProductA("1"), ProductA("1")) shouldBe Identical(
+    Diff.compare[ACoproduct](ProductA("1"), ProductA("1")) shouldBe IdenticalValue(
       ProductA("1")
     )
   }
@@ -49,7 +49,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
   "should allow ignoring on derived diffs" in {
     implicit val dACoproduct: Derived[Diff[ProductA]] = Diff.derived[ProductA].ignore(_.id)
 
-    Diff.compare[ProductA](ProductA("1"), ProductA("2")) shouldBe Identical(
+    Diff.compare[ProductA](ProductA("1"), ProductA("2")) shouldBe IdenticalValue(
       ProductA("1")
     )
   }
@@ -57,7 +57,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
   "should allow modifying derived diffs" in {
     implicit val dACoproduct: Derived[Diff[ProductA]] = Diff.derived[ProductA].modify(_.id).ignore()
 
-    Diff.compare[ProductA](ProductA("1"), ProductA("2")) shouldBe Identical(
+    Diff.compare[ProductA](ProductA("1"), ProductA("2")) shouldBe IdenticalValue(
       ProductA("1")
     )
   }

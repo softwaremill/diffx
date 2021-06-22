@@ -9,14 +9,16 @@ trait DiffResult extends Product with Serializable {
     showIndented(indentLevel, renderIdentical)
 
   private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String
+
+  protected def i(indent: Int): String = " " * indent
 }
 
 object DiffResult {
   private[diffx] final val indentLevel = 5
-  val Ignored = Identical("<ignored>")
+  val Ignored: IdenticalValue[Any] = IdenticalValue("<ignored>")
 }
 
-case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResultDifferent {
+case class DiffResultObject(name: String, fields: Map[String, DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
@@ -41,13 +43,15 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
   ) = {
     s"${i(indent)}${defaultColor(s"$field: ")}"
   }
+
+  override def isIdentical: Boolean = fields.values.forall(_.isIdentical)
 }
 
-case class DiffResultMap(fields: Map[DiffResult, DiffResult]) extends DiffResultDifferent {
+case class DiffResultMap(entries: Map[DiffResult, DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
-    val showFields = fields
+    val showFields = entries
       .filter { case (k, v) =>
         renderIdentical || !v.isIdentical || !k.isIdentical
       }
@@ -71,9 +75,11 @@ case class DiffResultMap(fields: Map[DiffResult, DiffResult]) extends DiffResult
   ) = {
     s"${i(indent)}${defaultColor(s"${key.showIndented(indent + indentLevel, renderIdentical)}")}"
   }
+
+  override def isIdentical: Boolean = entries.forall { case (k, v) => k.isIdentical && v.isIdentical }
 }
 
-case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
+case class DiffResultSet(diffs: List[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
@@ -82,42 +88,44 @@ case class DiffResultSet(diffs: List[DiffResult]) extends DiffResultDifferent {
       .map(f => s"${i(indent)}${f.showIndented(indent + indentLevel, renderIdentical)}")
     showFields.mkString(defaultColor("Set(\n"), ",\n", defaultColor(")"))
   }
+
+  override def isIdentical: Boolean = diffs.forall(_.isIdentical)
 }
 
-case class DiffResultString(diffs: List[DiffResult]) extends DiffResultDifferent {
+case class DiffResultString(diffs: List[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
     s"${diffs.map(_.showIndented(indent, renderIdentical)).mkString("\n")}"
   }
+
+  override def isIdentical: Boolean = diffs.forall(_.isIdentical)
 }
 
-trait DiffResultDifferent extends DiffResult {
-  override def isIdentical: Boolean = false
-
-  protected def i(indent: Int): String = " " * indent
-}
-
-case class DiffResultValue[T](left: T, right: T) extends DiffResultDifferent {
+case class DiffResultValue[T](left: T, right: T) extends DiffResult {
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String =
     showChange(s"$left", s"$right")
+
+  override def isIdentical: Boolean = false
 }
 
-case class Identical[T](value: T) extends DiffResult {
+case class IdenticalValue[T](value: T) extends DiffResult {
   override def isIdentical: Boolean = true
 
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String =
     defaultColor(s"$value")
 }
 
-case class DiffResultMissing[T](value: T) extends DiffResultDifferent {
+case class DiffResultMissing[T](value: T) extends DiffResult {
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String = {
     rightColor(s"$value")
   }
+  override def isIdentical: Boolean = false
 }
 
-case class DiffResultAdditional[T](value: T) extends DiffResultDifferent {
+case class DiffResultAdditional[T](value: T) extends DiffResult {
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String = {
     leftColor(s"$value")
   }
+  override def isIdentical: Boolean = false
 }

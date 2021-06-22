@@ -28,10 +28,6 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
     val matchedDiffs = matchedKeys.map { case (l, r) => diffKey(l._1, r._1) -> diffValue(l._2, r._2, context) }.toList
 
     val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
-    if (diffs.forall(p => p._1.isIdentical && p._2.isIdentical)) {
-      Identical(left)
-    } else {
-      DiffResultMap(diffs.toMap)
-    }
+    DiffResultMap(diffs.toMap)
   }
 }

@@ -10,7 +10,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
   "diff set output" - {
     "it should show a simple difference" in {
-      val output = DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show()
+      val output = DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
           |     a,
@@ -19,7 +19,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
     "it should show an indented difference" in {
       val output =
-        DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show()
+        DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -27,7 +27,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     }
 
     "it should show a nested list difference" in {
-      val output = DiffResultSet(List(Identical("a"), DiffResultSet(List(Identical("b"))))).show()
+      val output = DiffResultSet(List(IdenticalValue("a"), DiffResultSet(List(IdenticalValue("b"))))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -36,14 +36,14 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     }
 
     "it should show null" in {
-      val output = DiffResultSet(List(Identical(null), DiffResultValue(null, null))).show()
+      val output = DiffResultSet(List(IdenticalValue(null), DiffResultValue(null, null))).show()
       output shouldBe
         s"""Set(
           |     null,
           |     null -> null)""".stripMargin
     }
     "it shouldn't render identical elements" in {
-      val output = DiffResultSet(List(Identical("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
+      val output = DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
       output shouldBe
         s"""Set(
            |     1 -> 2)""".stripMargin
@@ -53,7 +53,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
   "diff map output" - {
     "it should show a simple diff" in {
       val output =
-        DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3)))
+        DiffResultMap(Map(IdenticalValue("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3)))
           .show()
       output shouldBe
         s"""Map(
@@ -63,7 +63,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
     "it should show an indented diff" in {
       val output =
-        DiffResultMap(Map(Identical("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3)))
+        DiffResultMap(Map(IdenticalValue("a") -> DiffResultValue(1, 2), DiffResultMissing("b") -> DiffResultMissing(3)))
           .show()
       output shouldBe
         s"""Map(
@@ -73,7 +73,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
     "it should show a nested diff" in {
       val output =
-        DiffResultMap(Map(Identical("a") -> DiffResultMap(Map(Identical("b") -> DiffResultValue(1, 2)))))
+        DiffResultMap(Map(IdenticalValue("a") -> DiffResultMap(Map(IdenticalValue("b") -> DiffResultValue(1, 2)))))
           .show()
       output shouldBe
         s"""Map(
@@ -85,9 +85,9 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       val output =
         DiffResultMap(
           Map(
-            Identical("a") -> DiffResultValue(1, 2),
-            DiffResultValue("b", "c") -> Identical(3),
-            Identical("d") -> Identical(4)
+            IdenticalValue("a") -> DiffResultValue(1, 2),
+            DiffResultValue("b", "c") -> IdenticalValue(3),
+            IdenticalValue("d") -> IdenticalValue(4)
           )
         )
           .show(renderIdentical = false)
@@ -105,7 +105,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
       val output = DiffResultObject(
         "List",
-        Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> Identical(1234))
+        Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> IdenticalValue(1234))
       )
         .show()(colorConfigWithPlusMinus)
       output shouldBe
@@ -118,7 +118,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     "it should not render identical fields" in {
       val output = DiffResultObject(
         "List",
-        Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> Identical(1234))
+        Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> IdenticalValue(1234))
       )
         .show(renderIdentical = false)
       output shouldBe

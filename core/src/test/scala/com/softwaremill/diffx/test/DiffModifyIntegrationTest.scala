@@ -17,7 +17,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
-      Map("name" -> Identical("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
+      Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
     )
   }
 
@@ -25,7 +25,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
-      Map("name" -> Identical("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> Identical(instant))
+      Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
     )
   }
 
@@ -33,7 +33,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     implicit val d: Diff[Person] = Derived[Diff[Person]]
       .ignore(_.name)
       .ignore(_.age)
-    compare(p1, p2) shouldBe Identical(p1)
+    compare(p1, p2) shouldBe IdenticalValue(p1)
   }
 
   it should "compare lists using explicit object matcher comparator" in {
@@ -44,7 +44,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
       .withListMatcher(
         ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
       )
-    compare(o1, o2) shouldBe Identical(Organization(List(p1, p2)))
+    compare(o1, o2) shouldBe IdenticalValue(Organization(List(p1, p2)))
   }
 
   it should "ignore only on right" in {
@@ -54,12 +54,12 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
     implicit val wrapperDiff: Diff[Wrapper] = Derived[Diff[Wrapper]].ignore(_.e.eachRight.name)
 
-    compare(e1, e2) shouldBe Identical(e1)
+    compare(e1, e2) shouldBe IdenticalValue(e1)
 
     val e3 = Wrapper(Left(p1))
     val e4 = Wrapper(Left(p1.copy(name = p1.name + "_modified")))
 
-    compare(e3, e4) should not be an[Identical[_]]
+    compare(e3, e4) should not be an[IdenticalValue[_]]
   }
 
   it should "ignore only on left" in {
@@ -69,11 +69,11 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
     implicit val wrapperDiff: Diff[Wrapper] = Derived[Diff[Wrapper]].ignore(_.e.eachLeft.name)
 
-    compare(e1, e2) should not be an[Identical[_]]
+    compare(e1, e2) should not be an[IdenticalValue[_]]
     val e3 = Wrapper(Left(p1))
     val e4 = Wrapper(Left(p1.copy(name = p1.name + "_modified")))
 
-    compare(e3, e4) shouldBe an[Identical[_]]
+    compare(e3, e4) shouldBe an[IdenticalValue[_]]
   }
 
   it should "match map entries by values" in {
@@ -95,9 +95,9 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
               "KeyModel",
               Map(
                 "id" -> DiffResultValue(uuid1, uuid2),
-                "name" -> Identical("k1")
+                "name" -> IdenticalValue("k1")
               )
-            ) -> Identical("val1")
+            ) -> IdenticalValue("val1")
           )
         )
       )
@@ -114,10 +114,14 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
       Map(
         "workers" -> DiffResultSet(
           List(
-            Identical(p1),
+            IdenticalValue(p1),
             DiffResultObject(
               "Person",
-              Map("name" -> Identical(p2.name), "age" -> DiffResultValue(p2.age, p2m.age), "in" -> Identical(p1.in))
+              Map(
+                "name" -> IdenticalValue(p2.name),
+                "age" -> DiffResultValue(p2.age, p2m.age),
+                "in" -> IdenticalValue(p1.in)
+              )
             )
           )
         )

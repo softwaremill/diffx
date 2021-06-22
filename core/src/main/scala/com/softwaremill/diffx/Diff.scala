@@ -31,7 +31,6 @@ trait Diff[-T] { outer =>
 object Diff extends MiddlePriorityDiff with TupleInstances {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
-  def identical[T]: Diff[T] = (left: T, _: T, _: DiffContext) => Identical(left)
   def ignored[T]: Diff[T] = (_: T, _: T, _: DiffContext) => DiffResult.Ignored
 
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
