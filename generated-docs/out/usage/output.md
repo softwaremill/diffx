@@ -56,7 +56,7 @@ val result = compare(Person("Bob", 23), Person("Alice", 23))
 //     "name" -> DiffResultString(
 //       diffs = List(DiffResultValue(left = "Bob", right = "Alice"))
 //     ),
-//     "age" -> Identical(value = 23)
+//     "age" -> IdenticalValue(value = 23)
 //   )
 // )
 result.show(renderIdentical = false)

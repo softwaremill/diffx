@@ -49,7 +49,7 @@ compare(left, right)
 //     "bar" -> DiffResultObject(
 //       name = "Bar",
 //       fields = ListMap(
-//         "s" -> Identical(value = "asdf"),
+//         "s" -> IdenticalValue(value = "asdf"),
 //         "i" -> DiffResultValue(left = 66, right = 5)
 //       )
 //     ),

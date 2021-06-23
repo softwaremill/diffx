@@ -5,13 +5,13 @@ This module contains integration layer between [com.softwaremill.common.tagging]
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.5.1"
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.5.2"
 ```
 
 ## mill 
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-tagging::0.5.1"
+ivy"com.softwaremill.diffx::diffx-tagging::0.5.2"
 ```
 
 ## Usage
@@ -39,7 +39,7 @@ compare(t1, t2)
 // res0: com.softwaremill.diffx.DiffResult = DiffResultObject(
 //   name = "TestData",
 //   fields = ListMap(
-//     "p1" -> Identical(value = 1),
+//     "p1" -> IdenticalValue(value = 1),
 //     "p2" -> DiffResultValue(left = 1, right = 3)
 //   )
 // )

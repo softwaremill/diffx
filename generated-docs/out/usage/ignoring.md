@@ -20,5 +20,11 @@ implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.age)
 ```
 ```scala
 compare(Person("bob", 25), Person("bob", 30))
-// res1: DiffResult = Identical(value = Person(name = "bob", age = 25))
+// res1: DiffResult = DiffResultObject(
+//   name = "Person",
+//   fields = ListMap(
+//     "name" -> IdenticalValue(value = "bob"),
+//     "age" -> IdenticalValue(value = "<ignored>")
+//   )
+// )
 ```

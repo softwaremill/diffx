@@ -30,7 +30,13 @@ compare(Set(bob), Set(bob, Person("2","Alice")))
 // res1: DiffResult = DiffResultSet(
 //   diffs = List(
 //     DiffResultMissing(value = Person(id = "2", name = "Alice")),
-//     Identical(value = Person(id = "1", name = "Bob"))
+//     DiffResultObject(
+//       name = "Person",
+//       fields = ListMap(
+//         "id" -> IdenticalValue(value = "1"),
+//         "name" -> IdenticalValue(value = "Bob")
+//       )
+//     )
 //   )
 // )
 ```
@@ -50,9 +56,13 @@ val bob = Person("1","Bob")
 ```scala
 compare(Map("1" -> bob), Map("2" -> bob))
 // res3: DiffResult = DiffResultMap(
-//   fields = Map(
-//     DiffResultString(diffs = List(DiffResultValue(left = "1", right = "2"))) -> Identical(
-//       value = Person(id = "1", name = "Bob")
+//   entries = Map(
+//     DiffResultString(diffs = List(DiffResultValue(left = "1", right = "2"))) -> DiffResultObject(
+//       name = "Person",
+//       fields = ListMap(
+//         "id" -> IdenticalValue(value = "1"),
+//         "name" -> IdenticalValue(value = "Bob")
+//       )
 //     )
 //   )
 // )
@@ -73,8 +83,24 @@ val alice = Person("2","Alice")
 ```
 ```scala
 compare(List(bob, alice), List(alice, bob))
-// res5: DiffResult = Identical(
-//   value = List(Person(id = "1", name = "Bob"), Person(id = "2", name = "Alice"))
+// res5: DiffResult = DiffResultObject(
+//   name = "List",
+//   fields = ListMap(
+//     "0" -> DiffResultObject(
+//       name = "Person",
+//       fields = ListMap(
+//         "id" -> IdenticalValue(value = "1"),
+//         "name" -> IdenticalValue(value = "Bob")
+//       )
+//     ),
+//     "1" -> DiffResultObject(
+//       name = "Person",
+//       fields = ListMap(
+//         "id" -> IdenticalValue(value = "2"),
+//         "name" -> IdenticalValue(value = "Alice")
+//       )
+//     )
+//   )
 // )
 ```
 

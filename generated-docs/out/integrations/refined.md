@@ -5,13 +5,13 @@ This module contains integration layer between [eu.timepit.refined](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-refined" % "0.5.1" % Test    
+"com.softwaremill.diffx" %% "diffx-refined" % "0.5.2" % Test    
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-refined::0.5.1"
+ivy"com.softwaremill.diffx::diffx-refined::0.5.2"
 ```
 
 ## Usage
@@ -40,7 +40,7 @@ compare(t1, t2)
 // res0: com.softwaremill.diffx.DiffResult = DiffResultObject(
 //   name = "TestData",
 //   fields = ListMap(
-//     "posInt" -> Identical(value = 1),
+//     "posInt" -> IdenticalValue(value = 1),
 //     "nonEmptyString" -> DiffResultString(
 //       diffs = List(DiffResultValue(left = "foo", right = "bar"))
 //     )

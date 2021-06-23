@@ -24,7 +24,13 @@ implicit val diffPerson: Derived[Diff[Person]] = Diff.derived[Person].modify(_.w
 
 ```scala
 compare(Person(23, 60), Person(23, 62))
-// res0: DiffResult = Identical(value = Person(age = 23, weight = 60))
+// res0: DiffResult = DiffResultObject(
+//   name = "Person",
+//   fields = ListMap(
+//     "age" -> IdenticalValue(value = 23),
+//     "weight" -> IdenticalValue(value = 60)
+//   )
+// )
 ```
 
 In fact, replacement is so powerful that ignoring is implemented as a replacement 
