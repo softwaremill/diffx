@@ -32,10 +32,6 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
       val matchedDiffs = matchedInstances.map { case (l, r) => l._1 -> dt(l._2, r._2, context) }.toList
 
       val diffs = ListMap((matchedDiffs ++ leftDiffs ++ rightDiffs).map { case (k, v) => k.toString -> v }: _*)
-      if (diffs.forall { case (_, v) => v.isIdentical }) {
-        Identical(left)
-      } else {
-        DiffResultObject("List", diffs)
-      }
+      DiffResultObject("List", diffs)
   }
 }

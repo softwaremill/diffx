@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.tagging.test
 
-import com.softwaremill.diffx.{Diff, DiffResultObject, DiffResultValue, Identical}
+import com.softwaremill.diffx.{Diff, DiffResultObject, DiffResultValue, IdenticalValue}
 import com.softwaremill.diffx.tagging._
 import com.softwaremill.tagging._
 import com.softwaremill.tagging.@@
@@ -15,7 +15,7 @@ class DiffTaggingSupportTest extends AnyFlatSpec with Matchers {
     val p2 = 1.taggedWith[T2]
     compare(TestData(p1, p2), TestData(p11, p2)) shouldBe DiffResultObject(
       "TestData",
-      Map("p1" -> DiffResultValue(p1, p11), "p2" -> Identical(p2))
+      Map("p1" -> DiffResultValue(p1, p11), "p2" -> IdenticalValue(p2))
     )
   }
 

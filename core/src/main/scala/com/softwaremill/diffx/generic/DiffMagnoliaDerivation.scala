@@ -1,6 +1,14 @@
 package com.softwaremill.diffx.generic
 
-import com.softwaremill.diffx.{Diff, DiffContext, DiffResultObject, DiffResultValue, FieldPath, Identical, nullGuard}
+import com.softwaremill.diffx.{
+  Diff,
+  DiffContext,
+  DiffResultObject,
+  DiffResultValue,
+  FieldPath,
+  IdenticalValue,
+  nullGuard
+}
 import magnolia._
 
 import scala.collection.immutable.ListMap
@@ -16,11 +24,7 @@ trait DiffMagnoliaDerivation extends LowPriority {
         val fieldDiff = context.getOverride(p.label).map(_.asInstanceOf[Diff[p.PType]]).getOrElse(p.typeclass)
         p.label -> fieldDiff(lType, pType, context.getNextStep(p.label))
       }: _*)
-      if (map.values.forall(p => p.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject(ctx.typeName.short, map)
-      }
+      DiffResultObject(ctx.typeName.short, map)
     }
   }
 
@@ -43,7 +47,7 @@ trait LowPriority {
       if (left != right) {
         DiffResultValue(left, right)
       } else {
-        Identical(left)
+        IdenticalValue(left)
       }
     }
 }

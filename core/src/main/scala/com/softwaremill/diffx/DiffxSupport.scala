@@ -12,7 +12,7 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with Diff
     if ((left == null && right != null) || (left != null && right == null)) {
       DiffResultValue(left, right)
     } else if (left == null && right == null) {
-      Identical(null)
+      IdenticalValue(null)
     } else {
       compareNotNull(left, right)
     }

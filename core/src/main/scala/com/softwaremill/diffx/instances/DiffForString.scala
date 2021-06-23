@@ -14,7 +14,7 @@ private[diffx] class DiffForString extends Diff[String] {
         (leftAsMap(i), rightAsMap(i)) match {
           case (Some(lv), Some(rv)) =>
             if (lv == rv) {
-              Identical(lv)
+              IdenticalValue(lv)
             } else {
               DiffResultValue(lv, rv)
             }
@@ -24,7 +24,7 @@ private[diffx] class DiffForString extends Diff[String] {
         }
       }.toList
       if (partialResults.forall(_.isIdentical)) {
-        Identical(left)
+        IdenticalValue(left)
       } else {
         DiffResultString(partialResults)
       }
