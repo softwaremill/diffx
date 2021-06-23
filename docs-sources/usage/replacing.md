@@ -28,3 +28,13 @@ compare(Person(23, 60), Person(23, 62))
 
 In fact, replacement is so powerful that ignoring is implemented as a replacement 
 with the `Diff.ignore` instance.
+
+You can use the same mechanism to set particular object matcher for given nested collection in the hierarchy.
+Depending, whether it is list, set or map a respective method needs to be called:
+```scala mdoc:silent
+case class Organization(peopleList: List[Person], peopleSet: Set[Person], peopleMap: Map[String, Person])
+implicit val diffOrg: Derived[Diff[Organization]] = Diff.derived[Organization]
+        .modify(_.peopleList).withListMatcher[Person](ObjectMatcher.byValue(_.age))
+        .modify(_.peopleSet).withSetMatcher[Person](ObjectMatcher.by(_.age))
+        .modify(_.peopleMap).withMapMatcher[String,Person](ObjectMatcher.byValue(_.age))
+```

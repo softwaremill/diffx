@@ -67,8 +67,7 @@ import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.auto._
 case class Person(id: String, name: String)
 
-implicit val personMatcher: ObjectMatcher[(Int, Person)] = 
-    ObjectMatcher.byValue(ObjectMatcher.by(_.id))
+implicit val personMatcher: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue(_.id)
 val bob = Person("1","Bob")
 val alice = Person("2","Alice")
 ```
@@ -80,3 +79,4 @@ compare(List(bob, alice), List(alice, bob))
 ```
 
 *Note: `ObjectMatcher` can be also passed explicitly, either upon creation or during modification*
+*See [replacing](replacing.md) for details.*

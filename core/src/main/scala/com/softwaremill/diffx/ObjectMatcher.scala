@@ -14,6 +14,8 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
     ObjectMatcher[U].isSameObject(f(left), f(right))
 
   def byValue[K, V: ObjectMatcher]: ObjectMatcher[(K, V)] = ObjectMatcher.by[(K, V), V](_._2)
+  def byValue[K, V, U: ObjectMatcher](f: V => U): ObjectMatcher[(K, V)] =
+    ObjectMatcher.by[(K, V), V](_._2)(ObjectMatcher.by[V, U](f))
 
   implicit def optionMatcher[T: ObjectMatcher]: ObjectMatcher[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
