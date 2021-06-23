@@ -123,14 +123,16 @@ lazy val munit = (projectMatrix in file("munit"))
     name := "diffx-munit",
     libraryDependencies ++= Seq(
       "org.scalameta" %%% "munit" % "0.7.26"
-    )
+    ),
+    testFrameworks += new TestFramework("munit.Framework")
   )
   .dependsOn(core)
   .jvmPlatform(
     scalaVersions = List(scala212, scala213)
   )
   .jsPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213),
+    settings = commonSettings ++ Seq(scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) })
   )
 
 lazy val tagging = (projectMatrix in file("tagging"))
