@@ -46,10 +46,11 @@ In below example we tell `diffx` to compare these maps by paring entries by valu
 ```scala
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.auto._
+import com.softwaremill.diffx.ObjectMatcher.MapEntry
 case class Person(id: String, name: String)
 
 val personMatcher: ObjectMatcher[Person] = ObjectMatcher.by(_.id)
-implicit val om: ObjectMatcher[(String, Person)] = ObjectMatcher.byValue(personMatcher)
+implicit val om: ObjectMatcher[MapEntry[String, Person]] = ObjectMatcher.byValue(personMatcher)
 val bob = Person("1","Bob")
 ```
 
@@ -70,14 +71,15 @@ compare(Map("1" -> bob), Map("2" -> bob))
 
 Last but not least you can use `objectMatcher` to customize paring when comparing indexed collections.
 Such collections are treated similarly to maps (they use key-value object matcher),
-but the key type is bound to `Int`.
+but the key type is bound to `Int` (`IterableEntry` is an alias for `MapEntry[Int,V]`).
 
 ```scala
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.auto._
+import com.softwaremill.diffx.ObjectMatcher.IterableEntry
 case class Person(id: String, name: String)
 
-implicit val personMatcher: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue(_.id)
+implicit val personMatcher: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.id)
 val bob = Person("1","Bob")
 val alice = Person("2","Alice")
 ```
