@@ -2,12 +2,12 @@ package com.softwaremill.diffx.instances.string
 
 import java.util
 
-class MyersDiff[T](equalizer: Equalizer[T]) extends DiffAlgorithm[T] {
+class MyersDiff[T](equalizer: Equalizer[T]) {
   def this() = this(Equalizer.default[T])
-  override def diff(
+  def diff(
       original: util.List[T],
       revised: util.List[T]
-  ): Patch[T] = {
+  ) = {
     try {
       buildRevision(buildPath(original, revised), original, revised)
     } catch {
@@ -20,7 +20,7 @@ class MyersDiff[T](equalizer: Equalizer[T]) extends DiffAlgorithm[T] {
       _path: PathNode,
       orig: util.List[T],
       rev: util.List[T]
-  ): Patch[T] = {
+  ) = {
     var path = _path
     val patch = new Patch[T]
     if (path.isSnake) path = path.prev

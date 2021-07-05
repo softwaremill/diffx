@@ -1,7 +1,5 @@
 package com.softwaremill.diffx.instances.string
 
-import com.softwaremill.diffx.{DiffResult, DiffResultValue, IdenticalValue}
-
 import java.util
 
 object DiffUtils {
@@ -11,11 +9,11 @@ object DiffUtils {
       originalLines: util.List[String],
       patch: Patch[String],
       contextSize: Int
-  ): util.List[DiffResult] = {
+  ): util.List[String] = {
     if (!patch.getDeltas.isEmpty) {
-      val ret: util.List[DiffResult] = new util.ArrayList()
-//      ret.add("--- " + original)
-//      ret.add("+++ " + revised)
+      val ret: util.List[String] = new util.ArrayList()
+      ret.add("--- " + original)
+      ret.add("+++ " + revised)
       val patchDeltas: util.List[Delta[String]] =
         new util.ArrayList(patch.getDeltas)
       val deltas: util.List[Delta[String]] = new util.ArrayList()
@@ -55,7 +53,7 @@ object DiffUtils {
       ret.addAll(curBlock)
       ret
     } else {
-      new util.ArrayList[DiffResult]()
+      new util.ArrayList[String]()
     }
   }
   def diff(
@@ -69,7 +67,7 @@ object DiffUtils {
       deltas: util.List[Delta[String]],
       contextSize: Int
   ) = {
-    val buffer = new util.ArrayList[DiffResult]
+    val buffer = new util.ArrayList[String]
     var origTotal = 0 // counter for total lines output from Original
     var revTotal = 0
     var line = 0
@@ -87,14 +85,14 @@ object DiffUtils {
     while ({
       line < curDelta.getOriginal.getPosition
     }) { //
-      buffer.add(IdenticalValue(" " + origLines.get(line)))
+      buffer.add(" " + origLines.get(line))
       origTotal += 1
       revTotal += 1
 
       line += 1
     }
     // output the first Delta
-    buffer.add(getDeltaText(curDelta))
+    buffer.addAll(getDeltaText(curDelta))
     origTotal += curDelta.getOriginal.getLines.size
     revTotal += curDelta.getRevised.getLines.size
     var deltaIndex = 1
@@ -108,13 +106,13 @@ object DiffUtils {
       while ({
         line < nextDelta.getOriginal.getPosition
       }) { // output the code between the last Delta and this one
-        buffer.add(IdenticalValue(" " + origLines.get(line)))
+        buffer.add(" " + origLines.get(line))
         origTotal += 1
         revTotal += 1
 
         line += 1
       }
-      buffer.add(getDeltaText(nextDelta)) // output the Delta
+      buffer.addAll(getDeltaText(nextDelta)) // output the Delta
 
       origTotal += nextDelta.getOriginal.getLines.size
       revTotal += nextDelta.getRevised.getLines.size
@@ -127,39 +125,38 @@ object DiffUtils {
     while ({
       (line < (contextStart + contextSize)) && (line < origLines.size)
     }) {
-      buffer.add(IdenticalValue(" " + origLines.get(line)))
+      buffer.add(" " + origLines.get(line))
       origTotal += 1
       revTotal += 1
 
       line += 1
     }
     // Create and insert the block header, conforming to the Unified Diff
-//    // standard
-//    val header = new StringBuffer
-//    header.append("@@ -")
-//    header.append(origStart)
-//    header.append(",")
-//    header.append(origTotal)
-//    header.append(" +")
-//    header.append(revStart)
-//    header.append(",")
-//    header.append(revTotal)
-//    header.append(" @@")
-//    buffer.add(0, header.toString)
+    // standard
+    val header = new StringBuffer
+    header.append("@@ -")
+    header.append(origStart)
+    header.append(",")
+    header.append(origTotal)
+    header.append(" +")
+    header.append(revStart)
+    header.append(",")
+    header.append(revTotal)
+    header.append(" @@")
+    buffer.add(0, header.toString)
     buffer
   }
 
-  private def getDeltaText(delta: Delta[String]) = { //TOOD tutaj trzeba zmienic na missing/additional
+  private def getDeltaText(delta: Delta[String]) = {
     import scala.collection.JavaConverters._
-//    val buffer = new util.ArrayList[String]
-//    for (line <- delta.getOriginal.getLines.asScala) {
-//      buffer.add("-" + line)
-//    }
-//    for (line <- delta.getRevised.getLines.asScala) {
-//      buffer.add("+" + line)
-//    }
-//    buffer
-    DiffResultValue(delta.getOriginal.getLines.asScala.mkString("\n"), delta.getRevised.getLines.asScala.mkString("\n"))
+    val buffer = new util.ArrayList[String]
+    for (line <- delta.getOriginal.getLines.asScala) {
+      buffer.add("-" + line)
+    }
+    for (line <- delta.getRevised.getLines.asScala) {
+      buffer.add("+" + line)
+    }
+    buffer
   }
 
 }

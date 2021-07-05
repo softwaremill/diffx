@@ -1,15 +1,14 @@
 package com.softwaremill.diffx.instances.string
 
-import com.softwaremill.diffx.DiffResultString
-
 import scala.collection.JavaConverters._
 
-class ExDiff(val obtained: String, val expected: String) extends Serializable {
+class AADiff(val obtained: String, val expected: String) extends Serializable {
   val obtainedClean: String = filterAnsi(obtained)
   val expectedClean: String = filterAnsi(expected)
   val obtainedLines: Seq[String] = splitIntoLines(obtainedClean)
   val expectedLines: Seq[String] = splitIntoLines(expectedClean)
-  val unifiedDiff: DiffResultString = createUnifiedDiff(obtainedLines, expectedLines)
+  val unifiedDiff: String = createUnifiedDiff(obtainedLines, expectedLines)
+  def isEmpty: Boolean = unifiedDiff.isEmpty()
 
   def createReport(
       title: String,
@@ -65,19 +64,37 @@ class ExDiff(val obtained: String, val expected: String) extends Serializable {
   private def createUnifiedDiff(
       original: Seq[String],
       revised: Seq[String]
-  ): DiffResultString = {
+  ): String = {
     val diff = DiffUtils.diff(original.asJava, revised.asJava)
-    val result = DiffUtils
-      .generateUnifiedDiff(
-        "obtained",
-        "expected",
-        original.asJava,
-        diff,
-        1
-      )
-      .asScala
-      .iterator
-    DiffResultString(result.toList)
+    val result =
+      if (diff.getDeltas.isEmpty) ""
+      else {
+        DiffUtils
+          .generateUnifiedDiff(
+            "obtained",
+            "expected",
+            original.asJava,
+            diff,
+            1
+          )
+          .asScala
+          .iterator
+          .drop(2)
+          .filterNot(_.startsWith("@@"))
+          .map { line =>
+            if (line.isEmpty()) line
+            else if (line.last == ' ') line + "∙"
+            else line
+          }
+          .map { line =>
+            if (line.startsWith("-")) line
+            else if (line.startsWith("+"))
+              line
+            else line
+          }
+          .mkString("\n")
+      }
+    result
   }
 
   private def splitIntoLines(string: String): Seq[String] = {

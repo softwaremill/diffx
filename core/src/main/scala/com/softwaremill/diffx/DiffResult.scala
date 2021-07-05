@@ -96,7 +96,7 @@ case class DiffResultString(diffs: List[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
-    s"${diffs.map(_.showIndented(indent, renderIdentical)).mkString("\n")}"
+    s"${diffs.map(_.showIndented(indent, renderIdentical)).mkString}"
   }
 
   override def isIdentical: Boolean = diffs.forall(_.isIdentical)
