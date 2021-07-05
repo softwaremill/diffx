@@ -1,5 +1,6 @@
 package com.softwaremill.diffx.test
 
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
 import com.softwaremill.diffx.generic.auto._
 import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
@@ -373,7 +374,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "compare lists using object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue(_.name)
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.name)
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using object matcher comparator when matching by pair" in {
+        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
+        val o1 = Organization(List(p1, p2WithSameNameAsP1))
+        val o2 = Organization(List(p2WithSameNameAsP1, p1))
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(p => (p.name, p.age))
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -652,7 +661,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "match map entries by values" in {
-        implicit val om: ObjectMatcher[(KeyModel, String)] = ObjectMatcher.byValue
+        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.byValue
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
