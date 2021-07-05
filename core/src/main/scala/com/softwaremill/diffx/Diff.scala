@@ -29,7 +29,7 @@ trait Diff[-T] { outer =>
     }
 }
 
-object Diff extends MiddlePriorityDiff with TupleInstances {
+object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExtensions {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def ignored[T]: Diff[T] = (_: T, _: T, _: DiffContext) => DiffResult.Ignored
