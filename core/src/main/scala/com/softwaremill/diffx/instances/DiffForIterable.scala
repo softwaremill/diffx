@@ -1,9 +1,10 @@
 package com.softwaremill.diffx.instances
 
-import com.softwaremill.diffx.Matching.{MatchingResults, matching}
+import com.softwaremill.diffx.Matching.MatchingResults
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
 import com.softwaremill.diffx._
 
+import scala.annotation.tailrec
 import scala.collection.immutable.{ListMap, ListSet}
 
 private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
@@ -16,12 +17,12 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
 
       val leftAsMap = left.toList.lift
       val rightAsMap = right.toList.lift
-      val leftv2 = ListSet(keys.map(i => i -> leftAsMap(i)): _*).collect { case (k, Some(v)) => MapEntry(k, v) }
-      val rightv2 = ListSet(keys.map(i => i -> rightAsMap(i)): _*).collect { case (k, Some(v)) => MapEntry(k, v) }
+      val lEntries = keys.map(i => i -> leftAsMap(i)).collect { case (k, Some(v)) => MapEntry(k, v) }.toList
+      val rEntries = keys.map(i => i -> rightAsMap(i)).collect { case (k, Some(v)) => MapEntry(k, v) }.toList
 
       val adjustedMatcher = context.getMatcherOverride[IterableEntry[T]].getOrElse(matcher)
       val MatchingResults(unMatchedLeftInstances, unMatchedRightInstances, matchedInstances) =
-        matching(leftv2, rightv2, adjustedMatcher)
+        matchPairs(lEntries, rEntries, adjustedMatcher)
       val leftDiffs = unMatchedLeftInstances
         .diff(unMatchedRightInstances)
         .collectFirst { case MapEntry(k, v) => k -> DiffResultAdditional(v) }
@@ -34,5 +35,33 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
 
       val diffs = ListMap((matchedDiffs ++ leftDiffs ++ rightDiffs).map { case (k, v) => k.toString -> v }: _*)
       DiffResultObject("List", diffs)
+  }
+
+  private def matchPairs(
+      left: List[IterableEntry[T]],
+      right: List[IterableEntry[T]],
+      matcher: ObjectMatcher[IterableEntry[T]]
+  ): MatchingResults[IterableEntry[T]] = {
+    @tailrec
+    def loop(
+        left: List[IterableEntry[T]],
+        right: List[IterableEntry[T]],
+        matches: List[(IterableEntry[T], IterableEntry[T])],
+        leftUnmatched: List[IterableEntry[T]]
+    ): MatchingResults[IterableEntry[T]] = {
+      left match {
+        case lHead :: tail =>
+          val maybeMatch = right.collectFirst {
+            case r if matcher.isSameObject(lHead, r) => lHead -> r
+          }
+          maybeMatch match {
+            case Some(m @ (_, rm)) =>
+              loop(tail, right.filterNot(r => r.key == rm.key), matches :+ m, leftUnmatched)
+            case None => loop(tail, right, matches, leftUnmatched :+ lHead)
+          }
+        case Nil => MatchingResults(ListSet(leftUnmatched: _*), ListSet(right: _*), ListSet(matches: _*))
+      }
+    }
+    loop(left, right, List.empty, List.empty)
   }
 }

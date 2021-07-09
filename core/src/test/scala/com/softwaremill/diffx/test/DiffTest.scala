@@ -395,6 +395,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
         compare(o1, o2).isIdentical shouldBe true
       }
 
+      "compare lists using value object matcher" in {
+        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
+        val o1 = Organization(List(p1, p2WithSameNameAsP1))
+        val o2 = Organization(List(p2WithSameNameAsP1, p1))
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(identity(_))
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare correctly lists with duplicates using objectMatcher" in {
+        val o1 = Organization(List(p1, p1))
+        val o2 = Organization(List(p1, p1))
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(identity(_))
+        val result = compare(o1, o2)
+        result.isIdentical shouldBe true
+      }
+
       "should preserve order of elements" in {
         val l1 = List(1, 2, 3, 4, 5, 6)
         val l2 = List(1, 2, 3, 4, 5, 7)
