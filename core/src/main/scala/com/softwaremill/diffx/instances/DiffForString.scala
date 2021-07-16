@@ -3,7 +3,6 @@ package com.softwaremill.diffx.instances
 import com.github.difflib.text.DiffRow.Tag
 import com.github.difflib.text.{DiffRow, DiffRowGenerator}
 import com.softwaremill.diffx._
-import com.softwaremill.diffx.instances.DiffForString.join
 
 import java.util
 import scala.collection.JavaConverters._
@@ -18,13 +17,19 @@ private[diffx] class DiffForString extends Diff[String] {
     .newTag(_ => "")
     .build()
 
-  override def apply(left: String, right: String, context: DiffContext): DiffResult = {
-    val rows = generator.generateDiffRows(splitIntoLines(left), splitIntoLines(right))
-    processTextDiffs(rows)
-  }
+  override def apply(left: String, right: String, context: DiffContext): DiffResult =
+    nullGuard(left, right) { (left, right) =>
+      val rows = generator.generateDiffRows(splitIntoLines(left), splitIntoLines(right))
+      val lineResults = processTextDiffs(rows)
+      if (lineResults.forall(_.isIdentical)) {
+        IdenticalValue(left)
+      } else {
+        DiffResultString(lineResults)
+      }
+    }
 
-  private def processTextDiffs(rows: util.List[DiffRow]): DiffResult = {
-    DiffResultString(rows.asScala.toList.flatMap { row =>
+  private def processTextDiffs(rows: util.List[DiffRow]) = {
+    rows.asScala.toList.flatMap { row =>
       row.getTag match {
         case Tag.INSERT => List(DiffResultMissing(row.getNewLine))
         case Tag.DELETE => List(DiffResultAdditional(row.getOldLine))
@@ -40,7 +45,7 @@ private[diffx] class DiffForString extends Diff[String] {
           }
         case Tag.EQUAL => List(IdenticalValue(row.getNewLine))
       }
-    })
+    }
   }
 
   private def processLineDiffs(rows: util.List[DiffRow]): List[DiffResult] = {
@@ -85,16 +90,5 @@ private[diffx] class DiffForString extends Diff[String] {
 
   private def splitIntoLines(string: String) = {
     string.trim().replace("\r\n", "\n").split("\n").toIndexedSeq.asJava
-  }
-}
-object DiffForString {
-  private def join[T](results: List[T])(sep: T): List[T] = {
-    results.zipWithIndex.flatMap { case (item, index) =>
-      if (index == 0) {
-        List(item)
-      } else {
-        List(sep, item)
-      }
-    }
   }
 }

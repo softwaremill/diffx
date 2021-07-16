@@ -14,7 +14,10 @@ class RefinedSupportTest extends AnyFlatSpec with Matchers {
     val testData2 = TestData(1, "bar")
     compare(testData1, testData2) shouldBe DiffResultObject(
       "TestData",
-      Map("posInt" -> IdenticalValue(1), "nonEmptyString" -> DiffResultString(List(DiffResultValue("foo", "bar"))))
+      Map(
+        "posInt" -> IdenticalValue(1),
+        "nonEmptyString" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue("foo", "bar")))))
+      )
     )
   }
 }
