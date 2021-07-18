@@ -16,13 +16,11 @@ package com.softwaremill.diffx.instances.string
  * limitations under the License.
  */
 
-import java.util._
 import java.util
-import java.util.function.BiFunction
-import java.util.function.BiPredicate
-import java.util.function.Function
+import java.util._
+import java.util.function.{BiPredicate, Function}
 import java.util.regex.Pattern
-import java.util.stream.Collectors.toList
+import scala.collection.JavaConversions._
 
 /** This class for generating DiffRows for side-by-sidy view. You can customize
   * the way of generating. For example, show inline diffs on not, ignoring white
@@ -86,66 +84,6 @@ object DiffRowGenerator {
       if (pos < str.length) list.add(str.substring(pos))
     }
     list
-  }
-
-  /** Wrap the elements in the sequence with the given tag
-    *
-    * @param startPosition the position from which tag should start. The
-    *                      counting start from a zero.
-    * @param endPosition   the position before which tag should should be closed.
-    * @param tagGenerator  the tag generator
-    */
-  private def wrapInTag(
-      sequence: util.List[String],
-      startPosition: Int,
-      endPosition: Int,
-      tag: DiffRow.Tag,
-      tagGenerator: BiFunction[DiffRow.Tag, Boolean, String],
-      processDiffs: Function[String, String],
-      replaceLinefeedWithSpace: Boolean
-  ): Unit = {
-    var endPos = endPosition
-    var v0: Boolean = true
-    var v1: Boolean = true
-    var v2: Boolean = true
-    while ({
-      endPos >= startPosition && v0
-    }) { //search position for end tag
-      v1 = true
-      while ({
-        endPos > startPosition && v1
-      }) {
-        if (!("\n" == sequence.get(endPos - 1))) {
-          v1 = false
-        } else if (replaceLinefeedWithSpace) {
-          sequence.set(endPos - 1, " ")
-          v1 = false
-
-        }
-        endPos -= 1
-      }
-      if (endPos == startPosition) {
-        v0 = false
-      } else {
-        sequence.add(endPos, tagGenerator.apply(tag, false))
-        if (processDiffs != null) sequence.set(endPos - 1, processDiffs.apply(sequence.get(endPos - 1)))
-        endPos -= 1
-        v2 = true
-        while ({
-          endPos > startPosition && v2
-        }) {
-          if ("\n" == sequence.get(endPos - 1))
-            if (replaceLinefeedWithSpace) sequence.set(endPos - 1, " ")
-            else v2 = false
-          if (v2) {
-            if (processDiffs != null) sequence.set(endPos - 1, processDiffs.apply(sequence.get(endPos - 1)))
-            endPos -= 1
-          }
-        }
-        sequence.add(endPos, tagGenerator.apply(tag, true))
-        endPos -= 1
-      }
-    }
   }
 
   /** This class used for building the DiffRowGenerator.
@@ -302,15 +240,10 @@ object DiffRowGenerator {
 
 final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   private var columnWidth = builder.columnWidth
-  private var equalizer = builder.equalizer
-  private var ignoreWhiteSpaces = builder.ignoreWhiteSpaces
   private var inlineDiffSplitter = builder.inlineDiffSplitter
   private var mergeOriginalRevised = builder.mergeOriginalRevised
   private var reportLinesUnchanged = builder.reportLinesUnchanged
-  private var lineNormalizer = builder.lineNormalizer
-  private var processDiffs = builder.processDiffs
   private var showInlineDiffs = builder.showInlineDiffs
-  private var replaceOriginalLinefeedInChangesWithSpaces = builder.replaceOriginalLinefeedInChangesWithSpaces
 
   /** Get the DiffRows describing the difference between original and revised
     * texts using the given patch. Useful for displaying side-by-side diff.
@@ -357,19 +290,16 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   ) = {
     val orig = delta.getSource
     val rev = delta.getTarget
-    import scala.collection.JavaConversions._
     for (line <- original.subList(endPos, orig.getPosition)) {
       diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, line, line))
     }
     delta.getType match {
       case Delta.TYPE.INSERT =>
-        import scala.collection.JavaConversions._
         for (line <- rev.getLines) {
           diffRows.add(buildDiffRow(DiffRow.Tag.INSERT, "", line))
         }
 
       case Delta.TYPE.DELETE =>
-        import scala.collection.JavaConversions._
         for (line <- orig.getLines) {
           diffRows.add(buildDiffRow(DiffRow.Tag.DELETE, line, ""))
         }
@@ -401,7 +331,6 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   private def decompressDeltas(delta: Delta[String]): util.List[Delta[String]] = {
     if ((delta.getType == Delta.TYPE.CHANGE) && delta.getSource.size != delta.getTarget.size) {
       val deltas = new util.ArrayList[Delta[String]]
-      //System.out.println("decompress this " + delta);
       val minSize = Math.min(delta.getSource.size, delta.getTarget.size)
       val orig = delta.getSource
       val rev = delta.getTarget
@@ -433,8 +362,8 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   private def buildDiffRow(`type`: DiffRow.Tag, orgline: String, newline: String) = if (reportLinesUnchanged)
     new DiffRow(`type`, orgline, newline)
   else {
-    var wrapOrg = preprocessLine(orgline)
-    var wrapNew = preprocessLine(newline)
+    val wrapOrg = preprocessLine(orgline)
+    val wrapNew = preprocessLine(newline)
     new DiffRow(`type`, wrapOrg, wrapNew)
   }
 
@@ -452,41 +381,20 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
     val rev = normalizeLines(delta.getTarget.getLines)
     val joinedOrig = String.join("\n", orig)
     val joinedRev = String.join("\n", rev)
-    var origList = inlineDiffSplitter.apply(joinedOrig)
-    var revList = inlineDiffSplitter.apply(joinedRev)
+    val origList = inlineDiffSplitter.apply(joinedOrig)
+    val revList = inlineDiffSplitter.apply(joinedRev)
     val inlineDeltas = DiffUtils.diff(origList, revList).getDeltas
     Collections.reverse(inlineDeltas)
-    import scala.collection.JavaConversions._
     for (inlineDelta <- inlineDeltas) {
       val inlineOrig = inlineDelta.getSource
       val inlineRev = inlineDelta.getTarget
-      if (inlineDelta.getType eq Delta.TYPE.DELETE) {
-//        DiffRowGenerator.wrapInTag(
-//          origList,
-//          inlineOrig.getPosition,
-//          inlineOrig.getPosition + inlineOrig.size,
-//          DiffRow.Tag.DELETE,
-//          oldTag,
-//          processDiffs,
-//          replaceOriginalLinefeedInChangesWithSpaces && mergeOriginalRevised
-//        )
-      } else if (inlineDelta.getType eq Delta.TYPE.INSERT) {
+      if (inlineDelta.getType eq Delta.TYPE.INSERT) {
         if (mergeOriginalRevised) {
           origList.addAll(
             inlineOrig.getPosition,
             revList.subList(inlineRev.getPosition, inlineRev.getPosition + inlineRev.size)
           )
-//          DiffRowGenerator.wrapInTag(
-//            origList,
-//            inlineOrig.getPosition,
-//            inlineOrig.getPosition + inlineRev.size,
-//            DiffRow.Tag.INSERT,
-//            newTag,
-//            processDiffs,
-//            false
-//          )
-        } else {
-//          DiffRowGenerator.wrapInTag(revList, inlineRev.getPosition, inlineRev.getPosition + inlineRev.size, DiffRow.Tag.INSERT, newTag, processDiffs, false)
+
         }
       } else if (inlineDelta.getType eq Delta.TYPE.CHANGE) {
         if (mergeOriginalRevised) {
@@ -494,44 +402,14 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
             inlineOrig.getPosition + inlineOrig.size,
             revList.subList(inlineRev.getPosition, inlineRev.getPosition + inlineRev.size)
           )
-//          DiffRowGenerator.wrapInTag(
-//            origList,
-//            inlineOrig.getPosition + inlineOrig.size,
-//            inlineOrig.getPosition + inlineOrig.size + inlineRev.size,
-//            DiffRow.Tag.CHANGE,
-//            newTag,
-//            processDiffs,
-//            false
-//          )
-        } else {
-//          DiffRowGenerator.wrapInTag(
-//            revList,
-//            inlineRev.getPosition,
-//            inlineRev.getPosition + inlineRev.size,
-//            DiffRow.Tag.CHANGE,
-//            newTag,
-//            processDiffs,
-//            false
-//          )
         }
-//        DiffRowGenerator.wrapInTag(
-//          origList,
-//          inlineOrig.getPosition,
-//          inlineOrig.getPosition + inlineOrig.size,
-//          DiffRow.Tag.CHANGE,
-//          oldTag,
-//          processDiffs,
-//          replaceOriginalLinefeedInChangesWithSpaces && mergeOriginalRevised
-//        )
       }
     }
     val origResult = new StringBuilder
     val revResult = new StringBuilder
-    import scala.collection.JavaConversions._
     for (character <- origList) {
       origResult.append(character)
     }
-    import scala.collection.JavaConversions._
     for (character <- revList) {
       revResult.append(character)
     }
