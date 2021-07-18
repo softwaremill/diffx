@@ -52,7 +52,6 @@ lazy val core = (projectMatrix in file("core"))
     libraryDependencies ++= Seq(
       "com.propensive" %%% "magnolia" % "0.17.0",
       "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "io.github.java-diff-utils" % "java-diff-utils" % "4.10",
       "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test,
