@@ -1,21 +1,18 @@
 package com.softwaremill.diffx.instances
 
-import com.github.difflib.text.DiffRow.Tag
-import com.github.difflib.text.{DiffRow, DiffRowGenerator}
 import com.softwaremill.diffx._
+import com.softwaremill.diffx.instances.string.DiffRow.Tag
+import com.softwaremill.diffx.instances.string.{DiffRow, DiffRowGenerator}
 
 import java.util
 import scala.collection.JavaConverters._
 
 private[diffx] class DiffForString extends Diff[String] {
-  private val generator = DiffRowGenerator
-    .create()
+  private val generator = DiffRowGenerator.create
     .showInlineDiffs(false)
     .mergeOriginalRevised(false)
     .inlineDiffByWord(false)
-    .oldTag(_ => "")
-    .newTag(_ => "")
-    .build()
+    .build
 
   override def apply(left: String, right: String, context: DiffContext): DiffResult =
     nullGuard(left, right) { (left, right) =>
@@ -30,60 +27,60 @@ private[diffx] class DiffForString extends Diff[String] {
 
   private def processTextDiffs(rows: util.List[DiffRow]) = {
     rows.asScala.toList.flatMap { row =>
-      row.getTag match {
-        case Tag.INSERT => List(DiffResultMissing(row.getNewLine))
-        case Tag.DELETE => List(DiffResultAdditional(row.getOldLine))
+      row.tag match {
+        case Tag.INSERT => List(DiffResultMissing(row.newLine))
+        case Tag.DELETE => List(DiffResultAdditional(row.oldLine))
         case Tag.CHANGE =>
-          if (row.getNewLine.isEmpty) {
-            List(DiffResultAdditional(row.getOldLine))
-          } else if (row.getOldLine.isEmpty) {
-            List(DiffResultMissing(row.getNewLine))
+          if (row.newLine.isEmpty) {
+            List(DiffResultAdditional(row.oldLine))
+          } else if (row.oldLine.isEmpty) {
+            List(DiffResultMissing(row.newLine))
           } else {
-            val lineDiffs = generator.generateDiffRows(splitIntoLines(row.getOldLine), splitIntoLines(row.getNewLine))
+            val lineDiffs = generator.generateDiffRows(splitIntoLines(row.oldLine), splitIntoLines(row.newLine))
             val b = processLineDiffs(lineDiffs)
             List(DiffResultStringLine(b))
           }
-        case Tag.EQUAL => List(IdenticalValue(row.getNewLine))
+        case Tag.EQUAL => List(IdenticalValue(row.newLine))
       }
     }
   }
 
   private def processLineDiffs(rows: util.List[DiffRow]): List[DiffResult] = {
     rows.asScala.toList.flatMap { row =>
-      row.getTag match {
-        case Tag.INSERT => List(DiffResultMissing(row.getNewLine))
-        case Tag.DELETE => List(DiffResultAdditional(row.getOldLine))
+      row.tag match {
+        case Tag.INSERT => List(DiffResultMissing(row.newLine))
+        case Tag.DELETE => List(DiffResultAdditional(row.oldLine))
         case Tag.CHANGE =>
-          if (row.getNewLine.isEmpty) {
-            List(DiffResultAdditional(row.getOldLine))
-          } else if (row.getOldLine.isEmpty) {
-            List(DiffResultMissing(row.getNewLine))
+          if (row.newLine.isEmpty) {
+            List(DiffResultAdditional(row.oldLine))
+          } else if (row.oldLine.isEmpty) {
+            List(DiffResultMissing(row.newLine))
           } else {
             val rows2 = generator.generateDiffRows(
-              row.getOldLine.split(' ').toList.asJava,
-              row.getNewLine.split(' ').toList.asJava
+              row.oldLine.split(' ').toList.asJava,
+              row.newLine.split(' ').toList.asJava
             )
             processWordDiffs(rows2)
           }
-        case Tag.EQUAL => List(IdenticalValue(row.getNewLine))
+        case Tag.EQUAL => List(IdenticalValue(row.newLine))
       }
     }
   }
 
   private def processWordDiffs(rows: util.List[DiffRow]): List[DiffResult] = {
     rows.asScala.toList.map { row =>
-      row.getTag match {
-        case Tag.INSERT => DiffResultMissing(row.getNewLine)
-        case Tag.DELETE => DiffResultAdditional(row.getOldLine)
+      row.tag match {
+        case Tag.INSERT => DiffResultMissing(row.newLine)
+        case Tag.DELETE => DiffResultAdditional(row.oldLine)
         case Tag.CHANGE =>
-          if (row.getNewLine.isEmpty) {
-            DiffResultAdditional(row.getOldLine)
-          } else if (row.getOldLine.isEmpty) {
-            DiffResultMissing(row.getNewLine)
+          if (row.newLine.isEmpty) {
+            DiffResultAdditional(row.oldLine)
+          } else if (row.oldLine.isEmpty) {
+            DiffResultMissing(row.newLine)
           } else {
-            DiffResultValue(row.getOldLine, row.getNewLine)
+            DiffResultValue(row.oldLine, row.newLine)
           }
-        case Tag.EQUAL => IdenticalValue(row.getNewLine)
+        case Tag.EQUAL => IdenticalValue(row.newLine)
       }
     }
   }
