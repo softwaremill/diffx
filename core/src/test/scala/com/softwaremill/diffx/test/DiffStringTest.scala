@@ -5,6 +5,7 @@ import com.softwaremill.diffx.{
   DiffResultMissing,
   DiffResultString,
   DiffResultStringLine,
+  DiffResultStringWord,
   DiffResultValue,
   IdenticalValue
 }
@@ -67,7 +68,11 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
         val left = "abc"
         val right = "abd"
         diffForString(left, right) shouldBe DiffResultString(
-          List(DiffResultStringLine(List(DiffResultValue("abc", "abd"))))
+          List(
+            DiffResultStringLine(
+              List(DiffResultStringWord(List(IdenticalValue("a"), IdenticalValue("b"), DiffResultValue("c", "d"))))
+            )
+          )
         )
       }
       "missing word at the end of the line" in {
