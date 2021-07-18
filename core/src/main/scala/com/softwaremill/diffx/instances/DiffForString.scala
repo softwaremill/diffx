@@ -9,7 +9,7 @@ import scala.collection.JavaConverters._
 
 private[diffx] class DiffForString extends Diff[String] {
   private val generator = DiffRowGenerator.create
-    .showInlineDiffs(false)
+    .showInlineDiffs(true)
     .mergeOriginalRevised(false)
     .inlineDiffByWord(false)
     .build

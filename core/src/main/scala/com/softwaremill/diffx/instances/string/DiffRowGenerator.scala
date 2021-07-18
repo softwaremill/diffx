@@ -16,6 +16,8 @@ package com.softwaremill.diffx.instances.string
  * limitations under the License.
  */
 
+import com.softwaremill.diffx.instances.string.DiffRowGenerator.SPLITTER_BY_CHARACTER
+
 import java.util
 import java.util._
 import java.util.function.{BiPredicate, Function}
@@ -37,12 +39,6 @@ import scala.collection.JavaConversions._
   * </code>
   */
 object DiffRowGenerator {
-  val DEFAULT_EQUALIZER: BiPredicate[String, String] = new BiPredicate[String, String] {
-    override def test(t: String, u: String): Boolean = t == u
-  }
-  val IGNORE_WHITESPACE_EQUALIZER: BiPredicate[String, String] = (original: String, revised: String) =>
-    adjustWhitespace(original) == adjustWhitespace(revised)
-  val LINE_NORMALIZER_FOR_HTML: Function[String, String] = identity[String]
 
   /** Splitting lines by character to achieve char by char diff checking.
     */
@@ -97,7 +93,6 @@ object DiffRowGenerator {
     var mergeOriginalRevised = false
     var reportLinesUnchanged = false
     var inlineDiffSplitter = SPLITTER_BY_CHARACTER
-    var lineNormalizer = LINE_NORMALIZER_FOR_HTML
     var processDiffs: Function[String, String] = null
     var equalizer: Function[String, String] = null
     var replaceOriginalLinefeedInChangesWithSpaces = false
@@ -201,19 +196,6 @@ object DiffRowGenerator {
       this
     }
 
-    /** By default DiffRowGenerator preprocesses lines for HTML output. Tabs
-      * and special HTML characters like "&lt;" are replaced with its encoded
-      * value. To change this you can provide a customized line normalizer
-      * here.
-      *
-      * @param lineNormalizer
-      * @return
-      */
-    def lineNormalizer(lineNormalizer: Function[String, String]): DiffRowGenerator.Builder = {
-      this.lineNormalizer = lineNormalizer
-      this
-    }
-
     /** Provide an equalizer for diff processing.
       *
       * @param equalizer equalizer for diff processing.
@@ -240,10 +222,10 @@ object DiffRowGenerator {
 
 final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   private var columnWidth = builder.columnWidth
-  private var inlineDiffSplitter = builder.inlineDiffSplitter
+  private var inlineDiffSplitter = SPLITTER_BY_CHARACTER
   private var mergeOriginalRevised = builder.mergeOriginalRevised
   private var reportLinesUnchanged = builder.reportLinesUnchanged
-  private var showInlineDiffs = builder.showInlineDiffs
+  private var showInlineDiffs = true
 
   /** Get the DiffRows describing the difference between original and revised
     * texts using the given patch. Useful for displaying side-by-side diff.
