@@ -112,6 +112,14 @@ case class DiffResultStringLine(diffs: List[DiffResult]) extends DiffResult {
   override def isIdentical: Boolean = diffs.forall(_.isIdentical)
 }
 
+case class DiffResultStringWord(diffs: List[DiffResult]) extends DiffResult {
+  override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
+      c: ConsoleColorConfig
+  ): String = diffs.map(_.showIndented(indent, renderIdentical)).mkString
+
+  override def isIdentical: Boolean = diffs.forall(_.isIdentical)
+}
+
 case class DiffResultValue[T](left: T, right: T) extends DiffResult {
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String =
     showChange(s"$left", s"$right")

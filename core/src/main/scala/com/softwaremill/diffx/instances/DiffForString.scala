@@ -2,7 +2,7 @@ package com.softwaremill.diffx.instances
 
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.instances.string.DiffRow.Tag
-import com.softwaremill.diffx.instances.string.{DiffRow, DiffRowGenerator}
+import com.softwaremill.diffx.instances.string.{DiffRow, DiffRowGenerator, DiffUtils}
 
 import java.util
 import scala.collection.JavaConverters._
@@ -60,7 +60,8 @@ private[diffx] class DiffForString extends Diff[String] {
               row.oldLine.split(' ').toList.asJava,
               row.newLine.split(' ').toList.asJava
             )
-            processWordDiffs(rows2)
+            val words = processWordDiffs(rows2)
+            words
           }
         case Tag.EQUAL => List(IdenticalValue(row.newLine))
       }
@@ -68,6 +69,28 @@ private[diffx] class DiffForString extends Diff[String] {
   }
 
   private def processWordDiffs(rows: util.List[DiffRow]): List[DiffResult] = {
+    rows.asScala.toList.flatMap { row =>
+      row.tag match {
+        case Tag.INSERT => List(DiffResultMissing(row.newLine))
+        case Tag.DELETE => List(DiffResultAdditional(row.oldLine))
+        case Tag.CHANGE =>
+          if (row.newLine.isEmpty) {
+            List(DiffResultAdditional(row.oldLine))
+          } else if (row.oldLine.isEmpty) {
+            List(DiffResultMissing(row.newLine))
+          } else {
+            val charDiff = generator.generateDiffRows(
+              row.oldLine.toList.map(_.toString).asJava,
+              row.newLine.toList.map(_.toString).asJava
+            )
+            List(DiffResultStringWord(processCharDiffs(charDiff)))
+          }
+        case Tag.EQUAL => List(IdenticalValue(row.newLine))
+      }
+    }
+  }
+
+  private def processCharDiffs(rows: util.List[DiffRow]): List[DiffResult] = {
     rows.asScala.toList.map { row =>
       row.tag match {
         case Tag.INSERT => DiffResultMissing(row.newLine)
