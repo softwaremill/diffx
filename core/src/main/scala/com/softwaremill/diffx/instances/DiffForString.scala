@@ -9,10 +9,6 @@ import scala.collection.JavaConverters._
 
 class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
   private val generator = DiffRowGenerator.create
-    .showInlineDiffs(true)
-    .mergeOriginalRevised(false)
-    .inlineDiffByWord(false)
-    .build
 
   override def apply(left: String, right: String, context: DiffContext): DiffResult =
     nullGuard(left, right) { (left, right) =>
