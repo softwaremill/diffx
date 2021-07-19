@@ -1,6 +1,7 @@
 package com.softwaremill.diffx.instances.string
 
 import java.util
+import scala.collection.JavaConverters._
 
 class MyersDiff[T](equalizer: Equalizer[T]) {
   def this() = this(Equalizer.default[T])
@@ -41,12 +42,12 @@ class MyersDiff[T](equalizer: Equalizer[T]) {
       val original =
         new Chunk[T](
           ianchor,
-          copyOfRange(orig, ianchor, i)
+          copyOfRange(orig, ianchor, i).asScala.toList
         )
       val revised =
         new Chunk[T](
           janchor,
-          copyOfRange(rev, janchor, j)
+          copyOfRange(rev, janchor, j).asScala.toList
         )
       val delta: Delta[T] =
         if (original.size == 0 && revised.size != 0) {

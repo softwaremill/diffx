@@ -269,17 +269,17 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   ) = {
     val orig = delta.getSource
     val rev = delta.getTarget
-    for (line <- original.subList(endPos, orig.getPosition).asScala) {
+    for (line <- original.subList(endPos, orig.position).asScala) {
       diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, line, line))
     }
     delta.getType match {
       case Delta.TYPE.INSERT =>
-        for (line <- rev.getLines.asScala) {
+        for (line <- rev.lines) {
           diffRows.add(buildDiffRow(DiffRow.Tag.INSERT, "", line))
         }
 
       case Delta.TYPE.DELETE =>
-        for (line <- orig.getLines.asScala) {
+        for (line <- orig.lines) {
           diffRows.add(buildDiffRow(DiffRow.Tag.DELETE, line, ""))
         }
 
@@ -290,9 +290,9 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
             diffRows.add(
               buildDiffRow(
                 DiffRow.Tag.CHANGE,
-                if (orig.getLines.size > j) orig.getLines.get(j)
+                if (orig.lines.size > j) orig.lines(j)
                 else "",
-                if (rev.getLines.size > j) rev.getLines.get(j)
+                if (rev.lines.size > j) rev.lines(j)
                 else ""
               )
             )
@@ -315,22 +315,22 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
       val rev = delta.getTarget
       deltas.add(
         new ChangeDelta[String](
-          new Chunk[String](orig.getPosition, orig.getLines.subList(0, minSize)),
-          new Chunk[String](rev.getPosition, rev.getLines.subList(0, minSize))
+          new Chunk[String](orig.position, orig.lines.slice(0, minSize)),
+          new Chunk[String](rev.position, rev.lines.slice(0, minSize))
         )
       )
-      if (orig.getLines.size < rev.getLines.size)
+      if (orig.lines.size < rev.lines.size)
         deltas.add(
           new InsertDelta[String](
-            new Chunk[String](orig.getPosition + minSize, Collections.emptyList[String]),
-            new Chunk[String](rev.getPosition + minSize, rev.getLines.subList(minSize, rev.getLines.size))
+            new Chunk[String](orig.position + minSize, scala.List.empty),
+            new Chunk[String](rev.position + minSize, rev.lines.slice(minSize, rev.lines.size))
           )
         )
       else
         deltas.add(
           new DeleteDelta[String](
-            new Chunk[String](orig.getPosition + minSize, orig.getLines.subList(minSize, orig.getLines.size)),
-            new Chunk[String](rev.getPosition + minSize, Collections.emptyList[String])
+            new Chunk[String](orig.position + minSize, orig.lines.slice(minSize, orig.lines.size)),
+            new Chunk[String](rev.position + minSize, scala.List.empty)
           )
         )
       return deltas
@@ -356,8 +356,8 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
     * @param delta the given delta
     */
   private def generateInlineDiffs(delta: Delta[String]) = {
-    val orig = normalizeLines(delta.getSource.getLines)
-    val rev = normalizeLines(delta.getTarget.getLines)
+    val orig = normalizeLines(delta.getSource.lines.asJava)
+    val rev = normalizeLines(delta.getTarget.lines.asJava)
     val joinedOrig = String.join("\n", orig)
     val joinedRev = String.join("\n", rev)
     val origList = inlineDiffSplitter.apply(joinedOrig)
@@ -370,16 +370,16 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
       if (inlineDelta.getType eq Delta.TYPE.INSERT) {
         if (mergeOriginalRevised) {
           origList.addAll(
-            inlineOrig.getPosition,
-            revList.subList(inlineRev.getPosition, inlineRev.getPosition + inlineRev.size)
+            inlineOrig.position,
+            revList.subList(inlineRev.position, inlineRev.position + inlineRev.size)
           )
 
         }
       } else if (inlineDelta.getType eq Delta.TYPE.CHANGE) {
         if (mergeOriginalRevised) {
           origList.addAll(
-            inlineOrig.getPosition + inlineOrig.size,
-            revList.subList(inlineRev.getPosition, inlineRev.getPosition + inlineRev.size)
+            inlineOrig.position + inlineOrig.size,
+            revList.subList(inlineRev.position, inlineRev.position + inlineRev.size)
           )
         }
       }
