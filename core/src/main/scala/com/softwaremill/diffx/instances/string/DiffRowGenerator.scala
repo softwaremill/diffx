@@ -20,9 +20,9 @@ import com.softwaremill.diffx.instances.string.DiffRowGenerator.SPLITTER_BY_CHAR
 
 import java.util
 import java.util._
-import java.util.function.{BiPredicate, Function}
+import java.util.function.Function
 import java.util.regex.Pattern
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 /** This class for generating DiffRows for side-by-sidy view. You can customize
   * the way of generating. For example, show inline diffs on not, ignoring white
@@ -62,8 +62,6 @@ object DiffRowGenerator {
   val WHITESPACE_PATTERN: Pattern = Pattern.compile("\\s+")
 
   def create = new DiffRowGenerator.Builder
-
-  private def adjustWhitespace(raw: String) = WHITESPACE_PATTERN.matcher(raw.trim).replaceAll(" ")
 
   protected def splitStringPreserveDelimiter(str: String, SPLIT_PATTERN: Pattern): util.List[String] = {
     val list = new util.ArrayList[String]
@@ -249,14 +247,13 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
     val diffRows = new util.ArrayList[DiffRow]
     var endPos = 0
     val deltaList = patch.getDeltas
-    import scala.collection.JavaConversions._
-    for (originalDelta <- deltaList) {
-      for (delta <- decompressDeltas(originalDelta)) {
+    for (originalDelta <- deltaList.asScala) {
+      for (delta <- decompressDeltas(originalDelta).asScala) {
         endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta)
       }
     }
     // Copy the final matching chunk if any.
-    for (line <- original.subList(endPos, original.size)) {
+    for (line <- original.subList(endPos, original.size).asScala) {
       diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, line, line))
     }
     diffRows
@@ -272,17 +269,17 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
   ) = {
     val orig = delta.getSource
     val rev = delta.getTarget
-    for (line <- original.subList(endPos, orig.getPosition)) {
+    for (line <- original.subList(endPos, orig.getPosition).asScala) {
       diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, line, line))
     }
     delta.getType match {
       case Delta.TYPE.INSERT =>
-        for (line <- rev.getLines) {
+        for (line <- rev.getLines.asScala) {
           diffRows.add(buildDiffRow(DiffRow.Tag.INSERT, "", line))
         }
 
       case Delta.TYPE.DELETE =>
-        for (line <- orig.getLines) {
+        for (line <- orig.getLines.asScala) {
           diffRows.add(buildDiffRow(DiffRow.Tag.DELETE, line, ""))
         }
 
@@ -367,7 +364,7 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
     val revList = inlineDiffSplitter.apply(joinedRev)
     val inlineDeltas = DiffUtils.diff(origList, revList).getDeltas
     Collections.reverse(inlineDeltas)
-    for (inlineDelta <- inlineDeltas) {
+    for (inlineDelta <- inlineDeltas.asScala) {
       val inlineOrig = inlineDelta.getSource
       val inlineRev = inlineDelta.getTarget
       if (inlineDelta.getType eq Delta.TYPE.INSERT) {
@@ -389,10 +386,10 @@ final class DiffRowGenerator private (val builder: DiffRowGenerator.Builder) {
     }
     val origResult = new StringBuilder
     val revResult = new StringBuilder
-    for (character <- origList) {
+    for (character <- origList.asScala) {
       origResult.append(character)
     }
-    for (character <- revList) {
+    for (character <- revList.asScala) {
       revResult.append(character)
     }
     val original = origResult.toString.split("\n")

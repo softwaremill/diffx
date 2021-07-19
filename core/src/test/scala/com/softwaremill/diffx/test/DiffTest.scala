@@ -54,7 +54,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
       compare(p1, p2) shouldBe DiffResultObject(
         "Person",
         Map(
-          "name" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue(p1.name, p2.name))))),
+          "name" -> DiffResultString(
+            List(
+              DiffResultStringLine(
+                List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("1", "2"))))
+              )
+            )
+          ),
           "age" -> DiffResultValue(p1.age, p2.age),
           "in" -> IdenticalValue(instant)
         )
@@ -119,7 +125,11 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "second" -> DiffResultObject(
             "Person",
             Map(
-              "name" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue(p2.name, p1.name))))),
+              "name" -> DiffResultString(
+                List(
+                  DiffResultStringLine(List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("2", "1")))))
+                )
+              ),
               "age" -> DiffResultValue(p2.age, p1.age),
               "in" -> IdenticalValue(instant)
             )
@@ -210,7 +220,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
               "1" -> DiffResultObject(
                 "Person",
                 Map(
-                  "name" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue(p2.name, p1.name))))),
+                  "name" -> DiffResultString(
+                    List(
+                      DiffResultStringLine(
+                        List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("2", "1"))))
+                      )
+                    )
+                  ),
                   "age" -> DiffResultValue(p2.age, p1.age),
                   "in" -> IdenticalValue(instant)
                 )
@@ -326,7 +342,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "diff" in {
         compare(List("a"), List("B")) shouldBe DiffResultObject(
           "List",
-          Map("0" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue("a", "B"))))))
+          Map(
+            "0" -> DiffResultString(
+              List(
+                DiffResultStringLine(
+                  List(DiffResultValue("a", "B"))
+                )
+              )
+            )
+          )
         )
       }
 
@@ -616,7 +640,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
             IdenticalValue("first") -> DiffResultObject(
               "Person",
               Map(
-                "name" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue(p1.name, p2.name))))),
+                "name" -> DiffResultString(
+                  List(
+                    DiffResultStringLine(
+                      List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("1", "2"))))
+                    )
+                  )
+                ),
                 "age" -> DiffResult.Ignored,
                 "in" -> IdenticalValue(p1.in)
               )

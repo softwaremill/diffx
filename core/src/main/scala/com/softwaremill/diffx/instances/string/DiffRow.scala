@@ -1,9 +1,13 @@
 package com.softwaremill.diffx.instances.string
 
 object DiffRow {
-  type Tag = Tag.Value
-  object Tag extends Enumeration {
-    val INSERT, DELETE, CHANGE, EQUAL = Value
+
+  sealed trait Tag
+  object Tag {
+    case object INSERT extends Tag
+    case object DELETE extends Tag
+    case object CHANGE extends Tag
+    case object EQUAL extends Tag
   }
 }
 

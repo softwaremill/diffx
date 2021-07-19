@@ -75,6 +75,44 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
           )
         )
       }
+
+      "single word with multiple changes - quite similar" in {
+        val left = "person"
+        val right = "parzon"
+        diffForString(left, right) shouldBe DiffResultString(
+          List(
+            DiffResultStringLine(
+              List(
+                DiffResultStringWord(
+                  List(
+                    IdenticalValue("p"),
+                    DiffResultValue("e", "a"),
+                    IdenticalValue("r"),
+                    DiffResultValue("s", "z"),
+                    IdenticalValue("o"),
+                    IdenticalValue("n")
+                  )
+                )
+              )
+            )
+          )
+        )
+      }
+
+      "single word with multiple changes - quite different" in {
+        val left = "person"
+        val right = "larsum"
+        diffForString(left, right) shouldBe DiffResultString(
+          List(
+            DiffResultStringLine(
+              List(
+                DiffResultValue("person", "larsum")
+              )
+            )
+          )
+        )
+      }
+
       "missing word at the end of the line" in {
         val left = "alice bob"
         val right = "alice bob mark"
@@ -96,6 +134,24 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
         val right = "alice mark bob"
         diffForString(left, right) shouldBe DiffResultString(
           List(DiffResultStringLine(List(IdenticalValue("alice"), DiffResultMissing("mark"), IdenticalValue("bob"))))
+        )
+      }
+
+      "wrong word in the middle" in {
+        val left = "alice lark bob"
+        val right = "alice mark bob"
+        diffForString(left, right) shouldBe DiffResultString(
+          List(
+            DiffResultStringLine(
+              List(
+                IdenticalValue("alice"),
+                DiffResultStringWord(
+                  List(DiffResultValue("l", "m"), IdenticalValue("a"), IdenticalValue("r"), IdenticalValue("k"))
+                ),
+                IdenticalValue("bob")
+              )
+            )
+          )
         )
       }
     }
