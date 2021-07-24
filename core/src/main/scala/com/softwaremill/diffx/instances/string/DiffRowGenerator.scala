@@ -34,8 +34,10 @@ final class DiffRowGenerator {
     * @param revised  the revised text
     * @return the DiffRows between original and revised texts
     */
-  def generateDiffRows(original: util.List[String], revised: util.List[String]): util.List[DiffRow] =
-    generateDiffRows(original, DiffUtils.diff(original, revised))
+  def generateDiffRows(original: util.List[String], revised: util.List[String]): util.List[DiffRow] = {
+    val patch = DiffUtils.diff(original, revised)
+    generateDiffRows(original, patch)
+  }
 
   /** Generates the DiffRows describing the difference between original and
     * revised texts using the given patch. Useful for displaying side-by-side

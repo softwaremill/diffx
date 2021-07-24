@@ -15,6 +15,21 @@ trait DiffResult extends Product with Serializable {
 
 object DiffResult {
   private[diffx] final val indentLevel = 5
+  private[diffx] def mergeChunks(diffs: List[DiffResult]) = {
+    diffs
+      .foldLeft(List.empty[DiffResult]) { (acc, item) =>
+        (acc.lastOption, item) match {
+          case (Some(d: DiffResultMissingChunk), di: DiffResultMissingChunk) =>
+            acc.dropRight(1) :+ d.copy(value = d.value + di.value)
+          case (Some(d: DiffResultAdditionalChunk), di: DiffResultAdditionalChunk) =>
+            acc.dropRight(1) :+ d.copy(value = d.value + di.value)
+          case (Some(d: DiffResultChunk), di: DiffResultChunk) =>
+            acc.dropRight(1) :+ d.copy(left = d.left + di.left, right = d.right + di.right)
+          case _ => acc :+ item
+        }
+      }
+  }
+
   val Ignored: IdenticalValue[Any] = IdenticalValue("<ignored>")
 }
 
@@ -106,7 +121,9 @@ case class DiffResultStringLine(diffs: List[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
-    s"${diffs.map(_.showIndented(indent, renderIdentical)).mkString(" ")}"
+    mergeChunks(diffs)
+      .map(_.showIndented(indent, renderIdentical))
+      .mkString
   }
 
   override def isIdentical: Boolean = diffs.forall(_.isIdentical)
@@ -116,18 +133,7 @@ case class DiffResultStringWord(diffs: List[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {
-    diffs
-      .foldLeft(List.empty[DiffResult]) { (acc, item) =>
-        (acc.lastOption, item) match {
-          case (Some(d: DiffResultMissing[String]), di: DiffResultMissing[String]) =>
-            acc.dropRight(1) :+ d.copy(value = d.value + di.value)
-          case (Some(d: DiffResultAdditional[String]), di: DiffResultAdditional[String]) =>
-            acc.dropRight(1) :+ d.copy(value = d.value + di.value)
-          case (Some(d: DiffResultChunk), di: DiffResultChunk) =>
-            acc.dropRight(1) :+ d.copy(left = d.left + di.left, right = d.right + di.right)
-          case _ => acc :+ item
-        }
-      }
+    mergeChunks(diffs)
       .map(_.showIndented(indent, renderIdentical))
       .mkString
   }
@@ -139,7 +145,7 @@ case class DiffResultChunk(left: String, right: String) extends DiffResult {
   override def isIdentical: Boolean = false
 
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig) = {
-    "[" + showChange(s"$left", s"$right") + "]"
+    arrowColor("[") + showChange(s"$left", s"$right") + arrowColor("]")
   }
 }
 
@@ -159,14 +165,28 @@ case class IdenticalValue[T](value: T) extends DiffResult {
 
 case class DiffResultMissing[T](value: T) extends DiffResult {
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String = {
-    rightColor(s"$value")
+    leftColor(s"$value")
+  }
+  override def isIdentical: Boolean = false
+}
+
+case class DiffResultMissingChunk(value: String) extends DiffResult {
+  override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String = {
+    leftColor(s"[$value]")
   }
   override def isIdentical: Boolean = false
 }
 
 case class DiffResultAdditional[T](value: T) extends DiffResult {
   override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String = {
-    leftColor(s"$value")
+    rightColor(s"$value")
+  }
+  override def isIdentical: Boolean = false
+}
+
+case class DiffResultAdditionalChunk(value: String) extends DiffResult {
+  override def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig): String = {
+    rightColor(s"[$value]")
   }
   override def isIdentical: Boolean = false
 }

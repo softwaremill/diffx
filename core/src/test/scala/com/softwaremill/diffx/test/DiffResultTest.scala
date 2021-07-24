@@ -142,5 +142,20 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       ).show()
       output shouldBe "per[son -> bam]es"
     }
+
+    "display missing space character" in {
+      DiffResultString(
+        List(
+          DiffResultStringLine(
+            List(
+              IdenticalValue("abc"),
+              IdenticalValue(" "),
+              IdenticalValue("abc"),
+              DiffResultMissingChunk(" ")
+            )
+          )
+        )
+      ).show() shouldBe "abc abc[ ]"
+    }
   }
 }

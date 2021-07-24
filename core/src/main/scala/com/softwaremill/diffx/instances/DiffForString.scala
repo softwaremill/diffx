@@ -5,6 +5,7 @@ import com.softwaremill.diffx.instances.string.DiffRow.Tag
 import com.softwaremill.diffx.instances.string.{DiffRow, DiffRowGenerator}
 
 import java.util
+import scala.::
 import scala.collection.JavaConverters._
 
 class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
@@ -32,28 +33,57 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
           } else if (row.oldLine.isEmpty) {
             DiffResultMissing(row.newLine)
           } else {
+
+            val oldSplit = splitThem(row.oldLine)
+            val newSplit = splitThem(row.newLine)
             val wordDiffs = generator.generateDiffRows(
-              row.oldLine.split(' ').toList.asJava,
-              row.newLine.split(' ').toList.asJava
+              oldSplit.asJava,
+              newSplit.asJava
             )
             val words = processWordDiffs(wordDiffs)
             DiffResultStringLine(words)
           }
-        case Tag.EQUAL => IdenticalValue(row.newLine)
+        case Tag.EQUAL =>
+          IdenticalValue(row.newLine)
       }
     }
+  }
+
+  private def splitThem(line: String): List[String] = {
+    line
+      .foldLeft(List.empty[List[Char]]) { (acc, item) =>
+        acc.lastOption match {
+          case Some(word) =>
+//            if (word.lastOption.contains(' ')) {
+//              acc :+ List(item)
+//            } else {
+//              acc.dropRight(1) :+ (word ++ List(item))
+//            }
+            if (item == ' ') {
+              acc ++ List(List(item))
+            } else {
+              if (word.lastOption.contains(' ')) {
+                acc :+ List(item)
+              } else {
+                acc.dropRight(1) :+ (word ++ List(item))
+              }
+            }
+          case None => acc :+ List(item)
+        }
+      }
+      .map(_.mkString)
   }
 
   private def processWordDiffs(words: util.List[DiffRow]): List[DiffResult] = {
     words.asScala.toList.map { wordDiff =>
       wordDiff.tag match {
-        case Tag.INSERT => DiffResultMissing(wordDiff.newLine)
-        case Tag.DELETE => DiffResultAdditional(wordDiff.oldLine)
+        case Tag.INSERT => DiffResultMissingChunk(wordDiff.newLine)
+        case Tag.DELETE => DiffResultAdditionalChunk(wordDiff.oldLine)
         case Tag.CHANGE =>
           if (wordDiff.newLine.isEmpty) {
-            DiffResultAdditional(wordDiff.oldLine)
+            DiffResultAdditionalChunk(wordDiff.oldLine)
           } else if (wordDiff.oldLine.isEmpty) {
-            DiffResultMissing(wordDiff.newLine)
+            DiffResultMissingChunk(wordDiff.newLine)
           } else {
             val charDiff = generator.generateDiffRows(
               wordDiff.oldLine.toList.map(_.toString).asJava,
@@ -74,13 +104,13 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
   private def processCharDiffs(chars: util.List[DiffRow]): List[DiffResult] = {
     chars.asScala.toList.map { charDiff =>
       charDiff.tag match {
-        case Tag.INSERT => DiffResultMissing(charDiff.newLine)
-        case Tag.DELETE => DiffResultAdditional(charDiff.oldLine)
+        case Tag.INSERT => DiffResultMissingChunk(charDiff.newLine)
+        case Tag.DELETE => DiffResultAdditionalChunk(charDiff.oldLine)
         case Tag.CHANGE =>
           if (charDiff.newLine.isEmpty) {
-            DiffResultAdditional(charDiff.oldLine)
+            DiffResultAdditionalChunk(charDiff.oldLine)
           } else if (charDiff.oldLine.isEmpty) {
-            DiffResultMissing(charDiff.newLine)
+            DiffResultMissingChunk(charDiff.newLine)
           } else {
             DiffResultChunk(charDiff.oldLine, charDiff.newLine)
           }
@@ -90,6 +120,6 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
   }
 
   private def splitIntoLines(string: String) = {
-    string.trim().replace("\r\n", "\n").split("\n").toIndexedSeq.asJava
+    string.replace("\r\n", "\n").split("\n").toIndexedSeq.asJava
   }
 }
