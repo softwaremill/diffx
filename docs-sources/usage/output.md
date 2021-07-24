@@ -19,17 +19,16 @@ In <b>File | Settings | Editor | Color Scheme | Console Colors | Console | Error
 
 ## colors & signs
 
-I found it confusing to use the terms `expected`/`actual` as there seems to be no golden rule whether to keep expected on the right side or on the left side.
-Because of that, diffx refers to the values that are compared as `left` and `right` value. 
+Diffx refers to the values that are compared as `left` and `right`, but you can think of them as `actual` and `expected`. 
 
 By default, the difference is shown in the following form: 
 
 `leftColor(leftValue) -> rightColor(rightValue)`
 
-which in terms of missing/additional values e.g. in collections looks as follows:
+When comparing collection types the difference is calculated against the `right` value
 
-`leftColor(additionalValue)` in case the value was present on the left-hand side and absent on the right side
-`rightColor(missingValue)` in case the value was absent on the left-hand side and present on the right side
+`rightColor(additionalValue)` when there is an additional entity on the left-hand side
+`leftColor(missingValue)` when there is a missing entity on the left-hand side 
 
 
 Where, by default, `rightColor` is green and `leftColor` is red. 

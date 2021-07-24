@@ -111,7 +111,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       output shouldBe
         s"""List(
            |     0: -1234 -> +123,
-           |     1: +1234,
+           |     1: -1234,
            |     2: 1234)""".stripMargin
     }
 
