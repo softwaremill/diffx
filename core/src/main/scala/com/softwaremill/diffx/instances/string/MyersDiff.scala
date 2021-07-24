@@ -3,11 +3,12 @@ package com.softwaremill.diffx.instances.string
 import java.util
 import scala.collection.JavaConverters._
 
+// copied from https://github.com/java-diff-utils/java-diff-utils
 class MyersDiff[T] {
   def diff(
       original: util.List[T],
       revised: util.List[T]
-  ) = {
+  ): Patch[T] = {
     try {
       buildRevision(buildPath(original, revised), original, revised)
     } catch {
