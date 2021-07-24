@@ -13,8 +13,8 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       val output = DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
-          |     a,
-          |     1 -> 2)""".stripMargin
+           |     a,
+           |     1 -> 2)""".stripMargin
     }
 
     "it should show an indented difference" in {
@@ -39,8 +39,8 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       val output = DiffResultSet(List(IdenticalValue(null), DiffResultValue(null, null))).show()
       output shouldBe
         s"""Set(
-          |     null,
-          |     null -> null)""".stripMargin
+           |     null,
+           |     null -> null)""".stripMargin
     }
     "it shouldn't render identical elements" in {
       val output = DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
@@ -111,7 +111,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
       output shouldBe
         s"""List(
            |     0: -1234 -> +123,
-           |     1: +1234,
+           |     1: -1234,
            |     2: 1234)""".stripMargin
     }
 
@@ -125,6 +125,37 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
         s"""List(
            |     0: 1234 -> 123,
            |     1: 1234)""".stripMargin
+    }
+
+    "multiple consecutive different characters should be grouped into a single chunk" in {
+      val output = DiffResultStringWord(
+        List(
+          IdenticalValue("p"),
+          IdenticalValue("e"),
+          IdenticalValue("r"),
+          DiffResultChunk("s", "b"),
+          DiffResultChunk("o", "a"),
+          DiffResultChunk("n", "m"),
+          IdenticalValue("e"),
+          IdenticalValue("s")
+        )
+      ).show()
+      output shouldBe "per[son -> bam]es"
+    }
+
+    "display missing space character" in {
+      DiffResultString(
+        List(
+          DiffResultStringLine(
+            List(
+              IdenticalValue("abc"),
+              IdenticalValue(" "),
+              IdenticalValue("abc"),
+              DiffResultMissingChunk(" ")
+            )
+          )
+        )
+      ).show() shouldBe "abc abc[ ]"
     }
   }
 }
