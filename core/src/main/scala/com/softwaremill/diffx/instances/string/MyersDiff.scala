@@ -3,8 +3,7 @@ package com.softwaremill.diffx.instances.string
 import java.util
 import scala.collection.JavaConverters._
 
-class MyersDiff[T](equalizer: Equalizer[T]) {
-  def this() = this(Equalizer.default[T])
+class MyersDiff[T] {
   def diff(
       original: util.List[T],
       revised: util.List[T]
@@ -108,7 +107,7 @@ class MyersDiff[T](equalizer: Equalizer[T]) {
         while (
           i < N &&
           j < M &&
-          equalizer.equals(orig.get(i), rev.get(j))
+          orig.get(i) == rev.get(j)
         ) {
           i += 1
           j += 1
