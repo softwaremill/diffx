@@ -105,6 +105,7 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
       val right = "abc abc"
       diffForString(left, right).isIdentical shouldBe true
     }
+
     "missing whitespace at the end" in {
       val left = "abc abc"
       val right = "abc abc "
@@ -116,6 +117,19 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
         )
       )
     }
+
+    "duplicated whitespace in the middle" in {
+      val left = "abc abc"
+      val right = "abc  abc"
+      diffForString(left, right) shouldBe DiffResultString(
+        List(
+          DiffResultStringLine(
+            List(IdenticalValue("abc"), IdenticalValue(" "), DiffResultMissingChunk(" "), IdenticalValue("abc"))
+          )
+        )
+      )
+    }
+
     "missing word at the end of the line" in {
       val left = "alice bob"
       val right = "alice bob mark"
