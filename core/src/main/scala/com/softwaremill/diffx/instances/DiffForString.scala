@@ -82,7 +82,7 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
           } else if (charDiff.oldLine.isEmpty) {
             DiffResultMissing(charDiff.newLine)
           } else {
-            DiffResultValue(charDiff.oldLine, charDiff.newLine)
+            DiffResultChunk(charDiff.oldLine, charDiff.newLine)
           }
         case Tag.EQUAL => IdenticalValue(charDiff.newLine)
       }

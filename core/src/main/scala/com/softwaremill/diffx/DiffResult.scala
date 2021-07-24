@@ -115,9 +115,32 @@ case class DiffResultStringLine(diffs: List[DiffResult]) extends DiffResult {
 case class DiffResultStringWord(diffs: List[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
-  ): String = diffs.map(_.showIndented(indent, renderIdentical)).mkString
+  ): String = {
+    diffs
+      .foldLeft(List.empty[DiffResult]) { (acc, item) =>
+        (acc.lastOption, item) match {
+          case (Some(d: DiffResultMissing[String]), di: DiffResultMissing[String]) =>
+            acc.dropRight(1) :+ d.copy(value = d.value + di.value)
+          case (Some(d: DiffResultAdditional[String]), di: DiffResultAdditional[String]) =>
+            acc.dropRight(1) :+ d.copy(value = d.value + di.value)
+          case (Some(d: DiffResultChunk), di: DiffResultChunk) =>
+            acc.dropRight(1) :+ d.copy(left = d.left + di.left, right = d.right + di.right)
+          case _ => acc :+ item
+        }
+      }
+      .map(_.showIndented(indent, renderIdentical))
+      .mkString
+  }
 
   override def isIdentical: Boolean = diffs.forall(_.isIdentical)
+}
+
+case class DiffResultChunk(left: String, right: String) extends DiffResult {
+  override def isIdentical: Boolean = false
+
+  override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit c: ConsoleColorConfig) = {
+    "[" + showChange(s"$left", s"$right") + "]"
+  }
 }
 
 case class DiffResultValue[T](left: T, right: T) extends DiffResult {

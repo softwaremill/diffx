@@ -57,7 +57,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "name" -> DiffResultString(
             List(
               DiffResultStringLine(
-                List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("1", "2"))))
+                List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("1", "2"))))
               )
             )
           ),
@@ -127,7 +127,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
             Map(
               "name" -> DiffResultString(
                 List(
-                  DiffResultStringLine(List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("2", "1")))))
+                  DiffResultStringLine(List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1")))))
                 )
               ),
               "age" -> DiffResultValue(p2.age, p1.age),
@@ -223,7 +223,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
                   "name" -> DiffResultString(
                     List(
                       DiffResultStringLine(
-                        List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("2", "1"))))
+                        List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1"))))
                       )
                     )
                   ),
@@ -643,7 +643,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
                 "name" -> DiffResultString(
                   List(
                     DiffResultStringLine(
-                      List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultValue("1", "2"))))
+                      List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("1", "2"))))
                     )
                   )
                 ),

@@ -2,6 +2,7 @@ package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx.{
   DiffResultAdditional,
+  DiffResultChunk,
   DiffResultMissing,
   DiffResultString,
   DiffResultStringLine,
@@ -70,7 +71,7 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
         diffForString(left, right) shouldBe DiffResultString(
           List(
             DiffResultStringLine(
-              List(DiffResultStringWord(List(IdenticalValue("a"), IdenticalValue("b"), DiffResultValue("c", "d"))))
+              List(DiffResultStringWord(List(IdenticalValue("a"), IdenticalValue("b"), DiffResultChunk("c", "d"))))
             )
           )
         )
@@ -86,9 +87,9 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
                 DiffResultStringWord(
                   List(
                     IdenticalValue("p"),
-                    DiffResultValue("e", "a"),
+                    DiffResultChunk("e", "a"),
                     IdenticalValue("r"),
-                    DiffResultValue("s", "z"),
+                    DiffResultChunk("s", "z"),
                     IdenticalValue("o"),
                     IdenticalValue("n")
                   )
@@ -146,7 +147,7 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
               List(
                 IdenticalValue("alice"),
                 DiffResultStringWord(
-                  List(DiffResultValue("l", "m"), IdenticalValue("a"), IdenticalValue("r"), IdenticalValue("k"))
+                  List(DiffResultChunk("l", "m"), IdenticalValue("a"), IdenticalValue("r"), IdenticalValue("k"))
                 ),
                 IdenticalValue("bob")
               )
