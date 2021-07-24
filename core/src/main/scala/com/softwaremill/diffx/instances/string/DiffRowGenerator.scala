@@ -17,7 +17,7 @@ package com.softwaremill.diffx.instances.string
  */
 
 import java.util
-import java.util._
+import java.util.Collections
 import scala.collection.JavaConverters._
 
 object DiffRowGenerator {
@@ -34,20 +34,12 @@ final class DiffRowGenerator {
     * @param revised  the revised text
     * @return the DiffRows between original and revised texts
     */
-  def generateDiffRows(original: util.List[String], revised: util.List[String]): util.List[DiffRow] = {
-    val patch = DiffUtils.diff(original, revised)
-    generateDiffRows(original, patch)
+  def generateDiffRows(original: List[String], revised: List[String]): List[DiffRow] = {
+    val patch = DiffUtils.diff(original.asJava, revised.asJava)
+    generateDiffRowsFromPatch(original.asJava, patch).asScala.toList
   }
 
-  /** Generates the DiffRows describing the difference between original and
-    * revised texts using the given patch. Useful for displaying side-by-side
-    * diff.
-    *
-    * @param original the original text
-    * @param patch    the given patch
-    * @return the DiffRows between original and revised texts
-    */
-  def generateDiffRows(original: util.List[String], patch: Patch[String]): util.List[DiffRow] = {
+  private def generateDiffRowsFromPatch(original: util.List[String], patch: Patch[String]): util.List[DiffRow] = {
     val diffRows = new util.ArrayList[DiffRow]
     var endPos = 0
     val deltaList = patch.getDeltas
