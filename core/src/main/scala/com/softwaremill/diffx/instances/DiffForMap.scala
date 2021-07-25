@@ -1,62 +1,42 @@
 package com.softwaremill.diffx.instances
 
 import com.softwaremill.diffx.Matching._
+import com.softwaremill.diffx.ObjectMatcher.MapEntry
 import com.softwaremill.diffx._
 
 private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](
-    matcher: ObjectMatcher[K],
+    matcher: ObjectMatcher[MapEntry[K, V]],
     diffKey: Diff[K],
-    diffValue: Diff[Option[V]]
+    diffValue: Diff[V]
 ) extends Diff[C[K, V]] {
   override def apply(
       left: C[K, V],
       right: C[K, V],
-      toIgnore: List[FieldPath]
+      context: DiffContext
   ): DiffResult = nullGuard(left, right) { (left, right) =>
+    val adjustedMatcher = context.getMatcherOverride[MapEntry[K, V]].getOrElse(matcher)
     val MatchingResults(unMatchedLeftKeys, unMatchedRightKeys, matchedKeys) =
-      matching[K](left.keySet, right.keySet, matcher, diffKey, toIgnore)
-    val leftDiffs = this.leftDiffs(left, unMatchedLeftKeys, unMatchedRightKeys)
-    val rightDiffs = this.rightDiffs(right, unMatchedLeftKeys, unMatchedRightKeys)
-    val matchedDiffs = this.matchedDiffs(matchedKeys, left, right, toIgnore)
-    val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
-    if (diffs.forall(p => p._1.isIdentical && p._2.isIdentical)) {
-      Identical(left)
-    } else {
-      DiffResultMap(diffs.toMap)
-    }
-  }
+      matching(
+        left.map { case (k, v) => MapEntry.apply(k, v) }.toSet,
+        right.map { case (k, v) => MapEntry.apply(k, v) }.toSet,
+        adjustedMatcher,
+        diffKey.contramap[MapEntry[K, V]](_.key),
+        context
+      )
 
-  private def matchedDiffs(
-      matchedKeys: scala.collection.Set[(K, K)],
-      left: C[K, V],
-      right: C[K, V],
-      toIgnore: List[FieldPath]
-  ): List[(DiffResult, DiffResult)] = {
-    matchedKeys.map { case (lKey, rKey) =>
-      val result = diffKey.apply(lKey, rKey)
-      result -> diffValue.apply(left.get(lKey), right.get(rKey), toIgnore)
-    }.toList
-  }
-
-  private def rightDiffs(
-      right: C[K, V],
-      unMatchedLeftKeys: scala.collection.Set[K],
-      unMatchedRightKeys: scala.collection.Set[K]
-  ): List[(DiffResult, DiffResult)] = {
-    unMatchedRightKeys
-      .diff(unMatchedLeftKeys)
-      .map(k => DiffResultMissing(k) -> DiffResultMissing(right(k)))
-      .toList
-  }
-
-  private def leftDiffs(
-      left: C[K, V],
-      unMatchedLeftKeys: scala.collection.Set[K],
-      unMatchedRightKeys: scala.collection.Set[K]
-  ): List[(DiffResult, DiffResult)] = {
-    unMatchedLeftKeys
+    val leftDiffs = unMatchedLeftKeys
       .diff(unMatchedRightKeys)
-      .map(k => DiffResultAdditional(k) -> DiffResultAdditional(left(k)))
+      .collectFirst { case MapEntry(k, v) => DiffResultAdditional(k) -> DiffResultAdditional(v) }
       .toList
+    val rightDiffs = unMatchedRightKeys
+      .diff(unMatchedLeftKeys)
+      .collectFirst { case MapEntry(k, v) => DiffResultMissing(k) -> DiffResultMissing(v) }
+      .toList
+    val matchedDiffs = matchedKeys.map { case (l, r) =>
+      diffKey(l.key, r.key) -> diffValue(l.value, r.value, context)
+    }.toList
+
+    val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
+    DiffResultMap(diffs.toMap)
   }
 }

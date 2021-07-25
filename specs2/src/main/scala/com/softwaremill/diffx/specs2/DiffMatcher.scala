@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.specs2
 
-import com.softwaremill.diffx.{ConsoleColorConfig, Diff, DiffResultDifferent}
+import com.softwaremill.diffx.{ConsoleColorConfig, Diff}
 import org.specs2.matcher.{Expectable, MatchResult, Matcher}
 
 trait DiffMatcher {
@@ -14,11 +14,13 @@ trait DiffMatcher {
           diff.apply(left.value, right).isIdentical
         },
         okMessage = "",
-        koMessage = diff.apply(left.value, right) match {
-          case c: DiffResultDifferent =>
-            c.show()
-          case _ =>
+        koMessage = {
+          val diffResult = diff.apply(left.value, right)
+          if (!diffResult.isIdentical) {
+            diffResult.show()
+          } else {
             ""
+          }
         },
         left
       )

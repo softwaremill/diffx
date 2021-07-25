@@ -6,14 +6,10 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2),
         right: (T1, T2),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List("_1" -> d1.apply(left._1, right._1), "_2" -> d2.apply(left._2, right._2)).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple2", results)
-      }
+      DiffResultObject("Tuple2", results)
     }
   }
 
@@ -22,18 +18,14 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3),
           right: (T1, T2, T3),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple3", results)
-        }
+        DiffResultObject("Tuple3", results)
       }
     }
 
@@ -46,7 +38,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4),
         right: (T1, T2, T3, T4),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -54,11 +46,7 @@ trait TupleInstances {
         "_3" -> d3.apply(left._3, right._3),
         "_4" -> d4.apply(left._4, right._4)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple4", results)
-      }
+      DiffResultObject("Tuple4", results)
     }
   }
 
@@ -72,7 +60,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4, T5),
         right: (T1, T2, T3, T4, T5),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -81,11 +69,7 @@ trait TupleInstances {
         "_4" -> d4.apply(left._4, right._4),
         "_5" -> d5.apply(left._5, right._5)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple5", results)
-      }
+      DiffResultObject("Tuple5", results)
     }
   }
 
@@ -100,7 +84,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4, T5, T6),
         right: (T1, T2, T3, T4, T5, T6),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -110,11 +94,7 @@ trait TupleInstances {
         "_5" -> d5.apply(left._5, right._5),
         "_6" -> d6.apply(left._6, right._6)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple6", results)
-      }
+      DiffResultObject("Tuple6", results)
     }
   }
 
@@ -130,7 +110,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4, T5, T6, T7),
         right: (T1, T2, T3, T4, T5, T6, T7),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -141,11 +121,7 @@ trait TupleInstances {
         "_6" -> d6.apply(left._6, right._6),
         "_7" -> d7.apply(left._7, right._7)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple7", results)
-      }
+      DiffResultObject("Tuple7", results)
     }
   }
 
@@ -162,7 +138,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4, T5, T6, T7, T8),
         right: (T1, T2, T3, T4, T5, T6, T7, T8),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -174,11 +150,7 @@ trait TupleInstances {
         "_7" -> d7.apply(left._7, right._7),
         "_8" -> d8.apply(left._8, right._8)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple8", results)
-      }
+      DiffResultObject("Tuple8", results)
     }
   }
 
@@ -196,7 +168,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4, T5, T6, T7, T8, T9),
         right: (T1, T2, T3, T4, T5, T6, T7, T8, T9),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -209,11 +181,7 @@ trait TupleInstances {
         "_8" -> d8.apply(left._8, right._8),
         "_9" -> d9.apply(left._9, right._9)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple9", results)
-      }
+      DiffResultObject("Tuple9", results)
     }
   }
 
@@ -233,7 +201,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -247,11 +215,7 @@ trait TupleInstances {
           "_9" -> d9.apply(left._9, right._9),
           "_10" -> d10.apply(left._10, right._10)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple10", results)
-        }
+        DiffResultObject("Tuple10", results)
       }
     }
 
@@ -272,7 +236,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -287,11 +251,7 @@ trait TupleInstances {
           "_10" -> d10.apply(left._10, right._10),
           "_11" -> d11.apply(left._11, right._11)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple11", results)
-        }
+        DiffResultObject("Tuple11", results)
       }
     }
 
@@ -313,7 +273,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -329,11 +289,7 @@ trait TupleInstances {
           "_11" -> d11.apply(left._11, right._11),
           "_12" -> d12.apply(left._12, right._12)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple12", results)
-        }
+        DiffResultObject("Tuple12", results)
       }
     }
 
@@ -356,7 +312,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -374,7 +330,7 @@ trait TupleInstances {
           "_13" -> d13.apply(left._13, right._13)
         ).toMap
         if (results.values.forall(_.isIdentical)) {
-          Identical(left)
+          IdenticalValue(left)
         } else {
           DiffResultObject("Tuple13", results)
         }
@@ -401,7 +357,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -419,11 +375,7 @@ trait TupleInstances {
           "_13" -> d13.apply(left._13, right._13),
           "_14" -> d14.apply(left._14, right._14)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple14", results)
-        }
+        DiffResultObject("Tuple14", results)
       }
     }
 
@@ -448,7 +400,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -467,11 +419,7 @@ trait TupleInstances {
           "_14" -> d14.apply(left._14, right._14),
           "_15" -> d15.apply(left._15, right._15)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple15", results)
-        }
+        DiffResultObject("Tuple15", results)
       }
     }
 
@@ -497,7 +445,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -517,11 +465,7 @@ trait TupleInstances {
           "_15" -> d15.apply(left._15, right._15),
           "_16" -> d16.apply(left._16, right._16)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple16", results)
-        }
+        DiffResultObject("Tuple16", results)
       }
     }
 
@@ -548,7 +492,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -569,11 +513,7 @@ trait TupleInstances {
           "_16" -> d16.apply(left._16, right._16),
           "_17" -> d17.apply(left._17, right._17)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple17", results)
-        }
+        DiffResultObject("Tuple17", results)
       }
     }
 
@@ -601,7 +541,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -623,11 +563,7 @@ trait TupleInstances {
           "_17" -> d17.apply(left._17, right._17),
           "_18" -> d18.apply(left._18, right._18)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple18", results)
-        }
+        DiffResultObject("Tuple18", results)
       }
     }
 
@@ -656,7 +592,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -679,11 +615,7 @@ trait TupleInstances {
           "_18" -> d18.apply(left._18, right._18),
           "_19" -> d19.apply(left._19, right._19)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple19", results)
-        }
+        DiffResultObject("Tuple19", results)
       }
     }
 
@@ -714,7 +646,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -738,11 +670,7 @@ trait TupleInstances {
           "_19" -> d19.apply(left._19, right._19),
           "_20" -> d20.apply(left._20, right._20)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple20", results)
-        }
+        DiffResultObject("Tuple20", results)
       }
     }
 
@@ -774,7 +702,7 @@ trait TupleInstances {
       override def apply(
           left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21),
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21),
-          toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+          context: DiffContext
       ): DiffResult = {
         val results = List(
           "_1" -> d1.apply(left._1, right._1),
@@ -799,11 +727,7 @@ trait TupleInstances {
           "_20" -> d20.apply(left._20, right._20),
           "_21" -> d21.apply(left._21, right._21)
         ).toMap
-        if (results.values.forall(_.isIdentical)) {
-          Identical(left)
-        } else {
-          DiffResultObject("Tuple21", results)
-        }
+        DiffResultObject("Tuple21", results)
       }
     }
 
@@ -861,7 +785,7 @@ trait TupleInstances {
     override def apply(
         left: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22),
         right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22),
-        toIgnore: List[_root_.com.softwaremill.diffx.FieldPath]
+        context: DiffContext
     ): DiffResult = {
       val results = List(
         "_1" -> d1.apply(left._1, right._1),
@@ -887,11 +811,7 @@ trait TupleInstances {
         "_21" -> d21.apply(left._21, right._21),
         "_22" -> d22.apply(left._22, right._22)
       ).toMap
-      if (results.values.forall(_.isIdentical)) {
-        Identical(left)
-      } else {
-        DiffResultObject("Tuple22", results)
-      }
+      DiffResultObject("Tuple22", results)
     }
   }
 

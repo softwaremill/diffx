@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.refined
 
-import com.softwaremill.diffx.{DiffResultObject, DiffResultString, DiffResultValue, Identical, _}
+import com.softwaremill.diffx.{DiffResultObject, DiffResultString, DiffResultValue, IdenticalValue, _}
 import eu.timepit.refined.types.numeric.PosInt
 import eu.timepit.refined.auto._
 import eu.timepit.refined.types.string.NonEmptyString
@@ -14,7 +14,10 @@ class RefinedSupportTest extends AnyFlatSpec with Matchers {
     val testData2 = TestData(1, "bar")
     compare(testData1, testData2) shouldBe DiffResultObject(
       "TestData",
-      Map("posInt" -> Identical(1), "nonEmptyString" -> DiffResultString(List(DiffResultValue("foo", "bar"))))
+      Map(
+        "posInt" -> IdenticalValue(1),
+        "nonEmptyString" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue("foo", "bar")))))
+      )
     )
   }
 }

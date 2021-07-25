@@ -1,6 +1,8 @@
 import com.softwaremill.UpdateVersionInDocs
 import sbt.Def
 import sbt.Reference.display
+import com.softwaremill.SbtSoftwareMillCommon.commonSmlBuildSettings
+import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 
 val scala212 = "2.12.14"
 val scala213 = "2.13.6"
@@ -16,18 +18,17 @@ lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPubl
   scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
   ideSkipProject := (scalaVersion.value != scalaIdeaVersion) || thisProjectRef.value.project.contains("JS"),
   updateDocs := Def.taskDyn {
-    val files1 =
-      UpdateVersionInDocs(sLog.value, organization.value, version.value, List(file("docs-sources") / "README.md"))
+    val files1 = UpdateVersionInDocs(sLog.value, organization.value, version.value)
     Def.task {
       (docs.jvm(scala213) / mdoc).toTask("").value
-      files1 ++ Seq(file("generated-docs"), file("README.md"))
+      files1 ++ Seq(file("generated-docs/out"))
     }
   }.value
 )
 
 val compileDocs: TaskKey[Unit] = taskKey[Unit]("Compiles docs module throwing away its output")
 compileDocs := {
-  (docs.jvm(scala213) / mdoc).toTask(" --out target/sttp-docs").value
+  (docs.jvm(scala213) / mdoc).toTask(" --out target/diffx-docs").value
 }
 
 val versionSpecificScalaSources = {
@@ -118,6 +119,24 @@ lazy val utest = (projectMatrix in file("utest"))
     scalaVersions = List(scala212, scala213)
   )
 
+lazy val munit = (projectMatrix in file("munit"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-munit",
+    libraryDependencies ++= Seq(
+      "org.scalameta" %%% "munit" % "0.7.27"
+    ),
+    testFrameworks += new TestFramework("munit.Framework")
+  )
+  .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213),
+    settings = commonSettings ++ Seq(scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) })
+  )
+
 lazy val tagging = (projectMatrix in file("tagging"))
   .settings(commonSettings)
   .settings(
@@ -188,9 +207,9 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     mdocVariables := Map(
       "VERSION" -> version.value
     ),
-    mdocOut := file(".")
+    mdocOut := file("generated-docs/out")
   )
-  .dependsOn(core, scalatest, specs2, utest, refined, tagging)
+  .dependsOn(core, scalatest, specs2, utest, refined, tagging, cats, munit)
   .jvmPlatform(scalaVersions = List(scala213))
 
 val testJVM = taskKey[Unit]("Test JVM projects")
@@ -199,7 +218,7 @@ val testJS = taskKey[Unit]("Test JS projects")
 val allAggregates =
   core.projectRefs ++ scalatest.projectRefs ++
     specs2.projectRefs ++ utest.projectRefs ++ cats.projectRefs ++
-    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs
+    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs ++ munit.projectRefs
 
 def filterProject(p: String => Boolean) =
   ScopeFilter(inProjects(allAggregates.filter(pr => p(display(pr.project))): _*))

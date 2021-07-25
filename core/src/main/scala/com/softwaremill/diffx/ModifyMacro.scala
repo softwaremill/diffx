@@ -3,38 +3,62 @@ package com.softwaremill.diffx
 import scala.annotation.tailrec
 import scala.reflect.macros.blackbox
 
-object IgnoreMacro {
+object ModifyMacro {
   private val ShapeInfo = "Path must have shape: _.field1.field2.each.field3.(...)"
 
-  def derivedIgnoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
+  def derivedModifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree = applyDerivedIgnored[T, U](c)(ignoredFromPathMacro(c)(path))
+  )(path: c.Expr[T => U]): c.Tree =
+    applyDerivedModified[T, U](c)(modifiedFromPathMacro(c)(path))
 
-  private def applyDerivedIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+  private def applyDerivedModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
       path: c.Expr[List[String]]
   ): c.Tree = {
     import c.universe._
-    q"""{
-      com.softwaremill.diffx.Derived(${c.prefix}.dd.value.ignoreUnsafe($path:_*))
-     }"""
+    q"""com.softwaremill.diffx.DerivedDiffLens(${c.prefix}.dd.value, $path)"""
+  }
+
+  def derivedIgnoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[T => U]): c.Tree =
+    applyIgnoredModified[T, U](c)(modifiedFromPathMacro(c)(path))
+
+  private def applyIgnoredModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+      path: c.Expr[List[String]]
+  ): c.Tree = {
+    import c.universe._
+    val lens = applyDerivedModified[T, U](c)(path)
+    q"""$lens.ignore()"""
   }
 
   def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree = applyIgnored[T, U](c)(ignoredFromPathMacro(c)(path))
+  )(path: c.Expr[T => U]): c.Tree = applyIgnored[T, U](c)(modifiedFromPathMacro(c)(path))
 
-  private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
-      path: c.Expr[List[String]]
-  ): c.Tree = {
+  private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[List[String]]): c.Tree = {
+    import c.universe._
+    val lens = applyModified[T, U](c)(path)
+    q"""$lens.ignore()"""
+  }
+
+  def modifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[T => U]): c.Tree = applyModified[T, U](c)(modifiedFromPathMacro(c)(path))
+
+  private def applyModified[T: c.WeakTypeTag, U: c.WeakTypeTag](
+      c: blackbox.Context
+  )(path: c.Expr[List[String]]): c.Tree = {
     import c.universe._
     q"""{
-      ${c.prefix}.ignoreUnsafe($path:_*)
+      com.softwaremill.diffx.DiffLens(${c.prefix}.d, $path)
      }"""
   }
 
   /** Converts path to list of strings
     */
-  def ignoredFromPathMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
+  def modifiedFromPathMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
       path: c.Expr[T => U]
   ): c.Expr[List[String]] = {
     import c.universe._
@@ -73,11 +97,17 @@ object IgnoreMacro {
       case q"($arg) => $pathBody " => collectPathElements(pathBody, Nil)
       case _                       => c.abort(c.enclosingPosition, s"$ShapeInfo, got: ${path.tree}")
     }
-
-    c.Expr[List[String]](q"${pathEls.collect { case TermPathElement(c) =>
-      c.decodedName.toString
-    }}")
+    c.Expr[List[String]](
+      q"(${pathEls.collect {
+        case TermPathElement(c) => c.decodedName.toString
+        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachLeft" =>
+          method.decodedName.toString
+        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachRight" =>
+          method.decodedName.toString
+      }})"
+    )
   }
 
-  private[diffx] def ignoredFromPath[T, U](path: T => U): List[String] = macro ignoredFromPathMacro[T, U]
+  private[diffx] def modifiedFromPath[T, U](path: T => U): List[String] =
+    macro modifiedFromPathMacro[T, U]
 }
