@@ -1,5 +1,5 @@
 package com.softwaremill.diffx
 
-trait DiffCompanionMacro {
+import com.softwaremill.diffx.generic.DiffMagnoliaDerivation
 
-}
+trait DiffCompanionMacro extends DiffMagnoliaDerivation
