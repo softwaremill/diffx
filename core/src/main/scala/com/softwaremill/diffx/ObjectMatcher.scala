@@ -15,10 +15,10 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
     ObjectMatcher[U].isSameObject(f(left), f(right))
 
   /** Given key-value (K,V) pairs match them using V's objectMatcher */
-  def byValue[K, V: ObjectMatcher]: ObjectMatcher[(K, V)] = ObjectMatcher.by[(K, V), V](_._2)
+  def byValue[K, V: ObjectMatcher]: ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by[MapEntry[K, V], V](_.value)
 
   /** Given key-value (K,V) pairs, where V is a type of product and U is a property of V, match them using U's objectMatcher */
-  def byValue[K, V, U: ObjectMatcher](f: V => U): ObjectMatcher[(K, V)] =
+  def byValue[K, V, U: ObjectMatcher](f: V => U): ObjectMatcher[MapEntry[K, V]] =
     ObjectMatcher.byValue[K, V](ObjectMatcher.by[V, U](f))
 
   implicit def optionMatcher[T: ObjectMatcher]: ObjectMatcher[Option[T]] = (left: Option[T], right: Option[T]) => {
@@ -29,7 +29,10 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
   }
 
   /** Given key-value (K,V) pairs, match them using K's objectMatcher */
-  implicit def byKey[K: ObjectMatcher, V]: ObjectMatcher[(K, V)] = ObjectMatcher.by[(K, V), K](_._1)
+  implicit def byKey[K: ObjectMatcher, V]: ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by[MapEntry[K, V], K](_.key)
+
+  type IterableEntry[T] = MapEntry[Int, T]
+  case class MapEntry[K, V](key: K, value: V)
 }
 
 trait LowPriorityObjectMatcher {

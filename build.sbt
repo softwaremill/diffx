@@ -1,6 +1,8 @@
 import com.softwaremill.UpdateVersionInDocs
 import sbt.Def
 import sbt.Reference.display
+import com.softwaremill.SbtSoftwareMillCommon.commonSmlBuildSettings
+import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 
 val scala212 = "2.12.14"
 val scala213 = "2.13.6"
@@ -122,7 +124,7 @@ lazy val munit = (projectMatrix in file("munit"))
   .settings(
     name := "diffx-munit",
     libraryDependencies ++= Seq(
-      "org.scalameta" %%% "munit" % "0.7.26"
+      "org.scalameta" %%% "munit" % "0.7.27"
     ),
     testFrameworks += new TestFramework("munit.Framework")
   )

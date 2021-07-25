@@ -1,4 +1,5 @@
 package com.softwaremill.diffx
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
 import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
 
@@ -28,7 +29,7 @@ trait Diff[-T] { outer =>
     }
 }
 
-object Diff extends MiddlePriorityDiff with TupleInstances {
+object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExtensions {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def ignored[T]: Diff[T] = (_: T, _: T, _: DiffContext) => DiffResult.Ignored
@@ -52,7 +53,7 @@ object Diff extends MiddlePriorityDiff with TupleInstances {
   implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
       dv: Diff[V],
       dk: Diff[K],
-      matcher: ObjectMatcher[(K, V)]
+      matcher: ObjectMatcher[MapEntry[K, V]]
   ): Diff[C[K, V]] = new DiffForMap[K, V, C](matcher, dk, dv)
   implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = new DiffForOption[T](ddt)
   implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
@@ -67,7 +68,7 @@ trait MiddlePriorityDiff extends DiffMagnoliaDerivation with LowPriorityDiff {
 
   implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
       dt: Diff[T],
-      matcher: ObjectMatcher[(Int, T)]
+      matcher: ObjectMatcher[IterableEntry[T]]
   ): Diff[C[T]] = new DiffForIterable[T, C](dt, matcher)
 }
 
@@ -113,12 +114,12 @@ case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
   }
   def ignore(): Derived[Diff[T]] = Derived(outer.modifyUnsafe(path: _*)(Diff.ignored))
 
-  def withMapMatcher[K, V](m: ObjectMatcher[(K, V)])(implicit
+  def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit
       ev1: U <:< scala.collection.Map[K, V]
   ): Derived[Diff[T]] =
     Derived(outer.modifyMatcherUnsafe(path: _*)(m))
   def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Derived[Diff[T]] =
     Derived(outer.modifyMatcherUnsafe(path: _*)(m))
-  def withListMatcher[V](m: ObjectMatcher[(Int, V)])(implicit ev3: U <:< Iterable[V]): Derived[Diff[T]] =
+  def withListMatcher[V](m: ObjectMatcher[IterableEntry[V]])(implicit ev3: U <:< Iterable[V]): Derived[Diff[T]] =
     Derived(outer.modifyMatcherUnsafe(path: _*)(m))
 }

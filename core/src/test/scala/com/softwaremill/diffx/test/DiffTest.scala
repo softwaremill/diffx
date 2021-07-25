@@ -1,5 +1,6 @@
 package com.softwaremill.diffx.test
 
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
 import com.softwaremill.diffx.generic.auto._
 import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
@@ -53,7 +54,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
       compare(p1, p2) shouldBe DiffResultObject(
         "Person",
         Map(
-          "name" -> DiffResultString(List(DiffResultValue(p1.name, p2.name))),
+          "name" -> DiffResultString(
+            List(
+              DiffResultStringLine(
+                List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("1", "2"))))
+              )
+            )
+          ),
           "age" -> DiffResultValue(p1.age, p2.age),
           "in" -> IdenticalValue(instant)
         )
@@ -118,7 +125,11 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "second" -> DiffResultObject(
             "Person",
             Map(
-              "name" -> DiffResultString(List(DiffResultValue(p2.name, p1.name))),
+              "name" -> DiffResultString(
+                List(
+                  DiffResultStringLine(List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1")))))
+                )
+              ),
               "age" -> DiffResultValue(p2.age, p1.age),
               "in" -> IdenticalValue(instant)
             )
@@ -165,7 +176,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "first" -> DiffResultObject(
             "Person",
             Map(
-              "name" -> DiffResultString(List(DiffResultValue(p1.name, p1p.name))),
+              "name" -> DiffResultString(List(DiffResultStringLine(List(DiffResultValue(p1.name, p1p.name))))),
               "age" -> IdenticalValue(p1.age),
               "in" -> IdenticalValue(instant)
             )
@@ -209,7 +220,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
               "1" -> DiffResultObject(
                 "Person",
                 Map(
-                  "name" -> DiffResultString(List(DiffResultValue(p2.name, p1.name))),
+                  "name" -> DiffResultString(
+                    List(
+                      DiffResultStringLine(
+                        List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1"))))
+                      )
+                    )
+                  ),
                   "age" -> DiffResultValue(p2.age, p1.age),
                   "in" -> IdenticalValue(instant)
                 )
@@ -325,7 +342,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "diff" in {
         compare(List("a"), List("B")) shouldBe DiffResultObject(
           "List",
-          Map("0" -> DiffResultString(List(DiffResultValue("a", "B"))))
+          Map(
+            "0" -> DiffResultString(
+              List(
+                DiffResultStringLine(
+                  List(DiffResultValue("a", "B"))
+                )
+              )
+            )
+          )
         )
       }
 
@@ -373,7 +398,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "compare lists using object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val om: ObjectMatcher[(Int, Person)] = ObjectMatcher.byValue(_.name)
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.name)
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using object matcher comparator when matching by pair" in {
+        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
+        val o1 = Organization(List(p1, p2WithSameNameAsP1))
+        val o2 = Organization(List(p2WithSameNameAsP1, p1))
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(p => (p.name, p.age))
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -384,6 +417,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
           ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
         )
         compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using value object matcher" in {
+        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
+        val o1 = Organization(List(p1, p2WithSameNameAsP1))
+        val o2 = Organization(List(p2WithSameNameAsP1, p1))
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(identity(_))
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare correctly lists with duplicates using objectMatcher" in {
+        val o1 = Organization(List(p1, p1))
+        val o2 = Organization(List(p1, p1))
+        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(identity(_))
+        val result = compare(o1, o2)
+        result.isIdentical shouldBe true
       }
 
       "should preserve order of elements" in {
@@ -591,7 +640,13 @@ class DiffTest extends AnyFreeSpec with Matchers {
             IdenticalValue("first") -> DiffResultObject(
               "Person",
               Map(
-                "name" -> DiffResultString(List(DiffResultValue(p1.name, p2.name))),
+                "name" -> DiffResultString(
+                  List(
+                    DiffResultStringLine(
+                      List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("1", "2"))))
+                    )
+                  )
+                ),
                 "age" -> DiffResult.Ignored,
                 "in" -> IdenticalValue(p1.in)
               )
@@ -652,7 +707,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "match map entries by values" in {
-        implicit val om: ObjectMatcher[(KeyModel, String)] = ObjectMatcher.byValue
+        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.byValue
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
@@ -706,42 +761,6 @@ class DiffTest extends AnyFreeSpec with Matchers {
     }
   }
 
-  "strings" - {
-    "equal strings should be equal" in {
-      val left = "scalaIsAwesome"
-      val right = "scalaIsAwesome"
-
-      compare(left, right) shouldBe IdenticalValue(left)
-    }
-
-    "different strings should be different" in {
-      val left = "scalaIsAwesome"
-      val right = "diffxIsAwesome"
-
-      compare(left, right) shouldBe DiffResultString(List(DiffResultValue(left, right)))
-    }
-
-    "multiline strings should be compared line by line" in {
-      val left =
-        """first
-          |second
-          |third
-          |fourth""".stripMargin
-      val right =
-        """first
-          |sec???
-          |third""".stripMargin
-
-      compare(left, right) shouldBe DiffResultString(
-        List(
-          IdenticalValue("first"),
-          DiffResultValue("second", "sec???"),
-          IdenticalValue("third"),
-          DiffResultAdditional("fourth")
-        )
-      )
-    }
-  }
   "either" - {
     "equal rights should be identical" in {
       val e1: Either[String, String] = Right("a")
