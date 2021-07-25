@@ -1,7 +1,7 @@
 package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx.test.ACoproduct.ProductA
-import com.softwaremill.diffx.{Derived, Diff, IdenticalValue}
+import com.softwaremill.diffx.{Derived, Diff}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
