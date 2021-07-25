@@ -1,5 +1,6 @@
 package com.softwaremill.diffx.generic
 
+import com.softwaremill.diffx.generic.auto.MagnoliaDerivedMacro
 import com.softwaremill.diffx.{Derived, Diff}
 
 package object auto extends AutoDerivation

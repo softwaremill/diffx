@@ -1,4 +1,4 @@
-package com.softwaremill.diffx.generic
+package com.softwaremill.diffx.generic.auto
 
 import com.softwaremill.diffx.Derived
 import magnolia.Magnolia

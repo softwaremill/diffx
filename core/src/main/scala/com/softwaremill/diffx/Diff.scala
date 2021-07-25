@@ -1,6 +1,6 @@
 package com.softwaremill.diffx
+
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
-import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
 
 trait Diff[-T] { outer =>
@@ -37,12 +37,17 @@ object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExt
   def compare[T: Diff](left: T, right: T): DiffResult = apply[T].apply(left, right)
 
   /** Create a Diff instance using [[Object#equals]] */
-  def useEquals[T]: Diff[T] = Diff.fallback[T]
+  def useEquals[T]: Diff[T] =
+    (left: T, right: T, _: DiffContext) => {
+      if (left != right) {
+        DiffResultValue(left, right)
+      } else {
+        IdenticalValue(left)
+      }
+    }
 
   def approximate[T: Numeric](epsilon: T): Diff[T] =
     new ApproximateDiffForNumeric[T](epsilon)
-
-  def derived[T]: Derived[Diff[T]] = macro MagnoliaDerivedMacro.derivedGen[T]
 
   implicit val diffForString: Diff[String] = new DiffForString
   implicit val diffForRange: Diff[Range] = Diff.useEquals[Range]
@@ -64,7 +69,7 @@ object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExt
     new DiffForEither[L, R](ld, rd)
 }
 
-trait MiddlePriorityDiff extends DiffMagnoliaDerivation with LowPriorityDiff {
+trait MiddlePriorityDiff extends DiffCompanionMacro with LowPriorityDiff {
 
   implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
       dt: Diff[T],
@@ -75,18 +80,6 @@ trait MiddlePriorityDiff extends DiffMagnoliaDerivation with LowPriorityDiff {
 trait LowPriorityDiff {
   // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
   implicit def derivedDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
-
-  implicit class RichDerivedDiff[T](val dd: Derived[Diff[T]]) {
-    def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
-
-    def modify[U](path: T => U): DerivedDiffLens[T, U] = macro ModifyMacro.derivedModifyMacro[T, U]
-    def ignore[U](path: T => U): Derived[Diff[T]] = macro ModifyMacro.derivedIgnoreMacro[T, U]
-  }
-
-  implicit class RichDiff[T](val d: Diff[T]) {
-    def modify[U](path: T => U): DiffLens[T, U] = macro ModifyMacro.modifyMacro[T, U]
-    def ignore[U](path: T => U): Diff[T] = macro ModifyMacro.ignoreMacro[T, U]
-  }
 }
 
 case class Derived[T](value: T)
@@ -108,6 +101,7 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
   def withListMatcher[V](m: ObjectMatcher[(Int, V)])(implicit ev3: U <:< Iterable[V]): Diff[T] =
     outer.modifyMatcherUnsafe(path: _*)(m)
 }
+
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
   def setTo(d: Diff[U]): Derived[Diff[T]] = {
     Derived(outer.modifyUnsafe(path: _*)(d))

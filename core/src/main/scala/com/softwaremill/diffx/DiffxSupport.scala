@@ -77,7 +77,7 @@ object ConsoleColorConfig {
   def red: String => String = toColor(Console.RED)
   def black: String => String = toColor(Console.BLACK)
 
-  private def toColor(color: String) = { s: String => color + s + Console.RESET }
+  private def toColor(color: String) = { (s: String) => color + s + Console.RESET }
 }
 
 trait DiffxOptionSupport {
