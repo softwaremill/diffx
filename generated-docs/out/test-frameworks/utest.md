@@ -5,13 +5,13 @@ To use with utest, add following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.5.3" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.5.4" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-utest::0.5.3"
+ivy"com.softwaremill.diffx::diffx-utest::0.5.4"
 ```
 
 ## Usage

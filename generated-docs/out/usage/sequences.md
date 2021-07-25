@@ -58,7 +58,13 @@ val bob = Person("1","Bob")
 compare(Map("1" -> bob), Map("2" -> bob))
 // res3: DiffResult = DiffResultMap(
 //   entries = Map(
-//     DiffResultString(diffs = List(DiffResultValue(left = "1", right = "2"))) -> DiffResultObject(
+//     DiffResultString(
+//       diffs = List(
+//         DiffResultStringLine(
+//           diffs = List(DiffResultValue(left = "1", right = "2"))
+//         )
+//       )
+//     ) -> DiffResultObject(
 //       name = "Person",
 //       fields = ListMap(
 //         "id" -> IdenticalValue(value = "1"),
