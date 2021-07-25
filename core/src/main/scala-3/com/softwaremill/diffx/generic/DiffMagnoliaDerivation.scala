@@ -15,8 +15,8 @@ trait DiffMagnoliaDerivation {
     val derivation = new Derivation[Diff] {
       type Typeclass[T] = Diff[T]
 
-      override def join[T](ctx: CaseClass[Diff, T]): Diff[T] = {
-        if(ctx.isValueClass) {
+      override def join[T](ctx: CaseClass[Diff, T]): Diff[T] = { //TODO check fallback behavior
+        if(!ctx.isValueClass) {
           new Diff[T] {
             override def apply(left: T, right: T, context: DiffContext): DiffResult = {
               nullGuard(left, right) { (left, right) =>

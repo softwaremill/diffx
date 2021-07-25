@@ -13,6 +13,11 @@ trait DiffCompanionMacro extends DiffMagnoliaDerivation {
     def ignore[U](path: T => U): Derived[Diff[T]] = macro ModifyMacro.derivedIgnoreMacro[T, U]
   }
 
+  /*
+  `modify` and `ignore` methods have to be declared
+  in invariant extension class in scala-2, as it somehow helps with the typeinference
+  and makes chainging those methods possible without the need to specify generic parameters
+   */
   implicit class RichDiff[T](val d: Diff[T]) {
     def modify[U](path: T => U): DiffLens[T, U] = macro ModifyMacro.modifyMacro[T, U]
     def ignore[U](path: T => U): Diff[T] = macro ModifyMacro.ignoreMacro[T, U]

@@ -8,4 +8,7 @@ package object auto extends AutoDerivation
 
 trait AutoDerivation extends DiffMagnoliaDerivation {
   inline implicit def diffForCaseClass[T](implicit m: Mirror.Of[T]): Derived[Diff[T]] = Derived(derived[T])
+
+//  // Implicit conversion
+//  implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
 }
