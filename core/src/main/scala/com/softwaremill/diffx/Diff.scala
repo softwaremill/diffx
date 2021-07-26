@@ -101,11 +101,11 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
   }
   def ignore(): Diff[T] = outer.modifyUnsafe(path: _*)(Diff.ignored)
 
-  def withMapMatcher[K, V](m: ObjectMatcher[(K, V)])(implicit ev1: U <:< scala.collection.Map[K, V]): Diff[T] =
+  def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit ev1: U <:< scala.collection.Map[K, V]): Diff[T] =
     outer.modifyMatcherUnsafe(path: _*)(m)
   def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Diff[T] =
     outer.modifyMatcherUnsafe(path: _*)(m)
-  def withListMatcher[V](m: ObjectMatcher[(Int, V)])(implicit ev3: U <:< Iterable[V]): Diff[T] =
+  def withListMatcher[V](m: ObjectMatcher[IterableEntry[V]])(implicit ev3: U <:< Iterable[V]): Diff[T] =
     outer.modifyMatcherUnsafe(path: _*)(m)
 }
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {

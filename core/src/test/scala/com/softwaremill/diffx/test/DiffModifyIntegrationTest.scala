@@ -1,5 +1,6 @@
 package com.softwaremill.diffx.test
 
+import com.softwaremill.diffx.ObjectMatcher.IterableEntry
 import com.softwaremill.diffx._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -134,5 +135,13 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
         )
       )
     )
+  }
+
+  it should "compare lists using object matcher comparator passed explicitly" in {
+    val o1 = Organization(List(p1, p2))
+    val o2 = Organization(List(p2, p1))
+    val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.name)
+    val d = Diff[Organization].modify(_.people).withListMatcher(om)
+    compare(o1, o2)(d).isIdentical shouldBe true
   }
 }
