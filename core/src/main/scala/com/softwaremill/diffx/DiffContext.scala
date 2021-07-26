@@ -1,11 +1,15 @@
 package com.softwaremill.diffx
 
-case class DiffContext(overrides: Tree[Diff[_]], path: FieldPath, matcherOverrides: Tree[ObjectMatcher[_]]) {
+case class DiffContext(
+    overrides: Tree[Diff[Any] => Diff[Any]],
+    path: FieldPath,
+    matcherOverrides: Tree[ObjectMatcher[_]]
+) {
   def merge(other: DiffContext): DiffContext = {
     DiffContext(overrides.merge(other.overrides), List.empty, matcherOverrides.merge(other.matcherOverrides))
   }
 
-  def getOverride(label: String): Option[Diff[_]] = {
+  def getOverride(label: String): Option[Diff[Any] => Diff[Any]] = {
     treeOverride(label, overrides)
   }
 
@@ -50,7 +54,8 @@ case class DiffContext(overrides: Tree[Diff[_]], path: FieldPath, matcherOverrid
 
 object DiffContext {
   val Empty: DiffContext = DiffContext(Tree.empty, List.empty, Tree.empty)
-  def atPath(path: FieldPath, diff: Diff[_]): DiffContext = Empty.copy(overrides = Tree.fromList(path, diff))
+  def atPath(path: FieldPath, mod: Diff[Any] => Diff[Any]): DiffContext =
+    Empty.copy(overrides = Tree.fromList(path, mod))
   def atPath(path: FieldPath, matcher: ObjectMatcher[_]): DiffContext =
     Empty.copy(matcherOverrides = Tree.fromList(path, matcher))
 }

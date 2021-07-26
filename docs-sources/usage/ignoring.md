@@ -25,3 +25,20 @@ implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.age)
 ```scala mdoc
 compare(Person("bob", 25), Person("bob", 30))
 ```
+
+Starting from `diffx` 0.5.5 it is possible to globally customize how ignoring works. By default, an instance of
+`Diff` under a particular path gets replaced by `Diff.ignored` instance. `Diff.ignored` is configured to always produce 
+identical results with fixed placeholder `"<ignored>"` no-matter what it gets. To customize that behavior one has to 
+create an implicit instance of `DiffConfiguration` with desired behavior. Below is an example of how to include results of 
+original comparison into ignored output:
+
+```scala mdoc:nest
+implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
+  (original: Diff[Any]) =>
+    (left: Any, right: Any, context: DiffContext) => {
+      IdenticalValue(s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}")
+    }
+)
+val d = Diff[Person].ignore(_.age)
+d(Person("bob", 25), Person("bob", 30)) 
+```
