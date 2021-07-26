@@ -104,9 +104,9 @@ object Derived {
 }
 
 case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
-  def setTo(d: Diff[U]): Diff[T] = modify(_ => d)
+  def setTo(d: Diff[U]): Diff[T] = using(_ => d)
 
-  def modify(mod: Diff[U] => Diff[U]): Diff[T] = {
+  def using(mod: Diff[U] => Diff[U]): Diff[T] = {
     outer.modifyUnsafe(path: _*)(mod)
   }
 
@@ -120,9 +120,9 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
     outer.modifyMatcherUnsafe(path: _*)(m)
 }
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
-  def setTo(d: Diff[U]): Derived[Diff[T]] = modify(_ => d)
+  def setTo(d: Diff[U]): Derived[Diff[T]] = using(_ => d)
 
-  def modify(mod: Diff[U] => Diff[U]): Derived[Diff[T]] = {
+  def using(mod: Diff[U] => Diff[U]): Derived[Diff[T]] = {
     Derived(outer.modifyUnsafe(path: _*)(mod))
   }
 
