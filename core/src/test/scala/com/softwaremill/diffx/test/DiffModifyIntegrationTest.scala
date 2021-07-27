@@ -1,6 +1,5 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.ObjectMatcher.IterableEntry
 import com.softwaremill.diffx._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -42,8 +41,8 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     val o2 = Organization(List(p2, p1))
     implicit val orgDiff: Diff[Organization] = Derived[Diff[Organization]]
       .modify(_.people)
-      .withListMatcher(
-        ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
+      .useMatcher(
+        ObjectMatcher.list[Person].byValue(_.name)
       )
     compare(o1, o2).isIdentical shouldBe true
   }
@@ -80,8 +79,8 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
   it should "match map entries by values" in {
     implicit val lookupDiff: Diff[MyLookup] = Derived[Diff[MyLookup]]
       .modify(_.map)
-      .withMapMatcher(
-        ObjectMatcher.byValue[KeyModel, String]
+      .useMatcher(
+        ObjectMatcher.map[KeyModel, String].byValue
       )
     val uuid1 = UUID.randomUUID()
     val uuid2 = UUID.randomUUID()
@@ -108,7 +107,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
   it should "use overrided object matcher when comparing set" in {
     implicit val lookupDiff: Diff[Startup] = Derived[Diff[Startup]]
       .modify(_.workers)
-      .withSetMatcher[Person](ObjectMatcher.by(_.name))
+      .useMatcher(ObjectMatcher.set[Person].by(_.name))
     val p2m = p2.copy(age = 33)
     compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
       "Startup",
@@ -140,8 +139,9 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
   it should "compare lists using object matcher comparator passed explicitly" in {
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p2, p1))
-    val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.name)
-    val d = Diff[Organization].modify(_.people).withListMatcher(om)
+    val d = Diff[Organization]
+      .modify(_.people)
+      .useMatcher(ObjectMatcher.list[Person].byValue(_.name))
     compare(o1, o2)(d).isIdentical shouldBe true
   }
 

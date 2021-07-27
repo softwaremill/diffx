@@ -112,4 +112,36 @@ object ModifyMacro {
 
   private[diffx] def modifiedFromPath[T, U](path: T => U): List[String] =
     macro modifiedFromPathMacro[T, U]
+
+  def withObjectMatcherDerived[T: c.WeakTypeTag, U: c.WeakTypeTag, M: c.WeakTypeTag](
+      c: blackbox.Context
+  )(matcher: c.Expr[ObjectMatcher[M]]): c.Tree = {
+    import c.universe._
+    val diff = withObjectMatcher[T, U, M](c)(matcher)
+    q"com.softwaremill.diffx.Derived($diff)"
+  }
+
+  def withObjectMatcher[T: c.WeakTypeTag, U: c.WeakTypeTag, M: c.WeakTypeTag](
+      c: blackbox.Context
+  )(matcher: c.Expr[ObjectMatcher[M]]): c.Tree = {
+    import c.universe._
+    val t = weakTypeOf[T]
+    val u = weakTypeOf[U]
+    val m = weakTypeOf[M]
+
+    val baseIsIterable = u <:< typeOf[Iterable[_]]
+    val baseIsSet = u <:< typeOf[Set[_]]
+    val baseIsMap = u <:< typeOf[Map[_, _]]
+    val typeArgsTheSame = u.typeArgs == m.typeArgs
+    val setRequirements = baseIsSet && u.typeArgs == List(m)
+    val iterableRequirements = !baseIsSet && baseIsIterable && typeArgsTheSame
+    val mapRequirements = baseIsMap && typeArgsTheSame
+    if (!setRequirements && !iterableRequirements && !mapRequirements) { //  weakTypeOf[U] <:< tq"Iterable[${u.typeArgs.head.termSymbol}]"
+      c.abort(c.enclosingPosition, s"Invalid objectMather type $u for given lens($t,$m)")
+    }
+    q""" 
+       val lens = ${c.prefix}
+       lens.outer.modifyMatcherUnsafe(lens.path: _*)($matcher)
+    """
+  }
 }

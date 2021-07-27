@@ -3,7 +3,7 @@
 `diffx` provides instances for many containers from scala's standard library (e.g. lists, sets, maps), however 
 not all collections can be simply compared. Ordered collections like lists or vectors are compared by default by 
 comparing elements under the same indexes. 
-Maps, by default, are compared by comparing values under the respective keys. 
+On the other hand maps, by default, are compared by comparing values under the respective keys. 
 For unordered collections there is an `ObjectMapper` typeclass which defines how elements should be paired. 
 
 ## object matcher
@@ -20,9 +20,10 @@ It is mostly useful when comparing unordered collections like sets:
 ```scala mdoc:silent
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.auto._
+
 case class Person(id: String, name: String)
 
-implicit val personMatcher: ObjectMatcher[Person] = ObjectMatcher.by(_.id)
+implicit val personMatcher: ObjectMatcher[Person] = ObjectMatcher.set.by(_.id)
 val bob = Person("1","Bob") 
 ```
 ```scala mdoc
@@ -34,11 +35,10 @@ In below example we tell `diffx` to compare these maps by paring entries by valu
 ```scala mdoc:reset:silent
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.auto._
-import com.softwaremill.diffx.ObjectMatcher.MapEntry
+
 case class Person(id: String, name: String)
 
-val personMatcher: ObjectMatcher[Person] = ObjectMatcher.by(_.id)
-implicit val om: ObjectMatcher[MapEntry[String, Person]] = ObjectMatcher.byValue(personMatcher)
+implicit val om = ObjectMatcher.map[String, Person].byValue(_.id)
 val bob = Person("1","Bob")
 ```
 
@@ -53,10 +53,10 @@ but the key type is bound to `Int` (`IterableEntry` is an alias for `MapEntry[In
 ```scala mdoc:reset:silent
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.auto._
-import com.softwaremill.diffx.ObjectMatcher.IterableEntry
+
 case class Person(id: String, name: String)
 
-implicit val personMatcher: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.id)
+implicit val personMatcher = ObjectMatcher.list[Person].byValue(_.id)
 val bob = Person("1","Bob")
 val alice = Person("2","Alice")
 ```

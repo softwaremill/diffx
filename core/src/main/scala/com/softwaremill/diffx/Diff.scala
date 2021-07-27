@@ -112,12 +112,7 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
 
   def ignore(implicit config: DiffConfiguration): Diff[T] = outer.modifyUnsafe(path: _*)(config.makeIgnored)
 
-  def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit ev1: U <:< scala.collection.Map[K, V]): Diff[T] =
-    outer.modifyMatcherUnsafe(path: _*)(m)
-  def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Diff[T] =
-    outer.modifyMatcherUnsafe(path: _*)(m)
-  def withListMatcher[V](m: ObjectMatcher[IterableEntry[V]])(implicit ev3: U <:< Iterable[V]): Diff[T] =
-    outer.modifyMatcherUnsafe(path: _*)(m)
+  def useMatcher[M](matcher: ObjectMatcher[M]): Diff[T] = macro ModifyMacro.withObjectMatcher[T, U, M]
 }
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
   def setTo(d: Diff[U]): Derived[Diff[T]] = using(_ => d)
@@ -130,12 +125,5 @@ case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
     outer.modifyUnsafe(path: _*)(config.makeIgnored)
   )
 
-  def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit
-      ev1: U <:< scala.collection.Map[K, V]
-  ): Derived[Diff[T]] =
-    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
-  def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Derived[Diff[T]] =
-    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
-  def withListMatcher[V](m: ObjectMatcher[IterableEntry[V]])(implicit ev3: U <:< Iterable[V]): Derived[Diff[T]] =
-    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
+  def useMatcher[M](matcher: ObjectMatcher[M]): Derived[Diff[T]] = macro ModifyMacro.withObjectMatcherDerived[T, U, M]
 }
