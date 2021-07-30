@@ -16,6 +16,7 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
   implicit def optionMatcher[T: ObjectMatcher]: ObjectMatcher[Option[T]] = (left: Option[T], right: Option[T]) => {
     (left, right) match {
       case (Some(l), Some(r)) => ObjectMatcher[T].isSameObject(l, r)
+      case (None, None)       => true
       case _                  => false
     }
   }
