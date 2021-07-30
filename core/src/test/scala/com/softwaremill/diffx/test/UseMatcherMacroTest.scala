@@ -37,4 +37,70 @@ class UseMatcherMacroTest extends AnyFreeSpec {
         |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.map[String, Person].byValue(_.name))
         |""".stripMargin)
   }
+
+  "should not compile when trying to use map matcher with list" in {
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+                     |import com.softwaremill.diffx.{Diff, ObjectMatcher}
+                     |
+                     |case class Organization(people: List[Person])
+                     |case class Person(name: String, age: Int)
+                     |
+                     |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.map[String, Person].byValue(_.name))
+                     |""".stripMargin)
+  }
+
+  "should not compile when trying to use map matcher with set" in {
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+                           |import com.softwaremill.diffx.{Diff, ObjectMatcher}
+                           |
+                           |case class Organization(people: Set[Person])
+                           |case class Person(name: String, age: Int)
+                           |
+                           |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.map[String, Person].byValue(_.name))
+                           |""".stripMargin)
+  }
+
+  "should not compile when trying to use list matcher with set" in {
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+                     |import com.softwaremill.diffx.{Diff, ObjectMatcher}
+                     |
+                     |case class Organization(people: Set[Person])
+                     |case class Person(name: String, age: Int)
+                     |
+                     |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.list[Person].byValue(_.name))
+                     |""".stripMargin)
+  }
+
+  "should not compile when trying to use list matcher with map" in {
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+                     |import com.softwaremill.diffx.{Diff, ObjectMatcher}
+                     |
+                     |case class Organization(people: Map[String, Person])
+                     |case class Person(name: String, age: Int)
+                     |
+                     |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.list[Person].byValue(_.name))
+                     |""".stripMargin)
+  }
+
+  "should not compile when trying to use set matcher with list" in {
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+                     |import com.softwaremill.diffx.{Diff, ObjectMatcher}
+                     |
+                     |case class Organization(people: List[Person])
+                     |case class Person(name: String, age: Int)
+                     |
+                     |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.set[Person].by(_.name))
+                     |""".stripMargin)
+  }
+
+  "should not compile when trying to use set matcher with map" in {
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+                     |import com.softwaremill.diffx.{Diff, ObjectMatcher}
+                     |
+                     |case class Organization(people: Map[String, Person])
+                     |case class Person(name: String, age: Int)
+                     |
+                     |Diff[Organization].modify(_.people).useMatcher(ObjectMatcher.set[Person].by(_.name))
+                     |""".stripMargin)
+  }
 }
