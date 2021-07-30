@@ -144,4 +144,44 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     val d = Diff[Organization].modify(_.people).withListMatcher(om)
     compare(o1, o2)(d).isIdentical shouldBe true
   }
+
+  it should "allow overriding how ignored diffs are produced" in {
+    implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
+      (original: Diff[Any]) =>
+        (left: Any, right: Any, context: DiffContext) => {
+          IdenticalValue(
+            s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}"
+          )
+        }
+    )
+    implicit val d: Diff[Person] = Derived[Diff[Person]].ignore(_.name)
+    compare(p1, p2) shouldBe DiffResultObject(
+      "Person",
+      Map(
+        "name" -> IdenticalValue("Ignored but was: p[1 -> 2]"),
+        "age" -> DiffResultValue(22, 11),
+        "in" -> IdenticalValue(instant)
+      )
+    )
+  }
+
+  it should "allow overriding how ignored diffs are produced - regular instance" in {
+    implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
+      (original: Diff[Any]) =>
+        (left: Any, right: Any, context: DiffContext) => {
+          IdenticalValue(
+            s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}"
+          )
+        }
+    )
+    val d: Diff[Person] = Diff[Person].ignore(_.name)
+    compare(p1, p2)(d) shouldBe DiffResultObject(
+      "Person",
+      Map(
+        "name" -> IdenticalValue("Ignored but was: p[1 -> 2]"),
+        "age" -> DiffResultValue(22, 11),
+        "in" -> IdenticalValue(instant)
+      )
+    )
+  }
 }

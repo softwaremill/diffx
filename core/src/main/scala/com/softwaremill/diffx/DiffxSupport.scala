@@ -59,6 +59,8 @@ case class ConsoleColorConfig(
 )
 
 object ConsoleColorConfig {
+  val noColors: ConsoleColorConfig =
+    ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
   val dark: ConsoleColorConfig = ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
   val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
   val normal: ConsoleColorConfig =

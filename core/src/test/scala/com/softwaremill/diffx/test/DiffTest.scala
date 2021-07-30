@@ -11,7 +11,8 @@ import java.util.UUID
 import scala.collection.immutable.ListMap
 
 class DiffTest extends AnyFreeSpec with Matchers {
-  private val instant: Instant = Instant.now()
+  val ignored = DiffConfiguration.Default.makeIgnored
+  val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
   val p2 = Person("p2", 11, instant)
 
@@ -83,7 +84,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
     }
 
     "ignored fields should be different than identical" in {
-      implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("name")(Diff.ignored)
+      implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("name")(ignored)
       compare(p1, p1.copy(name = "other")) shouldBe DiffResultObject(
         "Person",
         Map(
@@ -96,7 +97,9 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
     "ignoring given fields" in {
       implicit val d: Diff[Person] =
-        Derived[Diff[Person]].modifyUnsafe("name")(Diff.ignored).modifyUnsafe("age")(Diff.ignored)
+        Derived[Diff[Person]]
+          .modifyUnsafe("name")(ignored)
+          .modifyUnsafe("age")(ignored)
       val p3 = p2.copy(in = Instant.now())
       compare(p1, p3) shouldBe DiffResultObject(
         "Person",
@@ -141,7 +144,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "nested products ignoring nested fields" in {
       val f1 = Family(p1, p2)
       val f2 = Family(p1, p1)
-      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second", "name")(Diff.ignored)
+      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second", "name")(ignored)
       compare(f1, f2) shouldBe DiffResultObject(
         "Family",
         Map(
@@ -169,7 +172,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       val p1p = p1.copy(name = "other")
       val f1 = Family(p1, p2)
       val f2 = Family(p1p, p2.copy(name = "other"))
-      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second", "name")(Diff.ignored)
+      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second", "name")(ignored)
       compare(f1, f2) shouldBe DiffResultObject(
         "Family",
         Map(
@@ -196,7 +199,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "nested products ignoring nested products" in {
       val f1 = Family(p1, p2)
       val f2 = Family(p1, p1)
-      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second")(Diff.ignored)
+      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second")(ignored)
       compare(f1, f2).isIdentical shouldBe true
     }
 
@@ -357,7 +360,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "use ignored fields from elements" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p1, p1, p1))
-        implicit val d: Diff[Organization] = Derived[Diff[Organization]].modifyUnsafe("people", "name")(Diff.ignored)
+        implicit val d: Diff[Organization] = Derived[Diff[Organization]].modifyUnsafe("people", "name")(ignored)
         compare(o1, o2) shouldBe DiffResultObject(
           "Organization",
           Map(
@@ -488,7 +491,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
       "ignored fields from elements" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
-        implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(Diff.ignored)
+        implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         implicit val im: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           List(
@@ -527,15 +530,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "identical when products are identical using ignored" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
         implicit val d: Diff[Person] = Derived[Diff[Person]]
-          .modifyUnsafe("age")(Diff.ignored)
-          .modifyUnsafe("in")(Diff.ignored)
+          .modifyUnsafe("age")(ignored)
+          .modifyUnsafe("in")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)).isIdentical shouldBe true
       }
 
       "propagate ignore fields to elements" in {
         val p2m = p2.copy(in = Instant.now())
         implicit val im: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
-        implicit val ds: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(Diff.ignored)
+        implicit val ds: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           List(
             DiffResultObject(
@@ -634,7 +637,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "propagate ignored fields to elements" in {
-        implicit val dm: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(Diff.ignored)
+        implicit val dm: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         compare(Map("first" -> p1), Map("first" -> p2)) shouldBe DiffResultMap(
           Map(
             IdenticalValue("first") -> DiffResultObject(
@@ -658,8 +661,8 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "identical when products are identical using ignore" in {
         implicit val dm: Diff[Person] =
           Derived[Diff[Person]]
-            .modifyUnsafe("age")(Diff.ignored)
-            .modifyUnsafe("name")(Diff.ignored)
+            .modifyUnsafe("age")(ignored)
+            .modifyUnsafe("name")(ignored)
         compare(Map("first" -> p1), Map("first" -> p2)).isIdentical shouldBe true
       }
 

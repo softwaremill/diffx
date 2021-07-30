@@ -12,10 +12,16 @@ trait Diff[-T] { outer =>
       outer(f(left), f(right), context)
     }
 
-  def modifyUnsafe(path: String*)(diff: Diff[_]): Diff[T] =
+  def modifyUnsafe[U](path: String*)(mod: Diff[U] => Diff[U]): Diff[T] =
     new Diff[T] {
       override def apply(left: T, right: T, context: DiffContext): DiffResult =
-        outer.apply(left, right, context.merge(DiffContext(Tree.fromList(path.toList, diff), List.empty, Tree.empty)))
+        outer.apply(
+          left,
+          right,
+          context.merge(
+            DiffContext.atPath(path.toList, mod.asInstanceOf[Diff[Any] => Diff[Any]])
+          )
+        )
     }
 
   def modifyMatcherUnsafe(path: String*)(matcher: ObjectMatcher[_]): Diff[T] =
@@ -24,7 +30,7 @@ trait Diff[-T] { outer =>
         outer.apply(
           left,
           right,
-          context.merge(DiffContext(Tree.empty, List.empty, Tree.fromList(path.toList, matcher)))
+          context.merge(DiffContext.atPath(path.toList, matcher))
         )
     }
 }
@@ -79,13 +85,15 @@ trait LowPriorityDiff {
   implicit class RichDerivedDiff[T](val dd: Derived[Diff[T]]) {
     def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
 
-    def modify[U](path: T => U): DerivedDiffLens[T, U] = macro ModifyMacro.derivedModifyMacro[T, U]
-    def ignore[U](path: T => U): Derived[Diff[T]] = macro ModifyMacro.derivedIgnoreMacro[T, U]
+    def modify[U](path: T => U): DerivedDiffLens[T, U] =
+      macro ModifyMacro.derivedModifyMacro[T, U]
+    def ignore[U](path: T => U)(implicit conf: DiffConfiguration): Derived[Diff[T]] =
+      macro ModifyMacro.derivedIgnoreMacro[T, U]
   }
 
   implicit class RichDiff[T](val d: Diff[T]) {
     def modify[U](path: T => U): DiffLens[T, U] = macro ModifyMacro.modifyMacro[T, U]
-    def ignore[U](path: T => U): Diff[T] = macro ModifyMacro.ignoreMacro[T, U]
+    def ignore[U](path: T => U)(implicit conf: DiffConfiguration): Diff[T] = macro ModifyMacro.ignoreMacro[T, U]
   }
 }
 
@@ -96,10 +104,13 @@ object Derived {
 }
 
 case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
-  def setTo(d: Diff[U]): Diff[T] = {
-    outer.modifyUnsafe(path: _*)(d)
+  def setTo(d: Diff[U]): Diff[T] = using(_ => d)
+
+  def using(mod: Diff[U] => Diff[U]): Diff[T] = {
+    outer.modifyUnsafe(path: _*)(mod)
   }
-  def ignore(): Diff[T] = outer.modifyUnsafe(path: _*)(Diff.ignored)
+
+  def ignore(implicit config: DiffConfiguration): Diff[T] = outer.modifyUnsafe(path: _*)(config.makeIgnored)
 
   def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit ev1: U <:< scala.collection.Map[K, V]): Diff[T] =
     outer.modifyMatcherUnsafe(path: _*)(m)
@@ -109,10 +120,15 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
     outer.modifyMatcherUnsafe(path: _*)(m)
 }
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
-  def setTo(d: Diff[U]): Derived[Diff[T]] = {
-    Derived(outer.modifyUnsafe(path: _*)(d))
+  def setTo(d: Diff[U]): Derived[Diff[T]] = using(_ => d)
+
+  def using(mod: Diff[U] => Diff[U]): Derived[Diff[T]] = {
+    Derived(outer.modifyUnsafe(path: _*)(mod))
   }
-  def ignore(): Derived[Diff[T]] = Derived(outer.modifyUnsafe(path: _*)(Diff.ignored))
+
+  def ignore(implicit config: DiffConfiguration): Derived[Diff[T]] = Derived(
+    outer.modifyUnsafe(path: _*)(config.makeIgnored)
+  )
 
   def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit
       ev1: U <:< scala.collection.Map[K, V]

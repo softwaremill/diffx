@@ -21,7 +21,12 @@ trait DiffMagnoliaDerivation extends LowPriority {
       val map = ListMap(ctx.parameters.map { p =>
         val lType = p.dereference(left)
         val pType = p.dereference(right)
-        val fieldDiff = context.getOverride(p.label).map(_.asInstanceOf[Diff[p.PType]]).getOrElse(p.typeclass)
+        val fieldDiffMod =
+          context
+            .getOverride(p.label)
+            .map(_.asInstanceOf[Diff[p.PType] => Diff[p.PType]])
+            .getOrElse(identity[Diff[p.PType]] _)
+        val fieldDiff = fieldDiffMod(p.typeclass)
         p.label -> fieldDiff(lType, pType, context.getNextStep(p.label))
       }: _*)
       DiffResultObject(ctx.typeName.short, map)

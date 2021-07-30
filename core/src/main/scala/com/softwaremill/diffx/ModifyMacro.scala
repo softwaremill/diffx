@@ -20,27 +20,29 @@ object ModifyMacro {
 
   def derivedIgnoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree =
-    applyIgnoredModified[T, U](c)(modifiedFromPathMacro(c)(path))
+  )(path: c.Expr[T => U])(conf: c.Expr[DiffConfiguration]): c.Tree =
+    applyIgnoredModified[T, U](c)(modifiedFromPathMacro(c)(path), conf)
 
   private def applyIgnoredModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
-      path: c.Expr[List[String]]
+      path: c.Expr[List[String]],
+      conf: c.Expr[DiffConfiguration]
   ): c.Tree = {
     import c.universe._
     val lens = applyDerivedModified[T, U](c)(path)
-    q"""$lens.ignore()"""
+    q"""$lens.ignore($conf)"""
   }
 
   def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree = applyIgnored[T, U](c)(modifiedFromPathMacro(c)(path))
+  )(path: c.Expr[T => U])(conf: c.Expr[DiffConfiguration]): c.Tree =
+    applyIgnored[T, U](c)(modifiedFromPathMacro(c)(path), conf)
 
   private def applyIgnored[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
-  )(path: c.Expr[List[String]]): c.Tree = {
+  )(path: c.Expr[List[String]], conf: c.Expr[DiffConfiguration]): c.Tree = {
     import c.universe._
     val lens = applyModified[T, U](c)(path)
-    q"""$lens.ignore()"""
+    q"""$lens.ignore($conf)"""
   }
 
   def modifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
