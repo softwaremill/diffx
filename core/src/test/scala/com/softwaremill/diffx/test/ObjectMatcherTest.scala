@@ -162,6 +162,15 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
       )
     }
   }
+  "set" - {
+    "set full of duplicates according to object matcher should be identical to itself" in {
+      val left = Set(Example(1, 1), Example(1, 2), Example(1, 3), Example(1, 4), Example(1, 5))
+      implicit val om = ObjectMatcher.set[Example].by(_.a)
+
+      val result = compare(left, left)
+      result.isIdentical shouldBe true
+    }
+  }
 }
 
 case class Example(a: Int, b: Int)

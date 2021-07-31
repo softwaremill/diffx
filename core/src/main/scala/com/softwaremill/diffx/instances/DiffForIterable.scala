@@ -2,7 +2,7 @@ package com.softwaremill.diffx.instances
 
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
 import com.softwaremill.diffx._
-
+import com.softwaremill.diffx.instances.DiffForIterable._
 import scala.annotation.tailrec
 import scala.collection.immutable.ListMap
 
@@ -17,29 +17,6 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
       val rightWithIndex = right.zipWithIndex.map { case (rv, i) => MapEntry(i, rv) }.toList
 
       val matches = matchPairs(leftWithIndex, rightWithIndex, adjustedMatcher, List.empty, context)
-      implicit val iterableEntryOrdering: Ordering[IterableEntry[T]] = Ordering.by(_.key)
-      implicit val diffResultOrdering: Ordering[MatchResult[T]] = new Ordering[MatchResult[T]] {
-        override def compare(x: MatchResult[T], y: MatchResult[T]): Int = {
-          (x, y) match {
-            case (ur: MatchResult.UnmatchedRight[T], m: MatchResult.Matched[T]) =>
-              iterableEntryOrdering.compare(ur.v, m.r)
-            case (_: MatchResult.UnmatchedRight[_], _: MatchResult.UnmatchedLeft[_]) => 1
-            case (ur: MatchResult.UnmatchedRight[T], ur2: MatchResult.UnmatchedRight[T]) =>
-              iterableEntryOrdering.compare(ur.v, ur2.v)
-            case (ur: MatchResult.UnmatchedLeft[T], m: MatchResult.Matched[T]) =>
-              iterableEntryOrdering.compare(ur.v, m.l)
-            case (_: MatchResult.UnmatchedLeft[_], _: MatchResult.UnmatchedRight[_]) => -1
-            case (ur: MatchResult.UnmatchedLeft[T], ur2: MatchResult.UnmatchedLeft[T]) =>
-              iterableEntryOrdering.compare(ur.v, ur2.v)
-            case (m1: MatchResult.Matched[T], m2: MatchResult.Matched[T]) =>
-              Ordering.by[MatchResult.Matched[T], (IterableEntry[T], IterableEntry[T])](m => (m.r, m.l)).compare(m1, m2)
-            case (m: MatchResult.Matched[T], ur: MatchResult.UnmatchedRight[T]) =>
-              iterableEntryOrdering.compare(m.r, ur.v)
-            case (m: MatchResult.Matched[T], ul: MatchResult.UnmatchedLeft[T]) =>
-              iterableEntryOrdering.compare(m.l, ul.v)
-          }
-        }
-      }
       val sortedDiffs = matches.sorted.map {
         case MatchResult.UnmatchedLeft(v)  => DiffResultAdditional(v.value)
         case MatchResult.UnmatchedRight(v) => DiffResultMissing(v.value)
@@ -55,9 +32,9 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
       left: List[IterableEntry[T]],
       right: List[IterableEntry[T]],
       matcher: ObjectMatcher[IterableEntry[T]],
-      matched: List[MatchResult[T]],
+      matched: List[MatchResult[IterableEntry[T]]],
       context: DiffContext
-  ): List[MatchResult[T]] = {
+  ): List[MatchResult[IterableEntry[T]]] = {
     right match {
       case ::(rHead, tailRight) =>
         val maybeMatched = left
@@ -80,10 +57,31 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
   }
 }
 
-sealed trait MatchResult[T]
-
-object MatchResult {
-  case class UnmatchedLeft[T](v: IterableEntry[T]) extends MatchResult[T]
-  case class UnmatchedRight[T](v: IterableEntry[T]) extends MatchResult[T]
-  case class Matched[T](l: IterableEntry[T], r: IterableEntry[T]) extends MatchResult[T]
+object DiffForIterable {
+  implicit def iterableEntryOrdering[T]: Ordering[IterableEntry[T]] = Ordering.by(_.key)
+  implicit def diffResultOrdering[T]: Ordering[MatchResult[IterableEntry[T]]] =
+    new Ordering[MatchResult[IterableEntry[T]]] {
+      override def compare(x: MatchResult[IterableEntry[T]], y: MatchResult[IterableEntry[T]]): Int = {
+        (x, y) match {
+          case (ur: MatchResult.UnmatchedRight[IterableEntry[T]], m: MatchResult.Matched[IterableEntry[T]]) =>
+            iterableEntryOrdering.compare(ur.v, m.r)
+          case (_: MatchResult.UnmatchedRight[_], _: MatchResult.UnmatchedLeft[_]) => 1
+          case (ur: MatchResult.UnmatchedRight[IterableEntry[T]], ur2: MatchResult.UnmatchedRight[IterableEntry[T]]) =>
+            iterableEntryOrdering.compare(ur.v, ur2.v)
+          case (ur: MatchResult.UnmatchedLeft[IterableEntry[T]], m: MatchResult.Matched[IterableEntry[T]]) =>
+            iterableEntryOrdering.compare(ur.v, m.l)
+          case (_: MatchResult.UnmatchedLeft[_], _: MatchResult.UnmatchedRight[_]) => -1
+          case (ur: MatchResult.UnmatchedLeft[IterableEntry[T]], ur2: MatchResult.UnmatchedLeft[IterableEntry[T]]) =>
+            iterableEntryOrdering.compare(ur.v, ur2.v)
+          case (m1: MatchResult.Matched[IterableEntry[T]], m2: MatchResult.Matched[IterableEntry[T]]) =>
+            Ordering
+              .by[MatchResult.Matched[IterableEntry[T]], (IterableEntry[T], IterableEntry[T])](m => (m.r, m.l))
+              .compare(m1, m2)
+          case (m: MatchResult.Matched[IterableEntry[T]], ur: MatchResult.UnmatchedRight[IterableEntry[T]]) =>
+            iterableEntryOrdering.compare(m.r, ur.v)
+          case (m: MatchResult.Matched[IterableEntry[T]], ul: MatchResult.UnmatchedLeft[IterableEntry[T]]) =>
+            iterableEntryOrdering.compare(m.l, ul.v)
+        }
+      }
+    }
 }

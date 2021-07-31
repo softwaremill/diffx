@@ -19,7 +19,7 @@ class DiffxCatsTest extends AnyFreeSpec with Matchers {
 
   "nonEmptySet" in {
     compare(NonEmptySet.of(1), NonEmptySet.of(2)) shouldBe DiffResultSet(
-      List(DiffResultAdditional(1), DiffResultMissing(2))
+      Set(DiffResultAdditional(1), DiffResultMissing(2))
     )
   }
 
