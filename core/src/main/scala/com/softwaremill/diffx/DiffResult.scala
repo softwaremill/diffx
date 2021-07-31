@@ -94,7 +94,7 @@ case class DiffResultMap(entries: Map[DiffResult, DiffResult]) extends DiffResul
   override def isIdentical: Boolean = entries.forall { case (k, v) => k.isIdentical && v.isIdentical }
 }
 
-case class DiffResultSet(diffs: List[DiffResult]) extends DiffResult {
+case class DiffResultSet(diffs: Set[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int, renderIdentical: Boolean)(implicit
       c: ConsoleColorConfig
   ): String = {

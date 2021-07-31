@@ -29,6 +29,6 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
       matchedDiffs: List[DiffResult]
   ): DiffResult = {
     val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
-    DiffResultSet(diffs)
+    DiffResultSet(diffs.toSet)
   }
 }

@@ -9,7 +9,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
   "diff set output" - {
     "it should show a simple difference" in {
-      val output = DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
+      val output = DiffResultSet(Set(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -18,7 +18,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
     "it should show an indented difference" in {
       val output =
-        DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
+        DiffResultSet(Set(IdenticalValue("a"), DiffResultValue("1", "2"))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -26,7 +26,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     }
 
     "it should show a nested list difference" in {
-      val output = DiffResultSet(List(IdenticalValue("a"), DiffResultSet(List(IdenticalValue("b"))))).show()
+      val output = DiffResultSet(Set(IdenticalValue("a"), DiffResultSet(Set(IdenticalValue("b"))))).show()
       output shouldBe
         s"""Set(
            |     a,
@@ -35,14 +35,14 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
     }
 
     "it should show null" in {
-      val output = DiffResultSet(List(IdenticalValue(null), DiffResultValue(null, null))).show()
+      val output = DiffResultSet(Set(IdenticalValue(null), DiffResultValue(null, null))).show()
       output shouldBe
         s"""Set(
            |     null,
            |     null -> null)""".stripMargin
     }
     "it shouldn't render identical elements" in {
-      val output = DiffResultSet(List(IdenticalValue("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
+      val output = DiffResultSet(Set(IdenticalValue("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
       output shouldBe
         s"""Set(
            |     1 -> 2)""".stripMargin

@@ -113,7 +113,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
       "Startup",
       Map(
         "workers" -> DiffResultSet(
-          List(
+          Set(
             DiffResultObject(
               "Person",
               Map(

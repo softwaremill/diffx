@@ -493,7 +493,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
         implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         implicit val im: ObjectMatcher[Person] = ObjectMatcher.set.by(_.name)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
+          Set(
             DiffResultObject(
               "Person",
               Map(
@@ -539,7 +539,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
         implicit val im: ObjectMatcher[Person] = ObjectMatcher.set.by(_.name)
         implicit val ds: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
+          Set(
             DiffResultObject(
               "Person",
               Map(
@@ -562,7 +562,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "set of products" in {
         val p2m = p2.copy(age = 33)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
+          Set(
             DiffResultAdditional(p2),
             DiffResultMissing(p2m),
             DiffResultObject(
@@ -590,7 +590,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
           "Startup",
           Map(
             "workers" -> DiffResultSet(
-              List(
+              Set(
                 DiffResultObject(
                   "Person",
                   Map(
