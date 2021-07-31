@@ -1,17 +1,18 @@
 package com.softwaremill.diffx.instances
 
+import com.softwaremill.diffx.ObjectMatcher.SetEntry
 import com.softwaremill.diffx._
 
 import scala.annotation.tailrec
 
-private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T], matcher: ObjectMatcher[T])
+private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T], matcher: ObjectMatcher[SetEntry[T]])
     extends Diff[C[T]] {
   override def apply(left: C[T], right: C[T], context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
-      val adjustedMatcher = context.getMatcherOverride[T].getOrElse(matcher)
+      val adjustedMatcher = context.getMatcherOverride[SetEntry[T]].getOrElse(matcher)
       val matches = matchPairs(
-        left.toList.zipWithIndex.map(p => SetEntry(p._2, p._1)),
-        right.toList.zipWithIndex.map(p => SetEntry(p._2, p._1)),
+        left.toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
+        right.toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
         adjustedMatcher,
         List.empty,
         context
@@ -25,21 +26,23 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
   }
   @tailrec
   private def matchPairs(
-      left: List[SetEntry[T]],
-      right: List[SetEntry[T]],
-      matcher: ObjectMatcher[T],
+      left: List[IndexedEntry[SetEntry[T]]],
+      right: List[IndexedEntry[SetEntry[T]]],
+      matcher: ObjectMatcher[SetEntry[T]],
       matched: List[MatchResult[T]],
       context: DiffContext
   ): List[MatchResult[T]] = {
     right match {
       case rHead :: rTail =>
         val maybeMatched = left
-          .collect {
-            case l
-                if matcher.isSameObject(rHead.value, l.value) || dt.apply(l.value, rHead.value, context).isIdentical =>
-              l -> rHead
+          .map { l =>
+            val isSame = matcher.isSameObject(rHead.value, l.value)
+            val isIdentical = dt.apply(l.value.t, rHead.value.t, context).isIdentical
+            (l -> rHead, isSame, isIdentical)
           }
-          .sortBy { case (l, r) => !dt.apply(l.value, r.value, context).isIdentical }
+          .filter { case (_, isSame, isIdentical) => isSame || isIdentical }
+          .sortBy { case (_, _, isIdentical) => !isIdentical }
+          .map { case (lr, _, _) => lr }
           .headOption
         maybeMatched match {
           case Some((lm, rm)) =>
@@ -47,14 +50,14 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
               left.filterNot(l => l.index == lm.index),
               rTail,
               matcher,
-              matched :+ MatchResult.Matched(lm.value, rm.value),
+              matched :+ MatchResult.Matched(lm.value.t, rm.value.t),
               context
             )
-          case None => matchPairs(left, rTail, matcher, matched :+ MatchResult.UnmatchedRight(rHead.value), context)
+          case None => matchPairs(left, rTail, matcher, matched :+ MatchResult.UnmatchedRight(rHead.value.t), context)
         }
-      case Nil => matched ++ left.map(l => MatchResult.UnmatchedLeft(l.value))
+      case Nil => matched ++ left.map(l => MatchResult.UnmatchedLeft(l.value.t))
     }
   }
 }
 
-private case class SetEntry[T](index: Int, value: T)
+private case class IndexedEntry[T](index: Int, value: T)

@@ -22,9 +22,13 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
   }
 
   /** Given MapEntry[K,V], match them using K's objectMatcher */
-  implicit def byKey[K: ObjectMatcher, V]: ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by[MapEntry[K, V], K](_.key)
+  implicit def mapEntryByKey[K: ObjectMatcher, V]: ObjectMatcher[MapEntry[K, V]] =
+    ObjectMatcher.by[MapEntry[K, V], K](_.key)
+
+  implicit def setEntryByValue[T: ObjectMatcher]: ObjectMatcher[SetEntry[T]] = ObjectMatcher.by[SetEntry[T], T](_.t)
 
   type IterableEntry[T] = MapEntry[Int, T]
+  case class SetEntry[T](t: T)
   case class MapEntry[K, V](key: K, value: V)
 
   def list[T] = new ObjectMatcherListHelper[T]
@@ -41,8 +45,7 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
   def set[T] = new ObjectMatcherSetHelper[T]
 
   class ObjectMatcherSetHelper[T] {
-    def by[U: ObjectMatcher](f: T => U): ObjectMatcher[T] = (left: T, right: T) =>
-      ObjectMatcher[U].isSameObject(f(left), f(right))
+    def by[U: ObjectMatcher](f: T => U): ObjectMatcher[SetEntry[T]] = setEntryByValue(ObjectMatcher.by(f))
   }
 
   def map[K, V] = new ObjectMatcherMapHelper[K, V]

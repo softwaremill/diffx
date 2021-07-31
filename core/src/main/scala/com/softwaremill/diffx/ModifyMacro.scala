@@ -1,5 +1,7 @@
 package com.softwaremill.diffx
 
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
+
 import scala.annotation.tailrec
 import scala.reflect.macros.blackbox
 
@@ -133,9 +135,9 @@ object ModifyMacro {
     val baseIsSet = u <:< typeOf[Set[_]]
     val baseIsMap = u <:< typeOf[Map[_, _]]
     val typeArgsTheSame = u.typeArgs == m.typeArgs
-    val setRequirements = baseIsSet && u.typeArgs == List(m)
-    val iterableRequirements = !baseIsSet && baseIsIterable && typeArgsTheSame
-    val mapRequirements = baseIsMap && typeArgsTheSame
+    val setRequirements = baseIsSet && typeArgsTheSame && m <:< typeOf[SetEntry[_]]
+    val iterableRequirements = !baseIsSet && baseIsIterable && typeArgsTheSame && m <:< typeOf[IterableEntry[_]]
+    val mapRequirements = baseIsMap && typeArgsTheSame && m <:< typeOf[MapEntry[_, _]]
     if (!setRequirements && !iterableRequirements && !mapRequirements) { //  weakTypeOf[U] <:< tq"Iterable[${u.typeArgs.head.termSymbol}]"
       c.abort(c.enclosingPosition, s"Invalid objectMather type $u for given lens($t,$m)")
     }

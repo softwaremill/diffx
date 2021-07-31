@@ -491,7 +491,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "ignored fields from elements" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
         implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
-        implicit val im: ObjectMatcher[Person] = ObjectMatcher.set.by(_.name)
+        implicit val im = ObjectMatcher.set[Person].by(_.name)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
             DiffResultObject(
@@ -536,7 +536,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       "propagate ignore fields to elements" in {
         val p2m = p2.copy(in = Instant.now())
-        implicit val im: ObjectMatcher[Person] = ObjectMatcher.set.by(_.name)
+        implicit val im = ObjectMatcher.set[Person].by(_.name)
         implicit val ds: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
@@ -585,7 +585,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       "set of products using instance matcher" in {
         val p2m = p2.copy(age = 33)
-        implicit val im: ObjectMatcher[Person] = ObjectMatcher.set.by(_.name)
+        implicit val im = ObjectMatcher.set[Person].by(_.name)
         compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
           "Startup",
           Map(
@@ -685,7 +685,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "match keys using object mapper" in {
-        implicit val om: ObjectMatcher[KeyModel] = ObjectMatcher.set.by(_.name)
+        implicit val om = ObjectMatcher.map[KeyModel, String].byKey(_.name)
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))

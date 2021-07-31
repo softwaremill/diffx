@@ -1,5 +1,5 @@
 package com.softwaremill.diffx
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
 import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
 
@@ -64,7 +64,7 @@ object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExt
   implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = new DiffForOption[T](ddt)
   implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
       dt: Diff[T],
-      matcher: ObjectMatcher[T]
+      matcher: ObjectMatcher[SetEntry[T]]
   ): Diff[C[T]] = new DiffForSet[T, C](dt, matcher)
   implicit def diffForEither[L, R](implicit ld: Diff[L], rd: Diff[R]): Diff[Either[L, R]] =
     new DiffForEither[L, R](ld, rd)
