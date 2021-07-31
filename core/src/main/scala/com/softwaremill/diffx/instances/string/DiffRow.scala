@@ -11,4 +11,4 @@ object DiffRow {
   }
 }
 
-case class DiffRow(tag: DiffRow.Tag, oldLine: String, newLine: String)
+case class DiffRow[T](tag: DiffRow.Tag, oldLine: Option[T], newLine: Option[T])

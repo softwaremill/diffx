@@ -1,11 +1,12 @@
 package com.softwaremill.diffx.instances.string
 
-import java.util
+import scala.collection.JavaConverters._
 
 object DiffUtils {
-  def diff(
-      original: util.List[String],
-      revised: util.List[String]
-  ): Patch[String] =
-    new MyersDiff[String]().diff(original, revised)
+  def diff[T](
+      original: List[T],
+      revised: List[T],
+      equalizer: (T, T) => Boolean
+  ): Patch[T] =
+    new MyersDiff[T](equalizer).diff(original.asJava, revised.asJava)
 }
