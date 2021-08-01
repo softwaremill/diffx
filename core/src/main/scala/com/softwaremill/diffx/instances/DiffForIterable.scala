@@ -3,6 +3,8 @@ package com.softwaremill.diffx.instances
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.instances.DiffForIterable._
+import com.softwaremill.diffx.instances.internal.MatchResult
+
 import scala.annotation.tailrec
 import scala.collection.immutable.ListMap
 

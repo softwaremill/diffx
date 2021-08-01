@@ -2,6 +2,7 @@ package com.softwaremill.diffx.instances
 
 import com.softwaremill.diffx.ObjectMatcher.SetEntry
 import com.softwaremill.diffx._
+import com.softwaremill.diffx.instances.internal.{IndexedEntry, MatchResult}
 
 import scala.annotation.tailrec
 
@@ -59,5 +60,3 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
     }
   }
 }
-
-private case class IndexedEntry[T](index: Int, value: T)

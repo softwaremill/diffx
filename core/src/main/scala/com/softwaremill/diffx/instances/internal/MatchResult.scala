@@ -1,4 +1,4 @@
-package com.softwaremill.diffx.instances
+package com.softwaremill.diffx.instances.internal
 
 private[instances] sealed trait MatchResult[T]
 
