@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.instances.string
 
-object DiffRow {
+private[instances] object DiffRow {
 
   sealed trait Tag
   object Tag {
@@ -11,4 +11,4 @@ object DiffRow {
   }
 }
 
-case class DiffRow(tag: DiffRow.Tag, oldLine: String, newLine: String)
+private[instances] case class DiffRow[T](tag: DiffRow.Tag, oldLine: Option[T], newLine: Option[T])

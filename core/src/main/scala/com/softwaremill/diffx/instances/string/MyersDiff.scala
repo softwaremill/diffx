@@ -4,7 +4,7 @@ import java.util
 import scala.collection.JavaConverters._
 
 // copied from https://github.com/java-diff-utils/java-diff-utils
-class MyersDiff[T] {
+private[instances] class MyersDiff[T](equalizer: (T, T) => Boolean) {
   def diff(
       original: util.List[T],
       revised: util.List[T]
@@ -108,7 +108,7 @@ class MyersDiff[T] {
         while (
           i < N &&
           j < M &&
-          orig.get(i) == rev.get(j)
+          equalizer(orig.get(i), rev.get(j))
         ) {
           i += 1
           j += 1

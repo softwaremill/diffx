@@ -1,5 +1,5 @@
 package com.softwaremill.diffx
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
 import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
 
@@ -35,7 +35,7 @@ trait Diff[-T] { outer =>
     }
 }
 
-object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExtensions {
+object Diff extends MiddlePriorityDiff with DiffTupleInstances with DiffxPlatformExtensions {
   def apply[T: Diff]: Diff[T] = implicitly[Diff[T]]
 
   def ignored[T]: Diff[T] = (_: T, _: T, _: DiffContext) => DiffResult.Ignored
@@ -64,7 +64,7 @@ object Diff extends MiddlePriorityDiff with TupleInstances with DiffxPlatformExt
   implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = new DiffForOption[T](ddt)
   implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
       dt: Diff[T],
-      matcher: ObjectMatcher[T]
+      matcher: ObjectMatcher[SetEntry[T]]
   ): Diff[C[T]] = new DiffForSet[T, C](dt, matcher)
   implicit def diffForEither[L, R](implicit ld: Diff[L], rd: Diff[R]): Diff[Either[L, R]] =
     new DiffForEither[L, R](ld, rd)
@@ -112,12 +112,7 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
 
   def ignore(implicit config: DiffConfiguration): Diff[T] = outer.modifyUnsafe(path: _*)(config.makeIgnored)
 
-  def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit ev1: U <:< scala.collection.Map[K, V]): Diff[T] =
-    outer.modifyMatcherUnsafe(path: _*)(m)
-  def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Diff[T] =
-    outer.modifyMatcherUnsafe(path: _*)(m)
-  def withListMatcher[V](m: ObjectMatcher[IterableEntry[V]])(implicit ev3: U <:< Iterable[V]): Diff[T] =
-    outer.modifyMatcherUnsafe(path: _*)(m)
+  def useMatcher[M](matcher: ObjectMatcher[M]): Diff[T] = macro ModifyMacro.withObjectMatcher[T, U, M]
 }
 case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
   def setTo(d: Diff[U]): Derived[Diff[T]] = using(_ => d)
@@ -130,12 +125,5 @@ case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
     outer.modifyUnsafe(path: _*)(config.makeIgnored)
   )
 
-  def withMapMatcher[K, V](m: ObjectMatcher[MapEntry[K, V]])(implicit
-      ev1: U <:< scala.collection.Map[K, V]
-  ): Derived[Diff[T]] =
-    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
-  def withSetMatcher[V](m: ObjectMatcher[V])(implicit ev2: U <:< scala.collection.Set[V]): Derived[Diff[T]] =
-    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
-  def withListMatcher[V](m: ObjectMatcher[IterableEntry[V]])(implicit ev3: U <:< Iterable[V]): Derived[Diff[T]] =
-    Derived(outer.modifyMatcherUnsafe(path: _*)(m))
+  def useMatcher[M](matcher: ObjectMatcher[M]): Derived[Diff[T]] = macro ModifyMacro.withObjectMatcherDerived[T, U, M]
 }

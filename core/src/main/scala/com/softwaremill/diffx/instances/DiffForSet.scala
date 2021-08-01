@@ -1,34 +1,62 @@
 package com.softwaremill.diffx.instances
 
-import com.softwaremill.diffx.Matching.{MatchingResults, matching}
+import com.softwaremill.diffx.ObjectMatcher.SetEntry
 import com.softwaremill.diffx._
+import com.softwaremill.diffx.instances.internal.{IndexedEntry, MatchResult}
 
-private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T], matcher: ObjectMatcher[T])
+import scala.annotation.tailrec
+
+private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T], matcher: ObjectMatcher[SetEntry[T]])
     extends Diff[C[T]] {
   override def apply(left: C[T], right: C[T], context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
-      val adjustedMatcher = context.getMatcherOverride[T].getOrElse(matcher)
-      val MatchingResults(unMatchedLeftInstances, unMatchedRightInstances, matchedInstances) =
-        matching[T](left.toSet, right.toSet, adjustedMatcher, dt, context)
-      val leftDiffs = unMatchedLeftInstances
-        .diff(unMatchedRightInstances)
-        .map(DiffResultAdditional(_))
-        .toList
-      val rightDiffs = unMatchedRightInstances
-        .diff(unMatchedLeftInstances)
-        .map(DiffResultMissing(_))
-        .toList
-      val matchedDiffs = matchedInstances.map { case (l, r) => dt(l, r, context) }.toList
-      diffResultSet(left, leftDiffs, rightDiffs, matchedDiffs)
+      val adjustedMatcher = context.getMatcherOverride[SetEntry[T]].getOrElse(matcher)
+      val matches = matchPairs(
+        left.toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
+        right.toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
+        adjustedMatcher,
+        List.empty,
+        context
+      )
+      val diffs = matches.map {
+        case MatchResult.UnmatchedLeft(v)  => DiffResultAdditional(v)
+        case MatchResult.UnmatchedRight(v) => DiffResultMissing(v)
+        case MatchResult.Matched(l, r)     => dt.apply(l, r, context)
+      }
+      DiffResultSet(diffs.toSet)
   }
-
-  private def diffResultSet(
-      left: C[T],
-      leftDiffs: List[DiffResult],
-      rightDiffs: List[DiffResult],
-      matchedDiffs: List[DiffResult]
-  ): DiffResult = {
-    val diffs = leftDiffs ++ rightDiffs ++ matchedDiffs
-    DiffResultSet(diffs)
+  @tailrec
+  private def matchPairs(
+      left: List[IndexedEntry[SetEntry[T]]],
+      right: List[IndexedEntry[SetEntry[T]]],
+      matcher: ObjectMatcher[SetEntry[T]],
+      matched: List[MatchResult[T]],
+      context: DiffContext
+  ): List[MatchResult[T]] = {
+    right match {
+      case rHead :: rTail =>
+        val maybeMatched = left
+          .map { l =>
+            val isSame = matcher.isSameObject(rHead.value, l.value)
+            val isIdentical = dt.apply(l.value.t, rHead.value.t, context).isIdentical
+            (l -> rHead, isSame, isIdentical)
+          }
+          .filter { case (_, isSame, isIdentical) => isSame || isIdentical }
+          .sortBy { case (_, _, isIdentical) => !isIdentical }
+          .map { case (lr, _, _) => lr }
+          .headOption
+        maybeMatched match {
+          case Some((lm, rm)) =>
+            matchPairs(
+              left.filterNot(l => l.index == lm.index),
+              rTail,
+              matcher,
+              matched :+ MatchResult.Matched(lm.value.t, rm.value.t),
+              context
+            )
+          case None => matchPairs(left, rTail, matcher, matched :+ MatchResult.UnmatchedRight(rHead.value.t), context)
+        }
+      case Nil => matched ++ left.map(l => MatchResult.UnmatchedLeft(l.value.t))
+    }
   }
 }

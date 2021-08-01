@@ -10,29 +10,45 @@ trait ObjectMatcher[T] {
 object ObjectMatcher extends LowPriorityObjectMatcher {
   def apply[T: ObjectMatcher]: ObjectMatcher[T] = implicitly[ObjectMatcher[T]]
 
-  /** Given product of type T and its property U, match that products using U's objectMatcher */
-  def by[T, U: ObjectMatcher](f: T => U): ObjectMatcher[T] = (left: T, right: T) =>
+  private def by[T, U: ObjectMatcher](f: T => U): ObjectMatcher[T] = (left: T, right: T) =>
     ObjectMatcher[U].isSameObject(f(left), f(right))
 
-  /** Given MapEntry[K,V] match them using V's objectMatcher */
-  def byValue[K, V: ObjectMatcher]: ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by[MapEntry[K, V], V](_.value)
-
-  /** Given MapEntry[K,V], where V is a type of product and U is a property of V, match them using U's objectMatcher */
-  def byValue[K, V, U: ObjectMatcher](f: V => U): ObjectMatcher[MapEntry[K, V]] =
-    ObjectMatcher.byValue[K, V](ObjectMatcher.by[V, U](f))
-
-  implicit def optionMatcher[T: ObjectMatcher]: ObjectMatcher[Option[T]] = (left: Option[T], right: Option[T]) => {
-    (left, right) match {
-      case (Some(l), Some(r)) => ObjectMatcher[T].isSameObject(l, r)
-      case _                  => false
-    }
-  }
-
   /** Given MapEntry[K,V], match them using K's objectMatcher */
-  implicit def byKey[K: ObjectMatcher, V]: ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by[MapEntry[K, V], K](_.key)
+  implicit def mapEntryByKey[K: ObjectMatcher, V]: ObjectMatcher[MapEntry[K, V]] =
+    ObjectMatcher.by[MapEntry[K, V], K](_.key)
+
+  implicit def setEntryByValue[T: ObjectMatcher]: ObjectMatcher[SetEntry[T]] = ObjectMatcher.by[SetEntry[T], T](_.t)
 
   type IterableEntry[T] = MapEntry[Int, T]
+  case class SetEntry[T](t: T)
   case class MapEntry[K, V](key: K, value: V)
+
+  def list[T] = new ObjectMatcherListHelper[T]
+
+  class ObjectMatcherListHelper[V] {
+    def byValue[U: ObjectMatcher](f: V => U): ObjectMatcher[IterableEntry[V]] = byValue(ObjectMatcher.by[V, U](f))
+    def byValue(implicit ev: ObjectMatcher[V]): ObjectMatcher[IterableEntry[V]] =
+      ObjectMatcher.by[IterableEntry[V], V](_.value)
+
+    def byKey[U: ObjectMatcher](f: Int => U): ObjectMatcher[IterableEntry[V]] = byKey(ObjectMatcher.by(f))
+    def byKey(implicit ko: ObjectMatcher[Int]): ObjectMatcher[IterableEntry[V]] = ObjectMatcher.by(_.key)
+  }
+
+  def set[T] = new ObjectMatcherSetHelper[T]
+
+  class ObjectMatcherSetHelper[T] {
+    def by[U: ObjectMatcher](f: T => U): ObjectMatcher[SetEntry[T]] = setEntryByValue(ObjectMatcher.by(f))
+  }
+
+  def map[K, V] = new ObjectMatcherMapHelper[K, V]
+
+  class ObjectMatcherMapHelper[K, V] {
+    def byValue[U: ObjectMatcher](f: V => U): ObjectMatcher[MapEntry[K, V]] = byValue(ObjectMatcher.by(f))
+    def byValue(implicit ev: ObjectMatcher[V]): ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by(_.value)
+
+    def byKey[U: ObjectMatcher](f: K => U): ObjectMatcher[MapEntry[K, V]] = byKey(ObjectMatcher.by(f))
+    def byKey(implicit ko: ObjectMatcher[K]): ObjectMatcher[MapEntry[K, V]] = ObjectMatcher.by(_.key)
+  }
 }
 
 trait LowPriorityObjectMatcher {

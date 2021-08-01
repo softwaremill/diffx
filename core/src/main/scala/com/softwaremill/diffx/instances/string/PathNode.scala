@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.instances.string
 
-sealed abstract class PathNode(val i: Int, val j: Int, val prev: PathNode) {
+private[instances] sealed abstract class PathNode(val i: Int, val j: Int, val prev: PathNode) {
 
   def isSnake: Boolean
   final def isBootstrap: Boolean = {

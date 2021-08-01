@@ -1,31 +1,10 @@
 package com.softwaremill.diffx.instances.string
 
-/*
- * Copyright 2009-2017 java-diff-utils.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import java.util
 import java.util.Collections
 import scala.collection.JavaConverters._
 
-object DiffRowGenerator {
-
-  def create: DiffRowGenerator = new DiffRowGenerator
-}
-
-final class DiffRowGenerator {
+private[instances] class DiffRowGenerator {
 
   /** Get the DiffRows describing the difference between original and revised
     * texts using the given patch. Useful for displaying side-by-side diff.
@@ -34,49 +13,58 @@ final class DiffRowGenerator {
     * @param revised  the revised text
     * @return the DiffRows between original and revised texts
     */
-  def generateDiffRows(original: List[String], revised: List[String]): List[DiffRow] = {
-    val patch = DiffUtils.diff(original.asJava, revised.asJava)
-    generateDiffRowsFromPatch(original.asJava, patch).asScala.toList
+  def generateDiffRows[T](
+      original: List[T],
+      revised: List[T],
+      equalizer: (T, T) => Boolean = (t1: T, t2: T) => t1 == t2
+  ): List[DiffRow[T]] = {
+    val patch = DiffUtils.diff(original, revised, equalizer)
+    generateDiffRowsFromPatch(original.asJava, patch, revised.asJava).asScala.toList
   }
 
-  private def generateDiffRowsFromPatch(original: util.List[String], patch: Patch[String]): util.List[DiffRow] = {
-    val diffRows = new util.ArrayList[DiffRow]
+  private def generateDiffRowsFromPatch[T](
+      original: util.List[T],
+      patch: Patch[T],
+      revised: util.List[T]
+  ): util.List[DiffRow[T]] = {
+    val diffRows = new util.ArrayList[DiffRow[T]]
     var endPos = 0
     val deltaList = patch.getDeltas
     for (originalDelta <- deltaList.asScala) {
       for (delta <- decompressDeltas(originalDelta).asScala) {
-        endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta)
+        endPos = transformDeltaIntoDiffRow(original, endPos, diffRows, delta, revised)
       }
     }
     // Copy the final matching chunk if any.
     for (line <- original.subList(endPos, original.size).asScala) {
-      diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, line, line))
+      diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, Some(line), Some(line)))
     }
     diffRows
   }
 
   /** Transforms one patch delta into a DiffRow object.
     */
-  private def transformDeltaIntoDiffRow(
-      original: util.List[String],
+  private def transformDeltaIntoDiffRow[T](
+      original: util.List[T],
       endPos: Int,
-      diffRows: util.List[DiffRow],
-      delta: Delta[String]
+      diffRows: util.List[DiffRow[T]],
+      delta: Delta[T],
+      revised: util.List[T]
   ) = {
     val orig = delta.getSource
     val rev = delta.getTarget
     for (line <- original.subList(endPos, orig.position).asScala) {
-      diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, line, line))
+      diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, Some(line), Some(revised.get(rev.position - 1))))
     }
     delta.getType match {
       case Delta.TYPE.INSERT =>
         for (line <- rev.lines) {
-          diffRows.add(buildDiffRow(DiffRow.Tag.INSERT, "", line))
+          diffRows.add(buildDiffRow(DiffRow.Tag.INSERT, None, Some(line)))
         }
 
       case Delta.TYPE.DELETE =>
         for (line <- orig.lines) {
-          diffRows.add(buildDiffRow(DiffRow.Tag.DELETE, line, ""))
+          diffRows.add(buildDiffRow(DiffRow.Tag.DELETE, Some(line), None))
         }
 
       case _ =>
@@ -84,10 +72,8 @@ final class DiffRowGenerator {
           diffRows.add(
             buildDiffRow(
               DiffRow.Tag.CHANGE,
-              if (orig.lines.size > j) orig.lines(j)
-              else "",
-              if (rev.lines.size > j) rev.lines(j)
-              else ""
+              orig.lines.lift(j),
+              rev.lines.lift(j)
             )
           )
         }
@@ -101,30 +87,30 @@ final class DiffRowGenerator {
     *
     * @param deltaList
     */
-  private def decompressDeltas(delta: Delta[String]): util.List[Delta[String]] = {
+  private def decompressDeltas[T](delta: Delta[T]): util.List[Delta[T]] = {
     if ((delta.getType == Delta.TYPE.CHANGE) && delta.getSource.size != delta.getTarget.size) {
-      val deltas = new util.ArrayList[Delta[String]]
+      val deltas = new util.ArrayList[Delta[T]]
       val minSize = Math.min(delta.getSource.size, delta.getTarget.size)
       val orig = delta.getSource
       val rev = delta.getTarget
       deltas.add(
-        new ChangeDelta[String](
-          new Chunk[String](orig.position, orig.lines.slice(0, minSize)),
-          new Chunk[String](rev.position, rev.lines.slice(0, minSize))
+        new ChangeDelta[T](
+          new Chunk[T](orig.position, orig.lines.slice(0, minSize)),
+          new Chunk[T](rev.position, rev.lines.slice(0, minSize))
         )
       )
       if (orig.lines.size < rev.lines.size)
         deltas.add(
-          new InsertDelta[String](
-            new Chunk[String](orig.position + minSize, scala.List.empty),
-            new Chunk[String](rev.position + minSize, rev.lines.slice(minSize, rev.lines.size))
+          new InsertDelta[T](
+            new Chunk[T](orig.position + minSize, scala.List.empty),
+            new Chunk[T](rev.position + minSize, rev.lines.slice(minSize, rev.lines.size))
           )
         )
       else
         deltas.add(
-          new DeleteDelta[String](
-            new Chunk[String](orig.position + minSize, orig.lines.slice(minSize, orig.lines.size)),
-            new Chunk[String](rev.position + minSize, scala.List.empty)
+          new DeleteDelta[T](
+            new Chunk[T](orig.position + minSize, orig.lines.slice(minSize, orig.lines.size)),
+            new Chunk[T](rev.position + minSize, scala.List.empty)
           )
         )
       return deltas
@@ -132,6 +118,6 @@ final class DiffRowGenerator {
     Collections.singletonList(delta)
   }
 
-  private def buildDiffRow(`type`: DiffRow.Tag, orgline: String, newline: String) =
+  private def buildDiffRow[T](`type`: DiffRow.Tag, orgline: Option[T], newline: Option[T]) =
     new DiffRow(`type`, orgline, newline)
 }

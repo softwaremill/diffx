@@ -393,7 +393,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "compare lists using set-like comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val om: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
+        implicit val om = ObjectMatcher.set[Person].by(_.name)
         implicit val dd: Diff[List[Person]] = Diff[Set[Person]].contramap(_.toSet)
         compare(o1, o2).isIdentical shouldBe true
       }
@@ -401,7 +401,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "compare lists using object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(_.name)
+        implicit val om = ObjectMatcher.list[Person].byValue(_.name)
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -409,16 +409,15 @@ class DiffTest extends AnyFreeSpec with Matchers {
         val p2WithSameNameAsP1 = p2.copy(name = p1.name)
         val o1 = Organization(List(p1, p2WithSameNameAsP1))
         val o2 = Organization(List(p2WithSameNameAsP1, p1))
-        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(p => (p.name, p.age))
+        implicit val om = ObjectMatcher.list[Person].byValue(p => (p.name, p.age))
         compare(o1, o2).isIdentical shouldBe true
       }
 
       "compare lists using explicit object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val orgDiff: Diff[Organization] = Derived[Diff[Organization]].modifyMatcherUnsafe("people")(
-          ObjectMatcher.byValue[Int, Person](ObjectMatcher.by(_.name))
-        )
+        implicit val orgDiff: Diff[Organization] = Derived[Diff[Organization]]
+          .modifyMatcherUnsafe("people")(ObjectMatcher.list[Person].byValue(_.name))
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -426,14 +425,14 @@ class DiffTest extends AnyFreeSpec with Matchers {
         val p2WithSameNameAsP1 = p2.copy(name = p1.name)
         val o1 = Organization(List(p1, p2WithSameNameAsP1))
         val o2 = Organization(List(p2WithSameNameAsP1, p1))
-        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(identity(_))
+        implicit val om = ObjectMatcher.list[Person].byValue(identity(_))
         compare(o1, o2).isIdentical shouldBe true
       }
 
       "compare correctly lists with duplicates using objectMatcher" in {
         val o1 = Organization(List(p1, p1))
         val o2 = Organization(List(p1, p1))
-        implicit val om: ObjectMatcher[IterableEntry[Person]] = ObjectMatcher.byValue(identity(_))
+        implicit val om = ObjectMatcher.list[Person].byValue(identity(_))
         val result = compare(o1, o2)
         result.isIdentical shouldBe true
       }
@@ -492,9 +491,9 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "ignored fields from elements" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
         implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
-        implicit val im: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
+        implicit val im = ObjectMatcher.set[Person].by(_.name)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
+          Set(
             DiffResultObject(
               "Person",
               Map(
@@ -537,10 +536,10 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       "propagate ignore fields to elements" in {
         val p2m = p2.copy(in = Instant.now())
-        implicit val im: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
+        implicit val im = ObjectMatcher.set[Person].by(_.name)
         implicit val ds: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
+          Set(
             DiffResultObject(
               "Person",
               Map(
@@ -563,7 +562,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "set of products" in {
         val p2m = p2.copy(age = 33)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-          List(
+          Set(
             DiffResultAdditional(p2),
             DiffResultMissing(p2m),
             DiffResultObject(
@@ -586,12 +585,12 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       "set of products using instance matcher" in {
         val p2m = p2.copy(age = 33)
-        implicit val im: ObjectMatcher[Person] = ObjectMatcher.by(_.name)
+        implicit val im = ObjectMatcher.set[Person].by(_.name)
         compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
           "Startup",
           Map(
             "workers" -> DiffResultSet(
-              List(
+              Set(
                 DiffResultObject(
                   "Person",
                   Map(
@@ -686,7 +685,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "match keys using object mapper" in {
-        implicit val om: ObjectMatcher[KeyModel] = ObjectMatcher.by(_.name)
+        implicit val om = ObjectMatcher.map[KeyModel, String].byKey(_.name)
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
@@ -710,7 +709,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
 
       "match map entries by values" in {
-        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.byValue
+        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.map.byValue
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
         val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))

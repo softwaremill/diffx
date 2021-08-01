@@ -1,6 +1,6 @@
 package com.softwaremill.diffx
 
-trait TupleInstances {
+trait DiffTupleInstances {
 
   implicit def dTuple2[T1, T2](implicit d1: Diff[T1], d2: Diff[T2]): Diff[Tuple2[T1, T2]] = new Diff[Tuple2[T1, T2]] {
     override def apply(
