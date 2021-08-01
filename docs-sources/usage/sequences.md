@@ -23,7 +23,7 @@ import com.softwaremill.diffx.generic.auto._
 
 case class Person(id: String, name: String)
 
-implicit val personMatcher: ObjectMatcher[Person] = ObjectMatcher.set.by(_.id)
+implicit val personMatcher = ObjectMatcher.set[Person].by(_.id)
 val bob = Person("1","Bob") 
 ```
 ```scala mdoc
