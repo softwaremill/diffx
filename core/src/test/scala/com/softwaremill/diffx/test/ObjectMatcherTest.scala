@@ -189,9 +189,9 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     }
 
     "should prefer identical matches when there are multiple possible choices" in {
-      val left = Set(Example(1, 1), Example(1, 2))
-      val right = Set(Example(1, 2), Example(1, 1))
-      implicit val om = ObjectMatcher.set[Example].by(_.a)
+      val left = Map(Example(1, 1) -> Example(5, 5), Example(1, 2) -> Example(4, 4))
+      val right = Map(Example(1, 2) -> Example(4, 4), Example(1, 1) -> Example(5, 5))
+      implicit val om = ObjectMatcher.map[Example, Example].byValue(_.a)
       compare(left, right).isIdentical shouldBe true
     }
   }
