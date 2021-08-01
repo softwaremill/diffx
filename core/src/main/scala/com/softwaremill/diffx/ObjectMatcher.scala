@@ -13,14 +13,6 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
   private def by[T, U: ObjectMatcher](f: T => U): ObjectMatcher[T] = (left: T, right: T) =>
     ObjectMatcher[U].isSameObject(f(left), f(right))
 
-  implicit def optionMatcher[T: ObjectMatcher]: ObjectMatcher[Option[T]] = (left: Option[T], right: Option[T]) => {
-    (left, right) match {
-      case (Some(l), Some(r)) => ObjectMatcher[T].isSameObject(l, r)
-      case (None, None)       => true
-      case _                  => false
-    }
-  }
-
   /** Given MapEntry[K,V], match them using K's objectMatcher */
   implicit def mapEntryByKey[K: ObjectMatcher, V]: ObjectMatcher[MapEntry[K, V]] =
     ObjectMatcher.by[MapEntry[K, V], K](_.key)

@@ -28,7 +28,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
       val left = List(Example(1, 1), Example(1, 2))
       val right = List(Example(1, 2), Example(1, 1))
       implicit val om = ObjectMatcher.list[Example].byValue(_.a)
-      compare(left, left.reverse).isIdentical shouldBe true
+      compare(left, right).isIdentical shouldBe true
     }
 
     "should match list by value using whole object" in {
@@ -170,6 +170,13 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
       val result = compare(left, left)
       result.isIdentical shouldBe true
     }
+
+    "should prefer identical matches when there are multiple possible choices" in {
+      val left = Set(Example(1, 1), Example(1, 2))
+      val right = Set(Example(1, 2), Example(1, 1))
+      implicit val om = ObjectMatcher.set[Example].by(_.a)
+      compare(left, right).isIdentical shouldBe true
+    }
   }
 
   "map" - {
@@ -179,6 +186,13 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
 
       val result = compare(left, left)
       result.isIdentical shouldBe true
+    }
+
+    "should prefer identical matches when there are multiple possible choices" in {
+      val left = Set(Example(1, 1), Example(1, 2))
+      val right = Set(Example(1, 2), Example(1, 1))
+      implicit val om = ObjectMatcher.set[Example].by(_.a)
+      compare(left, right).isIdentical shouldBe true
     }
   }
 }
