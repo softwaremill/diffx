@@ -2,7 +2,7 @@ package com.softwaremill.diffx.instances.string
 
 import scala.collection.JavaConverters._
 
-object DiffUtils {
+private[instances] object DiffUtils {
   def diff[T](
       original: List[T],
       revised: List[T],

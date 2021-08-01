@@ -4,7 +4,7 @@ import java.util
 import java.util.Collections
 import scala.collection.JavaConverters._
 
-class DiffRowGenerator {
+private[instances] class DiffRowGenerator {
 
   /** Get the DiffRows describing the difference between original and revised
     * texts using the given patch. Useful for displaying side-by-side diff.

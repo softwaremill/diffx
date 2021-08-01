@@ -3,7 +3,7 @@ package com.softwaremill.diffx.instances.string
 import java.util
 import java.util.{Collections, Comparator}
 
-class Patch[T] {
+private[instances] class Patch[T] {
   private val deltas: util.List[Delta[T]] = new util.ArrayList()
   private val comparator: Comparator[Delta[T]] = new Comparator[Delta[T]] {
     override def compare(o1: Delta[T], o2: Delta[T]): Int =

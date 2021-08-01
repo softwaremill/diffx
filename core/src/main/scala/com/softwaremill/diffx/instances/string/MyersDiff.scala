@@ -4,7 +4,7 @@ import java.util
 import scala.collection.JavaConverters._
 
 // copied from https://github.com/java-diff-utils/java-diff-utils
-class MyersDiff[T](equalizer: (T, T) => Boolean) {
+private[instances] class MyersDiff[T](equalizer: (T, T) => Boolean) {
   def diff(
       original: util.List[T],
       revised: util.List[T]
