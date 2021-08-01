@@ -2,7 +2,7 @@ package com.softwaremill.diffx.instances
 
 import com.softwaremill.diffx.ObjectMatcher.MapEntry
 import com.softwaremill.diffx._
-import com.softwaremill.diffx.instances.internal.{IndexedEntry, MatchResult}
+import com.softwaremill.diffx.instances.internal.MatchResult
 
 import scala.annotation.tailrec
 
@@ -18,8 +18,8 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
   ): DiffResult = nullGuard(left, right) { (left, right) =>
     val adjustedMatcher = context.getMatcherOverride[MapEntry[K, V]].getOrElse(matcher)
     val matches = matchPairs(
-      left.toList.zipWithIndex.map { case ((k, v), i) => IndexedEntry(i, MapEntry(k, v)) },
-      right.toList.zipWithIndex.map { case ((k, v), i) => IndexedEntry(i, MapEntry(k, v)) },
+      left.toList.map { case (k, v) => MapEntry(k, v) },
+      right.toList.map { case (k, v) => MapEntry(k, v) },
       adjustedMatcher,
       List.empty,
       context
@@ -35,8 +35,8 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
 
   @tailrec
   private def matchPairs(
-      left: List[IndexedEntry[MapEntry[K, V]]],
-      right: List[IndexedEntry[MapEntry[K, V]]],
+      left: List[MapEntry[K, V]],
+      right: List[MapEntry[K, V]],
       matcher: ObjectMatcher[MapEntry[K, V]],
       matched: List[MatchResult[MapEntry[K, V]]],
       context: DiffContext
@@ -45,8 +45,8 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
       case rHead :: rTail =>
         val maybeMatched = left
           .map { l =>
-            val isSame = matcher.isSameObject(rHead.value, l.value)
-            val isIdentical = diffKey.apply(l.value.key, rHead.value.key, context).isIdentical
+            val isSame = matcher.isSameObject(rHead, l)
+            val isIdentical = diffKey.apply(l.key, rHead.key, context).isIdentical
             (l -> rHead, isSame, isIdentical)
           }
           .filter { case (_, isSame, isIdentical) => isSame || isIdentical }
@@ -56,15 +56,15 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
         maybeMatched match {
           case Some((lm, rm)) =>
             matchPairs(
-              left.filterNot(l => l.index == lm.index),
+              left.filterNot(l => l.key == lm.key),
               rTail,
               matcher,
-              matched :+ MatchResult.Matched(lm.value, rm.value),
+              matched :+ MatchResult.Matched(lm, rm),
               context
             )
-          case None => matchPairs(left, rTail, matcher, matched :+ MatchResult.UnmatchedRight(rHead.value), context)
+          case None => matchPairs(left, rTail, matcher, matched :+ MatchResult.UnmatchedRight(rHead), context)
         }
-      case Nil => matched ++ left.map(l => MatchResult.UnmatchedLeft(l.value))
+      case Nil => matched ++ left.map(l => MatchResult.UnmatchedLeft(l))
     }
   }
 }
