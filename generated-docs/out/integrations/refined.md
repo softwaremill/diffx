@@ -5,13 +5,13 @@ This module contains integration layer between [eu.timepit.refined](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-refined" % "0.5.4" % Test    
+"com.softwaremill.diffx" %% "diffx-refined" % "0.5.5" % Test    
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-refined::0.5.4"
+ivy"com.softwaremill.diffx::diffx-refined::0.5.5"
 ```
 
 ## Usage

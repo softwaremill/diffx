@@ -28,3 +28,29 @@ compare(Person("bob", 25), Person("bob", 30))
 //   )
 // )
 ```
+
+Starting from `diffx` 0.5.5 it is possible to globally customize how ignoring works. By default, an instance of
+`Diff` under a particular path gets replaced by `Diff.ignored` instance. `Diff.ignored` is configured to always produce 
+identical results with fixed placeholder `"<ignored>"` no-matter what it gets. To customize that behavior one has to 
+create an implicit instance of `DiffConfiguration` with desired behavior. Below is an example of how to include results of 
+original comparison into ignored output:
+
+```scala
+implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
+  (original: Diff[Any]) =>
+    (left: Any, right: Any, context: DiffContext) => {
+      IdenticalValue(s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}")
+    }
+)
+// conf: DiffConfiguration = DiffConfiguration(makeIgnored = <function1>)
+val d = Diff[Person].ignore(_.age)
+// d: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@7abcef55
+d(Person("bob", 25), Person("bob", 30)) 
+// res2: DiffResult = DiffResultObject(
+//   name = "Person",
+//   fields = ListMap(
+//     "name" -> IdenticalValue(value = "bob"),
+//     "age" -> IdenticalValue(value = "<ignored>")
+//   )
+// )
+```
