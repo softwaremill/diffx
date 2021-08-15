@@ -144,6 +144,23 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
         )
       )
     }
+
+    "should preserve order even if there are missing or additional entities and duplicates" in {
+      val left = List(Example(2, 2), Example(3, 3), Example(4, 4))
+      val right = List(Example(0, 0), Example(1, -1), Example(2, -2), Example(2, -2))
+      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      compare(left, right) shouldBe DiffResultObject(
+        "List",
+        ListMap(
+          "0" -> DiffResultMissing(Example(0, 0)),
+          "1" -> DiffResultMissing(Example(1, -1)),
+          "2" -> DiffResultObject("Example", ListMap("a" -> IdenticalValue(2), "b" -> DiffResultValue(2, -2))),
+          "3" -> DiffResultAdditional(Example(3, 3)),
+          "4" -> DiffResultAdditional(Example(4, 4)),
+          "5" -> DiffResultMissing(Example(2, -2))
+        )
+      )
+    }
   }
   "set" - {
     "set full of duplicates according to object matcher should be identical to itself" in {
