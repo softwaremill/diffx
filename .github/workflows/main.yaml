@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: coursier/cache-action@v6.3
-      - uses: olafurpg/setup-scala@v12
+      - uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.11
       - name: Compile docs
@@ -35,7 +35,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v6.3
-      - uses: olafurpg/setup-scala@v12
+      - uses: olafurpg/setup-scala@v13
       - run: sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
