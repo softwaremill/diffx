@@ -5,13 +5,13 @@ To use with scalatest, add the following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.5.5" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest" % "0.5.6" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-scalatest::0.5.5"
+ivy"com.softwaremill.diffx::diffx-scalatest::0.5.6"
 ```
 
 ## Usage

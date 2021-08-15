@@ -5,13 +5,13 @@ To use with munit, add following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-munit" % "0.5.5" % Test
+"com.softwaremill.diffx" %% "diffx-munit" % "0.5.6" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-munit::0.5.5"
+ivy"com.softwaremill.diffx::diffx-munit::0.5.6"
 ```
 
 ## Usage
