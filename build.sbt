@@ -124,7 +124,7 @@ lazy val munit = (projectMatrix in file("munit"))
   .settings(
     name := "diffx-munit",
     libraryDependencies ++= Seq(
-      "org.scalameta" %%% "munit" % "0.7.28"
+      "org.scalameta" %%% "munit" % "0.7.29"
     ),
     testFrameworks += new TestFramework("munit.Framework")
   )
