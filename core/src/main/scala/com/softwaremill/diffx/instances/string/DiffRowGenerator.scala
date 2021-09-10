@@ -6,12 +6,15 @@ import scala.collection.JavaConverters._
 
 private[instances] class DiffRowGenerator {
 
-  /** Get the DiffRows describing the difference between original and revised
-    * texts using the given patch. Useful for displaying side-by-side diff.
+  /** Get the DiffRows describing the difference between original and revised texts using the given patch. Useful for
+    * displaying side-by-side diff.
     *
-    * @param original the original text
-    * @param revised  the revised text
-    * @return the DiffRows between original and revised texts
+    * @param original
+    *   the original text
+    * @param revised
+    *   the revised text
+    * @return
+    *   the DiffRows between original and revised texts
     */
   def generateDiffRows[T](
       original: List[T],
@@ -81,9 +84,8 @@ private[instances] class DiffRowGenerator {
     orig.last + 1
   }
 
-  /** Decompresses ChangeDeltas with different source and target size to a
-    * ChangeDelta with same size and a following InsertDelta or DeleteDelta.
-    * With this problems of building DiffRows getting smaller.
+  /** Decompresses ChangeDeltas with different source and target size to a ChangeDelta with same size and a following
+    * InsertDelta or DeleteDelta. With this problems of building DiffRows getting smaller.
     *
     * @param deltaList
     */
