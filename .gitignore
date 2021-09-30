@@ -13,3 +13,9 @@ project/plugins/project/
 
 .idea*
 .bsp
+
+# Metals
+.metals/
+.bloop/
+metals.sbt
+.vscode
