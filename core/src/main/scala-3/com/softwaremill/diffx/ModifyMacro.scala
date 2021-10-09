@@ -63,9 +63,9 @@ object ModifyMacro {
     }
 
     '{
-    val pathValue = ${ Expr(pathElements.map {
+    val pathValue = ${ Expr(pathElements.collect {
       case PathElement.TermPathElement(c) => c
-      case PathElement.FunctorPathElement(_, method, _ @_*) => method
+      case PathElement.FunctorPathElement("DiffxEither", method, _ @_*) => method
     }.toList) }
 
     pathValue
