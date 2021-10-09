@@ -1,8 +1,8 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
-import com.softwaremill.diffx.generic.auto._
+import com.softwaremill.diffx.ObjectMatcher.MapEntry
 import com.softwaremill.diffx._
+import com.softwaremill.diffx.generic.auto._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 

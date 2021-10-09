@@ -18,6 +18,6 @@ To use auto derivation add following import
 
 or extend trait
 
-`com.softwaremill.diffx.generic.AutoDerivation`
+`com.softwaremill.diffx.generic.auto.AutoDerivation`
 
 **Auto derivation might have a huge impact on compilation times**, because of that it is recommended to use `semi-auto` derivation.

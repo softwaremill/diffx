@@ -6,8 +6,9 @@ import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 
 val scala212 = "2.12.14"
 val scala213 = "2.13.6"
+val scala3 = "3.0.2"
 
-val scalaIdeaVersion = scala212 // the version for which to import sources into intellij
+val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
 val scalatestVersion = "3.2.10"
 val specs2Version = "4.13.0"
@@ -51,9 +52,20 @@ lazy val core = (projectMatrix in file("core"))
   .settings(commonSettings)
   .settings(
     name := "diffx-core",
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((3, _)) =>
+          Seq(
+            "com.softwaremill.magnolia1_3" %% "magnolia" % "1.0.0-M6"
+          )
+        case _ =>
+          Seq(
+            "com.propensive" %%% "magnolia" % "0.17.0",
+            "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
+          )
+      }
+    },
     libraryDependencies ++= Seq(
-      "com.propensive" %%% "magnolia" % "0.17.0",
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
       "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test,
@@ -62,7 +74,7 @@ lazy val core = (projectMatrix in file("core"))
     versionSpecificScalaSources
   )
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213)

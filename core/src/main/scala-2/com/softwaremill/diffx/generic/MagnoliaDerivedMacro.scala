@@ -2,9 +2,9 @@ package com.softwaremill.diffx.generic
 
 import com.softwaremill.diffx.Derived
 import magnolia.Magnolia
-import scala.language.experimental.macros
 
 object MagnoliaDerivedMacro {
+
   import scala.reflect.macros.whitebox
 
   def derivedGen[T: c.WeakTypeTag](c: whitebox.Context): c.Expr[Derived[T]] = {

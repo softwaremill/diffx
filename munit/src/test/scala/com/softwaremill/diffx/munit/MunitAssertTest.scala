@@ -1,7 +1,5 @@
 package com.softwaremill.diffx.munit
 
-import com.softwaremill.diffx.generic.auto._
-
 class MunitAssertTest extends munit.FunSuite with DiffxAssertions {
 //   uncomment to run
 //  test("failing test") {

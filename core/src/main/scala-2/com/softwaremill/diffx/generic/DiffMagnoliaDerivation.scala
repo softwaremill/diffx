@@ -1,19 +1,11 @@
 package com.softwaremill.diffx.generic
 
-import com.softwaremill.diffx.{
-  Diff,
-  DiffContext,
-  DiffResultObject,
-  DiffResultValue,
-  FieldPath,
-  IdenticalValue,
-  nullGuard
-}
+import com.softwaremill.diffx.{Diff, DiffContext, DiffResultObject, DiffResultValue, nullGuard}
 import magnolia._
 
 import scala.collection.immutable.ListMap
 
-trait DiffMagnoliaDerivation extends LowPriority {
+trait DiffMagnoliaDerivation {
   type Typeclass[T] = Diff[T]
 
   def combine[T](ctx: ReadOnlyCaseClass[Typeclass, T]): Diff[T] = { (left: T, right: T, context: DiffContext) =>
@@ -44,15 +36,6 @@ trait DiffMagnoliaDerivation extends LowPriority {
       }
     }
   }
-}
 
-trait LowPriority {
-  def fallback[T]: Diff[T] =
-    (left: T, right: T, context: DiffContext) => {
-      if (left != right) {
-        DiffResultValue(left, right)
-      } else {
-        IdenticalValue(left)
-      }
-    }
+  def fallback[T]: Diff[T] = Diff.useEquals[T]
 }
