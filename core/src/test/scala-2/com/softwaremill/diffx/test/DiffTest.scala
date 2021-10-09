@@ -84,7 +84,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
     }
 
     "ignored fields should be different than identical" in {
-      implicit val d: Diff[Person] = Diff.derived[Person].modifyUnsafe("name")(ignored)
+      implicit val d: Diff[Person] = Diff.derivedDiff[Person].modifyUnsafe("name")(ignored)
       compare(p1, p1.copy(name = "other")) shouldBe DiffResultObject(
         "Person",
         Map(
@@ -97,7 +97,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 
     "ignoring given fields" in {
       implicit val d: Diff[Person] =
-        Diff.derived[Person]
+        Diff.derivedDiff[Person]
           .modifyUnsafe("name")(ignored)
           .modifyUnsafe("age")(ignored)
       val p3 = p2.copy(in = Instant.now())
@@ -490,7 +490,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       }
       "ignored fields from elements" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
-        implicit val d: Diff[Person] = Diff.derived[Person].modifyUnsafe("age")(ignored)
+        implicit val d: Diff[Person] = Diff.derivedDiff[Person].modifyUnsafe("age")(ignored)
         implicit val im = ObjectMatcher.set[Person].by(_.name)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
@@ -528,7 +528,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 
       "identical when products are identical using ignored" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
-        implicit val d: Diff[Person] = Diff.derived[Person]
+        implicit val d: Diff[Person] = Diff.derivedDiff[Person]
           .modifyUnsafe("age")(ignored)
           .modifyUnsafe("in")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)).isIdentical shouldBe true
@@ -537,7 +537,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       "propagate ignore fields to elements" in {
         val p2m = p2.copy(in = Instant.now())
         implicit val im = ObjectMatcher.set[Person].by(_.name)
-        implicit val ds: Diff[Person] = Diff.derived[Person].modifyUnsafe("age")(ignored)
+        implicit val ds: Diff[Person] = Diff.derivedDiff[Person].modifyUnsafe("age")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
             DiffResultObject(
@@ -636,7 +636,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       }
 
       "propagate ignored fields to elements" in {
-        implicit val dm: Diff[Person] = Diff.derived[Person].modifyUnsafe("age")(ignored)
+        implicit val dm: Diff[Person] = Diff.derivedDiff[Person].modifyUnsafe("age")(ignored)
         compare(Map("first" -> p1), Map("first" -> p2)) shouldBe DiffResultMap(
           Map(
             IdenticalValue("first") -> DiffResultObject(
@@ -659,7 +659,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 
       "identical when products are identical using ignore" in {
         implicit val dm: Diff[Person] =
-          Diff.derived[Person]
+          Diff.derivedDiff[Person]
             .modifyUnsafe("age")(ignored)
             .modifyUnsafe("name")(ignored)
         compare(Map("first" -> p1), Map("first" -> p2)).isIdentical shouldBe true
@@ -677,7 +677,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       }
 
       "ignore part of map's key using keys's diff specification" in {
-        implicit def dm: Diff[KeyModel] = Diff.derived[KeyModel].ignore(_.id)
+        implicit def dm: Diff[KeyModel] = Diff.derivedDiff[KeyModel].ignore(_.id)
 
         val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
         val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
