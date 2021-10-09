@@ -1,15 +1,16 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.Diff
+import com.softwaremill.diffx.{Derived, Diff}
+import com.softwaremill.diffx.generic.auto.diffForCaseClass
 
 trait ScalaVersionSpecificDiffInstances {
-  given Diff[Person] = Diff.derived[Person]
-  given Diff[Family] = Diff.derived[Family]
-  given Diff[Organization] = Diff.derived[Organization]
-  given Diff[TsDirection.Incoming.type] = Diff.derived[TsDirection.Incoming.type]
-  given Diff[TsDirection.Outgoing.type] = Diff.derived[TsDirection.Outgoing.type]
-  given Diff[TsDirection] = Diff.derived[TsDirection]
-  given Diff[Startup] = Diff.derived[Startup]
-  given Diff[KeyModel] = Diff.derived[KeyModel]
-  given Diff[MyLookup] = Diff.derived[MyLookup]
+  given diffPerson: Derived[Diff[Person]] = diffForCaseClass[Person]
+  given diffFamily: Derived[Diff[Family]] = diffForCaseClass[Family]
+  given diffOrg : Derived[Diff[Organization]] = diffForCaseClass[Organization]
+  given diffDirectionIn: Derived[Diff[TsDirection.Incoming.type]] = diffForCaseClass[TsDirection.Incoming.type]
+  given diffDirectionOut: Derived[Diff[TsDirection.Outgoing.type]] = diffForCaseClass[TsDirection.Outgoing.type]
+  given diffDirection: Derived[Diff[TsDirection]] = diffForCaseClass[TsDirection]
+  given diffStartup: Derived[Diff[Startup]] = diffForCaseClass[Startup]
+  given diffKeyModel : Derived[Diff[KeyModel]] = diffForCaseClass[KeyModel]
+  given diffMyLookup: Derived[Diff[MyLookup]] = diffForCaseClass[MyLookup]
 }

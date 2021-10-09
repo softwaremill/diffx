@@ -12,5 +12,5 @@ trait AutoDerivation extends DiffMagnoliaDerivation {
 //  // Implicit conversion
 //  implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
 
-//  inline given unwrapDerivedDiff[T] : Conversion[Derived[Diff[T]], Diff[T]] = _.value
+  inline given unwrapDerivedDiff[T] : Conversion[Derived[Diff[T]], Diff[T]] = _.value
 }

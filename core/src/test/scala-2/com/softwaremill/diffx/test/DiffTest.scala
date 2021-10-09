@@ -327,7 +327,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      final case class SubtypeTwo(id: Int, name: String) extends Base
 //      val left: Base = SubtypeOne(2, "one")
 //      val right: Base = SubtypeOne(1, "one")
-//      implicit val diff: Diff[Base] = Diff.derived[Base].ignoreUnsafe("id")
+//      implicit val diff: Diff[Base] = Diff.derivedDiff[Base].ignoreUnsafe("id")
 //      compare(left, right) shouldBe an[Identical[Base]]
 //    }
   }
@@ -360,7 +360,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       "use ignored fields from elements" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p1, p1, p1))
-        implicit val d: Diff[Organization] = Diff.derived[Organization].modifyUnsafe("people", "name")(ignored)
+        implicit val d: Diff[Organization] = Diff.derivedDiff[Organization].modifyUnsafe("people", "name")(ignored)
         compare(o1, o2) shouldBe DiffResultObject(
           "Organization",
           Map(
@@ -416,7 +416,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       "compare lists using explicit object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val orgDiff: Diff[Organization] = Diff.derived[Organization]
+        implicit val orgDiff: Diff[Organization] = Diff.derivedDiff[Organization]
           .modifyMatcherUnsafe("people")(ObjectMatcher.list[Person].byValue(_.name))
         compare(o1, o2).isIdentical shouldBe true
       }
