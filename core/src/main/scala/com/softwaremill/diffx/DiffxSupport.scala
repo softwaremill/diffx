@@ -5,6 +5,9 @@ import com.softwaremill.diffx.DiffxSupport._
 
 trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with DiffxOptionSupport {
   type FieldPath = List[String]
+  type ListMatcher[T] = ObjectMatcher[ObjectMatcher.IterableEntry[T]]
+  type SetMatcher[T] = ObjectMatcher[ObjectMatcher.SetEntry[T]]
+  type MapMatcher[K,V] = ObjectMatcher[ObjectMatcher.MapEntry[K,V]]
 
   def compare[T](left: T, right: T)(implicit d: Diff[T]): DiffResult = d.apply(left, right)
 

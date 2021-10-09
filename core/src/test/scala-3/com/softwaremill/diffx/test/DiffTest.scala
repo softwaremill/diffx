@@ -1,8 +1,8 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.ObjectMatcher.MapEntry
-import com.softwaremill.diffx._
-import com.softwaremill.diffx.generic.auto._
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
+import com.softwaremill.diffx.*
+import com.softwaremill.diffx.generic.auto.*
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -356,86 +356,91 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
           )
         )
       }
-//
-//      "use ignored fields from elements" in {
-//        val o1 = Organization(List(p1, p2))
-//        val o2 = Organization(List(p1, p1, p1))
-//        implicit val d: Diff[Organization] = Diff.derived[Organization].modifyUnsafe("people", "name")(ignored)
-//        compare(o1, o2) shouldBe DiffResultObject(
-//          "Organization",
-//          Map(
-//            "people" -> DiffResultObject(
-//              "List",
-//              Map(
-//                "0" -> DiffResultObject(
-//                  "Person",
-//                  Map(
-//                    "name" -> DiffResult.Ignored,
-//                    "age" -> IdenticalValue(p1.age),
-//                    "in" -> IdenticalValue(p1.in)
-//                  )
-//                ),
-//                "1" -> DiffResultObject(
-//                  "Person",
-//                  Map(
-//                    "name" -> DiffResult.Ignored,
-//                    "age" -> DiffResultValue(p2.age, p1.age),
-//                    "in" -> IdenticalValue(instant)
-//                  )
-//                ),
-//                "2" -> DiffResultMissing(Person(p1.name, p1.age, instant))
-//              )
-//            )
-//          )
-//        )
-//      }
-//
-//      "compare lists using set-like comparator" in {
-//        val o1 = Organization(List(p1, p2))
-//        val o2 = Organization(List(p2, p1))
-//        implicit val om = ObjectMatcher.set[Person].by(_.name)
-//        implicit val dd: Diff[List[Person]] = Diff[Set[Person]].contramap(_.toSet)
-//        compare(o1, o2).isIdentical shouldBe true
-//      }
-//
-//      "compare lists using object matcher comparator" in {
-//        val o1 = Organization(List(p1, p2))
-//        val o2 = Organization(List(p2, p1))
-//        implicit val om = ObjectMatcher.list[Person].byValue(_.name)
-//        compare(o1, o2).isIdentical shouldBe true
-//      }
-//
-//      "compare lists using object matcher comparator when matching by pair" in {
-//        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
-//        val o1 = Organization(List(p1, p2WithSameNameAsP1))
-//        val o2 = Organization(List(p2WithSameNameAsP1, p1))
-//        implicit val om = ObjectMatcher.list[Person].byValue(p => (p.name, p.age))
-//        compare(o1, o2).isIdentical shouldBe true
-//      }
-//
-//      "compare lists using explicit object matcher comparator" in {
-//        val o1 = Organization(List(p1, p2))
-//        val o2 = Organization(List(p2, p1))
-//        implicit val orgDiff: Diff[Organization] = Diff.derived[Organization]
-//          .modifyMatcherUnsafe("people")(ObjectMatcher.list[Person].byValue(_.name))
-//        compare(o1, o2).isIdentical shouldBe true
-//      }
-//
-//      "compare lists using value object matcher" in {
-//        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
-//        val o1 = Organization(List(p1, p2WithSameNameAsP1))
-//        val o2 = Organization(List(p2WithSameNameAsP1, p1))
-//        implicit val om = ObjectMatcher.list[Person].byValue(identity(_))
-//        compare(o1, o2).isIdentical shouldBe true
-//      }
-//
-//      "compare correctly lists with duplicates using objectMatcher" in {
-//        val o1 = Organization(List(p1, p1))
-//        val o2 = Organization(List(p1, p1))
-//        implicit val om = ObjectMatcher.list[Person].byValue(identity(_))
-//        val result = compare(o1, o2)
-//        result.isIdentical shouldBe true
-//      }
+
+      "use ignored fields from elements" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p1, p1, p1))
+        implicit val d: Diff[Organization] = Diff.derived[Organization].modifyUnsafe("people", "name")(ignored)
+        compare(o1, o2) shouldBe DiffResultObject(
+          "Organization",
+          Map(
+            "people" -> DiffResultObject(
+              "List",
+              Map(
+                "0" -> DiffResultObject(
+                  "Person",
+                  Map(
+                    "name" -> DiffResult.Ignored,
+                    "age" -> IdenticalValue(p1.age),
+                    "in" -> IdenticalValue(p1.in)
+                  )
+                ),
+                "1" -> DiffResultObject(
+                  "Person",
+                  Map(
+                    "name" -> DiffResult.Ignored,
+                    "age" -> DiffResultValue(p2.age, p1.age),
+                    "in" -> IdenticalValue(instant)
+                  )
+                ),
+                "2" -> DiffResultMissing(Person(p1.name, p1.age, instant))
+              )
+            )
+          )
+        )
+      }
+
+      "compare lists using set-like comparator" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p2, p1))
+        implicit val om: SetMatcher[Person] = ObjectMatcher.set[Person].by(_.name)
+        implicit val dd: Diff[List[Person]] = Diff[Set[Person]].contramap(_.toSet)
+        given Diff[Organization] = Diff.derived[Organization]
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using object matcher comparator" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p2, p1))
+        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(_.name)
+        given Diff[Organization] = Diff.derived[Organization]
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using object matcher comparator when matching by pair" in {
+        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
+        val o1 = Organization(List(p1, p2WithSameNameAsP1))
+        val o2 = Organization(List(p2WithSameNameAsP1, p1))
+        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(p => (p.name, p.age))
+        given Diff[Organization] = Diff.derived[Organization]
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using explicit object matcher comparator" in {
+        val o1 = Organization(List(p1, p2))
+        val o2 = Organization(List(p2, p1))
+        implicit val orgDiff: Diff[Organization] = Diff.derived[Organization]
+          .modifyMatcherUnsafe("people")(ObjectMatcher.list[Person].byValue(_.name))
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare lists using value object matcher" in {
+        val p2WithSameNameAsP1 = p2.copy(name = p1.name)
+        val o1 = Organization(List(p1, p2WithSameNameAsP1))
+        val o2 = Organization(List(p2WithSameNameAsP1, p1))
+        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(identity(_))
+        given Diff[Organization] = Diff.derived[Organization]
+        compare(o1, o2).isIdentical shouldBe true
+      }
+
+      "compare correctly lists with duplicates using objectMatcher" in {
+        val o1 = Organization(List(p1, p1))
+        val o2 = Organization(List(p1, p1))
+        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(identity(_))
+        given Diff[Organization] = Diff.derived[Organization]
+        val result = compare(o1, o2)
+        result.isIdentical shouldBe true
+      }
 
       "should preserve order of elements" in {
         val l1 = List(1, 2, 3, 4, 5, 6)
@@ -453,21 +458,21 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
         )
       }
 
-//      "should not use values when matching using default key strategy" in {
-//        val l1 = List(1, 2, 3, 4, 5, 6)
-//        val l2 = List(1, 2, 4, 5, 6)
-//        compare(l1, l2) shouldBe DiffResultObject(
-//          "List",
-//          ListMap(
-//            "0" -> IdenticalValue(1),
-//            "1" -> IdenticalValue(2),
-//            "2" -> DiffResultValue(3, 4),
-//            "3" -> DiffResultValue(4, 5),
-//            "4" -> DiffResultValue(5, 6),
-//            "5" -> DiffResultAdditional(6)
-//          )
-//        )
-//      }
+      "should not use values when matching using default key strategy" in {
+        val l1 = List(1, 2, 3, 4, 5, 6)
+        val l2 = List(1, 2, 4, 5, 6)
+        compare(l1, l2) shouldBe DiffResultObject(
+          "List",
+          ListMap(
+            "0" -> IdenticalValue(1),
+            "1" -> IdenticalValue(2),
+            "2" -> DiffResultValue(3, 4),
+            "3" -> DiffResultValue(4, 5),
+            "4" -> DiffResultValue(5, 6),
+            "5" -> DiffResultAdditional(6)
+          )
+        )
+      }
     }
     "sets" - {
       "identity" in {
@@ -583,35 +588,36 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
         compare(Set(p1, p2), Set(p1, p2m)).isIdentical shouldBe true
       }
 
-//      "set of products using instance matcher" in {
-//        val p2m = p2.copy(age = 33)
-//        implicit val im: ObjectMatcher[ObjectMatcher.SetEntry[Person]] = ObjectMatcher.set[Person].by(_.name)
-//        compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
-//          "Startup",
-//          Map(
-//            "workers" -> DiffResultSet(
-//              Set(
-//                DiffResultObject(
-//                  "Person",
-//                  Map(
-//                    "name" -> IdenticalValue(p1.name),
-//                    "age" -> IdenticalValue(p1.age),
-//                    "in" -> IdenticalValue(p1.in)
-//                  )
-//                ),
-//                DiffResultObject(
-//                  "Person",
-//                  Map(
-//                    "name" -> IdenticalValue(p2.name),
-//                    "age" -> DiffResultValue(p2.age, p2m.age),
-//                    "in" -> IdenticalValue(p1.in)
-//                  )
-//                )
-//              )
-//            )
-//          )
-//        )
-//      }
+      "set of products using instance matcher" in {
+        val p2m = p2.copy(age = 33)
+        implicit val im: SetMatcher[Person] = ObjectMatcher.set[Person].by(_.name)
+        given Diff[Startup] = Diff.derived[Startup]
+        compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
+          "Startup",
+          Map(
+            "workers" -> DiffResultSet(
+              Set(
+                DiffResultObject(
+                  "Person",
+                  Map(
+                    "name" -> IdenticalValue(p1.name),
+                    "age" -> IdenticalValue(p1.age),
+                    "in" -> IdenticalValue(p1.in)
+                  )
+                ),
+                DiffResultObject(
+                  "Person",
+                  Map(
+                    "name" -> IdenticalValue(p2.name),
+                    "age" -> DiffResultValue(p2.age, p2m.age),
+                    "in" -> IdenticalValue(p1.in)
+                  )
+                )
+              )
+            )
+          )
+        )
+      }
     }
     "maps" - {
       "identical" in {
@@ -676,61 +682,63 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
         ).isIdentical shouldBe true
       }
 
-//      "ignore part of map's key using keys's diff specification" in {
-//        implicit def dm: Diff[KeyModel] = Diff.derived[KeyModel].ignore(_.id)
-//
-//        val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
-//        val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
-//        compare(a1, a2).isIdentical shouldBe true
-//      }
-//
-//      "match keys using object mapper" in {
-//        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.map[KeyModel, String].byKey(_.name)
-//        val uuid1 = UUID.randomUUID()
-//        val uuid2 = UUID.randomUUID()
-//        val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
-//        val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
-//        compare(a1, a2) shouldBe DiffResultObject(
-//          "MyLookup",
-//          Map(
-//            "map" -> DiffResultMap(
-//              Map(
-//                DiffResultObject(
-//                  "KeyModel",
-//                  Map(
-//                    "id" -> DiffResultValue(uuid1, uuid2),
-//                    "name" -> IdenticalValue("k1")
-//                  )
-//                ) -> IdenticalValue("val1")
-//              )
-//            )
-//          )
-//        )
-//      }
-//
-//      "match map entries by values" in {
-//        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.map.byValue
-//        val uuid1 = UUID.randomUUID()
-//        val uuid2 = UUID.randomUUID()
-//        val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
-//        val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
-//        compare(a1, a2) shouldBe DiffResultObject(
-//          "MyLookup",
-//          Map(
-//            "map" -> DiffResultMap(
-//              Map(
-//                DiffResultObject(
-//                  "KeyModel",
-//                  Map(
-//                    "id" -> DiffResultValue(uuid1, uuid2),
-//                    "name" -> IdenticalValue("k1")
-//                  )
-//                ) -> IdenticalValue("val1")
-//              )
-//            )
-//          )
-//        )
-//      }
+      "ignore part of map's key using keys's diff specification" in {
+        implicit def dm: Diff[KeyModel] = Diff.derived[KeyModel].ignore(_.id)
+        given Diff[MyLookup] = Diff.derived[MyLookup]
+        val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
+        val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
+        compare(a1, a2).isIdentical shouldBe true
+      }
+
+      "match keys using object mapper" in {
+        implicit val om: MapMatcher[KeyModel, String] = ObjectMatcher.map[KeyModel, String].byKey(_.name)
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+        val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+        given Diff[MyLookup] = Diff.derived[MyLookup]
+        compare(a1, a2) shouldBe DiffResultObject(
+          "MyLookup",
+          Map(
+            "map" -> DiffResultMap(
+              Map(
+                DiffResultObject(
+                  "KeyModel",
+                  Map(
+                    "id" -> DiffResultValue(uuid1, uuid2),
+                    "name" -> IdenticalValue("k1")
+                  )
+                ) -> IdenticalValue("val1")
+              )
+            )
+          )
+        )
+      }
+
+      "match map entries by values" in {
+        implicit val om: ObjectMatcher[MapEntry[KeyModel, String]] = ObjectMatcher.map.byValue
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+        val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+        given Diff[MyLookup] = Diff.derived[MyLookup]
+        compare(a1, a2) shouldBe DiffResultObject(
+          "MyLookup",
+          Map(
+            "map" -> DiffResultMap(
+              Map(
+                DiffResultObject(
+                  "KeyModel",
+                  Map(
+                    "id" -> DiffResultValue(uuid1, uuid2),
+                    "name" -> IdenticalValue("k1")
+                  )
+                ) -> IdenticalValue("val1")
+              )
+            )
+          )
+        )
+      }
     }
     "ranges" - {
       "identical" in {
