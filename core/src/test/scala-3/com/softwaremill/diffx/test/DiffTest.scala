@@ -10,7 +10,7 @@ import java.time.Instant
 import java.util.UUID
 import scala.collection.immutable.ListMap
 
-class DiffTest extends AnyFreeSpec with Matchers {
+class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffInstances {
   val ignored = DiffConfiguration.Default.makeIgnored
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -42,47 +42,47 @@ class DiffTest extends AnyFreeSpec with Matchers {
     }
   }
 
-//  "products" - {
-//    "identity" in {
-//      compare(p1, p1).isIdentical shouldBe true
-//    }
-//
-//    "nullable" in {
-//      compare(p1, null) shouldBe DiffResultValue(p1, null)
-//    }
-//
-//    "diff" in {
-//      compare(p1, p2) shouldBe DiffResultObject(
-//        "Person",
-//        Map(
-//          "name" -> DiffResultString(
-//            List(
-//              DiffResultStringLine(
-//                List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("1", "2"))))
-//              )
-//            )
-//          ),
-//          "age" -> DiffResultValue(p1.age, p2.age),
-//          "in" -> IdenticalValue(instant)
-//        )
-//      )
-//    }
-//
-//    "difference between null and value" in {
-//      compare(p1.copy(name = null), p2) shouldBe DiffResultObject(
-//        "Person",
-//        Map(
-//          "name" -> DiffResultValue(null, p2.name),
-//          "age" -> DiffResultValue(p1.age, p2.age),
-//          "in" -> IdenticalValue(instant)
-//        )
-//      )
-//    }
-//
-//    "two nulls should be equal" in {
-//      compare(p1.copy(name = null), p1.copy(name = null)).isIdentical shouldBe true
-//    }
-//
+  "products" - {
+    "identity" in {
+      compare(p1, p1).isIdentical shouldBe true
+    }
+
+    "nullable" in {
+      compare(p1, null) shouldBe DiffResultValue(p1, null)
+    }
+
+    "diff" in {
+      compare(p1, p2) shouldBe DiffResultObject(
+        "Person",
+        Map(
+          "name" -> DiffResultString(
+            List(
+              DiffResultStringLine(
+                List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("1", "2"))))
+              )
+            )
+          ),
+          "age" -> DiffResultValue(p1.age, p2.age),
+          "in" -> IdenticalValue(instant)
+        )
+      )
+    }
+
+    "difference between null and value" in {
+      compare(p1.copy(name = null), p2) shouldBe DiffResultObject(
+        "Person",
+        Map(
+          "name" -> DiffResultValue(null, p2.name),
+          "age" -> DiffResultValue(p1.age, p2.age),
+          "in" -> IdenticalValue(instant)
+        )
+      )
+    }
+
+    "two nulls should be equal" in {
+      compare(p1.copy(name = null), p1.copy(name = null)).isIdentical shouldBe true
+    }
+
 //    "ignored fields should be different than identical" in {
 //      implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("name")(ignored)
 //      compare(p1, p1.copy(name = "other")) shouldBe DiffResultObject(
@@ -94,7 +94,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //        )
 //      )
 //    }
-//
+
 //    "ignoring given fields" in {
 //      implicit val d: Diff[Person] =
 //        Derived[Diff[Person]]
@@ -110,37 +110,37 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //        )
 //      )
 //    }
-//
-//    "nested products" in {
-//      val f1 = Family(p1, p2)
-//      val f2 = Family(p1, p1)
-//      compare(f1, f2) shouldBe DiffResultObject(
-//        "Family",
-//        Map(
-//          "first" -> DiffResultObject(
-//            "Person",
-//            Map(
-//              "name" -> IdenticalValue(p1.name),
-//              "age" -> IdenticalValue(p1.age),
-//              "in" -> IdenticalValue(p1.in)
-//            )
-//          ),
-//          "second" -> DiffResultObject(
-//            "Person",
-//            Map(
-//              "name" -> DiffResultString(
-//                List(
-//                  DiffResultStringLine(List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1")))))
-//                )
-//              ),
-//              "age" -> DiffResultValue(p2.age, p1.age),
-//              "in" -> IdenticalValue(instant)
-//            )
-//          )
-//        )
-//      )
-//    }
-//
+
+    "nested products" in {
+      val f1 = Family(p1, p2)
+      val f2 = Family(p1, p1)
+      compare(f1, f2) shouldBe DiffResultObject(
+        "Family",
+        Map(
+          "first" -> DiffResultObject(
+            "Person",
+            Map(
+              "name" -> IdenticalValue(p1.name),
+              "age" -> IdenticalValue(p1.age),
+              "in" -> IdenticalValue(p1.in)
+            )
+          ),
+          "second" -> DiffResultObject(
+            "Person",
+            Map(
+              "name" -> DiffResultString(
+                List(
+                  DiffResultStringLine(List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1")))))
+                )
+              ),
+              "age" -> DiffResultValue(p2.age, p1.age),
+              "in" -> IdenticalValue(instant)
+            )
+          )
+        )
+      )
+    }
+
 //    "nested products ignoring nested fields" in {
 //      val f1 = Family(p1, p2)
 //      val f2 = Family(p1, p1)
@@ -167,7 +167,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //        )
 //      )
 //    }
-//
+
 //    "nested products ignoring fields only in given path" in {
 //      val p1p = p1.copy(name = "other")
 //      val f1 = Family(p1, p2)
@@ -195,85 +195,85 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //        )
 //      )
 //    }
-//
+
 //    "nested products ignoring nested products" in {
 //      val f1 = Family(p1, p2)
 //      val f2 = Family(p1, p1)
 //      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second")(ignored)
 //      compare(f1, f2).isIdentical shouldBe true
 //    }
-//
-//    "list of products" in {
-//      val o1 = Organization(List(p1, p2))
-//      val o2 = Organization(List(p1, p1, p1))
-//      compare(o1, o2) shouldBe DiffResultObject(
-//        "Organization",
-//        Map(
-//          "people" -> DiffResultObject(
-//            "List",
-//            Map(
-//              "0" -> DiffResultObject(
-//                "Person",
-//                Map(
-//                  "name" -> IdenticalValue(p1.name),
-//                  "age" -> IdenticalValue(p1.age),
-//                  "in" -> IdenticalValue(p1.in)
-//                )
-//              ),
-//              "1" -> DiffResultObject(
-//                "Person",
-//                Map(
-//                  "name" -> DiffResultString(
-//                    List(
-//                      DiffResultStringLine(
-//                        List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1"))))
-//                      )
-//                    )
-//                  ),
-//                  "age" -> DiffResultValue(p2.age, p1.age),
-//                  "in" -> IdenticalValue(instant)
-//                )
-//              ),
-//              "2" -> DiffResultMissing(Person(p1.name, p1.age, instant))
-//            )
-//          )
-//        )
-//      )
-//    }
-//
-//    "identical list of products" in {
-//      val o1 = Organization(List(p1, p2))
-//      val o2 = Organization(List(p1, p2))
-//      compare(o1, o2) shouldBe DiffResultObject(
-//        "Organization",
-//        Map(
-//          "people" -> DiffResultObject(
-//            "List",
-//            Map(
-//              "0" -> DiffResultObject(
-//                "Person",
-//                Map(
-//                  "name" -> IdenticalValue(p1.name),
-//                  "age" -> IdenticalValue(p1.age),
-//                  "in" -> IdenticalValue(p1.in)
-//                )
-//              ),
-//              "1" -> DiffResultObject(
-//                "Person",
-//                Map(
-//                  "name" -> IdenticalValue(p2.name),
-//                  "age" -> IdenticalValue(p2.age),
-//                  "in" -> IdenticalValue(p2.in)
-//                )
-//              )
-//            )
-//          )
-//        )
-//      )
-//    }
-//  }
-//
-//  "coproducts" - {
+
+    "list of products" in {
+      val o1 = Organization(List(p1, p2))
+      val o2 = Organization(List(p1, p1, p1))
+      compare(o1, o2) shouldBe DiffResultObject(
+        "Organization",
+        Map(
+          "people" -> DiffResultObject(
+            "List",
+            Map(
+              "0" -> DiffResultObject(
+                "Person",
+                Map(
+                  "name" -> IdenticalValue(p1.name),
+                  "age" -> IdenticalValue(p1.age),
+                  "in" -> IdenticalValue(p1.in)
+                )
+              ),
+              "1" -> DiffResultObject(
+                "Person",
+                Map(
+                  "name" -> DiffResultString(
+                    List(
+                      DiffResultStringLine(
+                        List(DiffResultStringWord(List(IdenticalValue("p"), DiffResultChunk("2", "1"))))
+                      )
+                    )
+                  ),
+                  "age" -> DiffResultValue(p2.age, p1.age),
+                  "in" -> IdenticalValue(instant)
+                )
+              ),
+              "2" -> DiffResultMissing(Person(p1.name, p1.age, instant))
+            )
+          )
+        )
+      )
+    }
+
+    "identical list of products" in {
+      val o1 = Organization(List(p1, p2))
+      val o2 = Organization(List(p1, p2))
+      compare(o1, o2) shouldBe DiffResultObject(
+        "Organization",
+        Map(
+          "people" -> DiffResultObject(
+            "List",
+            Map(
+              "0" -> DiffResultObject(
+                "Person",
+                Map(
+                  "name" -> IdenticalValue(p1.name),
+                  "age" -> IdenticalValue(p1.age),
+                  "in" -> IdenticalValue(p1.in)
+                )
+              ),
+              "1" -> DiffResultObject(
+                "Person",
+                Map(
+                  "name" -> IdenticalValue(p2.name),
+                  "age" -> IdenticalValue(p2.age),
+                  "in" -> IdenticalValue(p2.in)
+                )
+              )
+            )
+          )
+        )
+      )
+    }
+  }
+
+  "coproducts" - {
 //    val right: Foo = Foo(
 //      Bar("asdf", 5),
 //      List(123, 1234),
@@ -285,25 +285,27 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //      Some(right)
 //    )
 //
-//    "sealed trait objects" - {
-//      "identity" in {
-//        compare[TsDirection](TsDirection.Outgoing, TsDirection.Outgoing).isIdentical shouldBe true
-//      }
-//      "diff" in {
-//        compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
-//          "com.softwaremill.diffx.test.TsDirection.Outgoing",
-//          "com.softwaremill.diffx.test.TsDirection.Incoming"
-//        )
-//      }
-//    }
+    "sealed trait objects" - {
+      "identity" in {
+        val result = compare[TsDirection](TsDirection.Outgoing, TsDirection.Outgoing)
+        println(result)
+        result.isIdentical shouldBe true
+      }
+      "diff" in {
+        compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
+          "com.softwaremill.diffx.test.TsDirection.Outgoing",
+          "com.softwaremill.diffx.test.TsDirection.Incoming"
+        )
+      }
+    }
 //
 //    "identity" in {
 //      compare(left, left).isIdentical shouldBe true
 //    }
 //
-//    "nullable" in {
-//      compare[TsDirection](TsDirection.Outgoing, null: TsDirection) shouldBe DiffResultValue(TsDirection.Outgoing, null)
-//    }
+    "nullable" in {
+      compare[TsDirection](TsDirection.Outgoing, null: TsDirection) shouldBe DiffResultValue(TsDirection.Outgoing, null)
+    }
 //
 //    "diff" in {
 //      compare(left, right) shouldBe DiffResultObject(
@@ -315,22 +317,22 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //        )
 //      )
 //    }
-//// TODO: uncomment once https://github.com/propensive/magnolia/issues/277 is resolved
-////
-////    "coproduct types with ignored fields" in {
-////      sealed trait Base {
-////        def id: Int
-////        def name: String
-////      }
-////
-////      final case class SubtypeOne(id: Int, name: String) extends Base
-////      final case class SubtypeTwo(id: Int, name: String) extends Base
-////      val left: Base = SubtypeOne(2, "one")
-////      val right: Base = SubtypeOne(1, "one")
-////      implicit val diff: Diff[Base] = Derived[Diff[Base]].ignoreUnsafe("id")
-////      compare(left, right) shouldBe an[Identical[Base]]
-////    }
-//  }
+// TODO: uncomment once https://github.com/propensive/magnolia/issues/277 is resolved
+//
+//    "coproduct types with ignored fields" in {
+//      sealed trait Base {
+//        def id: Int
+//        def name: String
+//      }
+//
+//      final case class SubtypeOne(id: Int, name: String) extends Base
+//      final case class SubtypeTwo(id: Int, name: String) extends Base
+//      val left: Base = SubtypeOne(2, "one")
+//      val right: Base = SubtypeOne(1, "one")
+//      implicit val diff: Diff[Base] = Derived[Diff[Base]].ignoreUnsafe("id")
+//      compare(left, right) shouldBe an[Identical[Base]]
+//    }
+  }
 //
 //  "collections" - {
 //    "list" - {

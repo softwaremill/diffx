@@ -9,9 +9,9 @@ trait DiffCompanionMacro extends DiffMagnoliaDerivation {
     def contramap[R](f: R => T): Derived[Diff[R]] = Derived(dd.value.contramap(f))
 
     def modify[U](path: T => U): DerivedDiffLens[T, U] =
-    macro ModifyMacro.derivedModifyMacro[T, U]
+      macro ModifyMacro.derivedModifyMacro[T, U]
     def ignore[U](path: T => U)(implicit conf: DiffConfiguration): Derived[Diff[T]] =
-    macro ModifyMacro.derivedIgnoreMacro[T, U]
+      macro ModifyMacro.derivedIgnoreMacro[T, U]
   }
 
   implicit class RichDiff[T](val d: Diff[T]) {

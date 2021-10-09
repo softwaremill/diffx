@@ -36,7 +36,7 @@ trait DiffMagnoliaDerivation extends Derivation[Diff]{
       nullGuard(left, right) { (left, right) =>
         val lType = ctx.choose(left)(a => a)
         val rType = ctx.choose(right)(a => a)
-        if (lType == rType) {
+        if (lType.typeInfo == rType.typeInfo) {
           lType.typeclass(lType.cast(left), lType.cast(right), context)
         } else {
           DiffResultValue(lType.typeInfo.full, rType.typeInfo.full)
