@@ -288,7 +288,6 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
     "sealed trait objects" - {
       "identity" in {
         val result = compare[TsDirection](TsDirection.Outgoing, TsDirection.Outgoing)
-        println(result)
         result.isIdentical shouldBe true
       }
       "diff" in {
@@ -334,30 +333,30 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //    }
   }
 //
-//  "collections" - {
-//    "list" - {
-//      "identical" in {
-//        compare(List("a"), List("a")) shouldBe DiffResultObject("List", Map("0" -> IdenticalValue("a")))
-//      }
-//
-//      "nullable" in {
-//        compare(List.empty[Int], null: List[Int]) shouldBe DiffResultValue(List.empty, null)
-//      }
-//
-//      "diff" in {
-//        compare(List("a"), List("B")) shouldBe DiffResultObject(
-//          "List",
-//          Map(
-//            "0" -> DiffResultString(
-//              List(
-//                DiffResultStringLine(
-//                  List(DiffResultValue("a", "B"))
-//                )
-//              )
-//            )
-//          )
-//        )
-//      }
+  "collections" - {
+    "list" - {
+      "identical" in {
+        compare(List("a"), List("a")) shouldBe DiffResultObject("List", Map("0" -> IdenticalValue("a")))
+      }
+
+      "nullable" in {
+        compare(List.empty[Int], null: List[Int]) shouldBe DiffResultValue(List.empty, null)
+      }
+
+      "diff" in {
+        compare(List("a"), List("B")) shouldBe DiffResultObject(
+          "List",
+          Map(
+            "0" -> DiffResultString(
+              List(
+                DiffResultStringLine(
+                  List(DiffResultValue("a", "B"))
+                )
+              )
+            )
+          )
+        )
+      }
 //
 //      "use ignored fields from elements" in {
 //        val o1 = Organization(List(p1, p2))
@@ -439,21 +438,21 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //        result.isIdentical shouldBe true
 //      }
 //
-//      "should preserve order of elements" in {
-//        val l1 = List(1, 2, 3, 4, 5, 6)
-//        val l2 = List(1, 2, 3, 4, 5, 7)
-//        compare(l1, l2) shouldBe DiffResultObject(
-//          "List",
-//          ListMap(
-//            "0" -> IdenticalValue(1),
-//            "1" -> IdenticalValue(2),
-//            "2" -> IdenticalValue(3),
-//            "3" -> IdenticalValue(4),
-//            "4" -> IdenticalValue(5),
-//            "5" -> DiffResultValue(6, 7)
-//          )
-//        )
-//      }
+      "should preserve order of elements" in {
+        val l1 = List(1, 2, 3, 4, 5, 6)
+        val l2 = List(1, 2, 3, 4, 5, 7)
+        compare(l1, l2) shouldBe DiffResultObject(
+          "List",
+          ListMap(
+            "0" -> IdenticalValue(1),
+            "1" -> IdenticalValue(2),
+            "2" -> IdenticalValue(3),
+            "3" -> IdenticalValue(4),
+            "4" -> IdenticalValue(5),
+            "5" -> DiffResultValue(6, 7)
+          )
+        )
+      }
 //
 //      "should not use values when matching using default key strategy" in {
 //        val l1 = List(1, 2, 3, 4, 5, 6)
@@ -470,26 +469,26 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //          )
 //        )
 //      }
-//    }
-//    "sets" - {
-//      "identity" in {
-//        compare(Set(1), Set(1)).isIdentical shouldBe true
-//      }
-//
-//      "nullable" in {
-//        compare(Set.empty[Int], null: Set[Int]) shouldBe DiffResultValue(Set.empty[Int], null)
-//      }
-//
-//      "diff" in {
-//        val diffResult = compare(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
-//        diffResult.diffs should contain theSameElementsAs List(
-//          DiffResultAdditional(5),
-//          IdenticalValue(4),
-//          IdenticalValue(3),
-//          IdenticalValue(2),
-//          IdenticalValue(1)
-//        )
-//      }
+    }
+    "sets" - {
+      "identity" in {
+        compare(Set(1), Set(1)).isIdentical shouldBe true
+      }
+
+      "nullable" in {
+        compare(Set.empty[Int], null: Set[Int]) shouldBe DiffResultValue(Set.empty[Int], null)
+      }
+
+      "diff" in {
+        val diffResult = compare(Set(1, 2, 3, 4, 5), Set(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
+        diffResult.diffs should contain theSameElementsAs List(
+          DiffResultAdditional(5),
+          IdenticalValue(4),
+          IdenticalValue(3),
+          IdenticalValue(2),
+          IdenticalValue(1)
+        )
+      }
 //      "ignored fields from elements" in {
 //        val p2m = p2.copy(age = 33, in = Instant.now())
 //        implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
@@ -516,18 +515,18 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //        )
 //      }
 //
-//      "mutable set" in {
-//        import scala.collection.{Set => mSet}
-//        val diffResult = compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
-//        diffResult.diffs should contain theSameElementsAs List(
-//          DiffResultAdditional(5),
-//          IdenticalValue(4),
-//          IdenticalValue(3),
-//          IdenticalValue(2),
-//          IdenticalValue(1)
-//        )
-//      }
-//
+      "mutable set" in {
+        import scala.collection.{Set => mSet}
+        val diffResult = compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
+        diffResult.diffs should contain theSameElementsAs List(
+          DiffResultAdditional(5),
+          IdenticalValue(4),
+          IdenticalValue(3),
+          IdenticalValue(2),
+          IdenticalValue(1)
+        )
+      }
+
 //      "identical when products are identical using ignored" in {
 //        val p2m = p2.copy(age = 33, in = Instant.now())
 //        implicit val d: Diff[Person] = Derived[Diff[Person]]
@@ -561,23 +560,23 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //          )
 //        )
 //      }
-//      "set of products" in {
-//        val p2m = p2.copy(age = 33)
-//        compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-//          Set(
-//            DiffResultAdditional(p2),
-//            DiffResultMissing(p2m),
-//            DiffResultObject(
-//              "Person",
-//              Map(
-//                "name" -> IdenticalValue(p1.name),
-//                "age" -> IdenticalValue(p1.age),
-//                "in" -> IdenticalValue(p1.in)
-//              )
-//            )
-//          )
-//        )
-//      }
+      "set of products" in {
+        val p2m = p2.copy(age = 33)
+        compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
+          Set(
+            DiffResultAdditional(p2),
+            DiffResultMissing(p2m),
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p1.name),
+                "age" -> IdenticalValue(p1.age),
+                "in" -> IdenticalValue(p1.in)
+              )
+            )
+          )
+        )
+      }
 //      "override set instance" in {
 //        val p2m = p2.copy(age = 33)
 //        implicit def setDiff[T, C[W] <: scala.collection.Set[W]]: Diff[C[T]] =
@@ -614,28 +613,28 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //          )
 //        )
 //      }
-//    }
-//    "maps" - {
-//      "identical" in {
-//        val m1 = Map("a" -> 1)
-//        compare(m1, m1).isIdentical shouldBe true
-//      }
-//
-//      "nullable" in {
-//        compare(Map.empty[Int, Int], null: Map[Int, Int]) shouldBe DiffResultValue(Map.empty[Int, Int], null)
-//      }
-//
-//      "simple diff" in {
-//        val m1 = Map("a" -> 1)
-//        val m2 = Map("a" -> 2)
-//        compare(m1, m2) shouldBe DiffResultMap(Map(IdenticalValue("a") -> DiffResultValue(1, 2)))
-//      }
-//
-//      "simple diff - mutable map" in {
-//        val m1 = scala.collection.Map("a" -> 1)
-//        val m2 = scala.collection.Map("a" -> 2)
-//        compare(m1, m2) shouldBe DiffResultMap(Map(IdenticalValue("a") -> DiffResultValue(1, 2)))
-//      }
+    }
+    "maps" - {
+      "identical" in {
+        val m1 = Map("a" -> 1)
+        compare(m1, m1).isIdentical shouldBe true
+      }
+
+      "nullable" in {
+        compare(Map.empty[Int, Int], null: Map[Int, Int]) shouldBe DiffResultValue(Map.empty[Int, Int], null)
+      }
+
+      "simple diff" in {
+        val m1 = Map("a" -> 1)
+        val m2 = Map("a" -> 2)
+        compare(m1, m2) shouldBe DiffResultMap(Map(IdenticalValue("a") -> DiffResultValue(1, 2)))
+      }
+
+      "simple diff - mutable map" in {
+        val m1 = scala.collection.Map("a" -> 1)
+        val m2 = scala.collection.Map("a" -> 2)
+        compare(m1, m2) shouldBe DiffResultMap(Map(IdenticalValue("a") -> DiffResultValue(1, 2)))
+      }
 //
 //      "propagate ignored fields to elements" in {
 //        implicit val dm: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
@@ -733,25 +732,25 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //          )
 //        )
 //      }
-//    }
-//    "ranges" - {
-//      "identical" in {
-//        val r1 = 0 until 100
-//        val r2 = 0 until 100
-//        compare(r1, r2) shouldBe IdenticalValue(r1)
-//      }
-//      "dif" in {
-//        val r1 = 0 until 100
-//        val r2 = 0 until 99
-//        compare(r1, r2) shouldBe DiffResultValue(r1, r2)
-//      }
-//      "inclusive vs exclusive" in {
-//        val r1 = 0 until 100
-//        val r2 = 0 to 100
-//        compare(r1, r2) shouldBe DiffResultValue(r1, r2)
-//      }
-//    }
-//  }
+    }
+    "ranges" - {
+      "identical" in {
+        val r1 = 0 until 100
+        val r2 = 0 until 100
+        compare(r1, r2) shouldBe IdenticalValue(r1)
+      }
+      "dif" in {
+        val r1 = 0 until 100
+        val r2 = 0 until 99
+        compare(r1, r2) shouldBe DiffResultValue(r1, r2)
+      }
+      "inclusive vs exclusive" in {
+        val r1 = 0 until 100
+        val r2 = 0 to 100
+        compare(r1, r2) shouldBe DiffResultValue(r1, r2)
+      }
+    }
+  }
 
   "Diff.useEquals" - {
     "Uses Object.equals instance for comparison" in {
