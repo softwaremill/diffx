@@ -60,16 +60,20 @@ object Diff extends LowPriorityDiff with DiffTupleInstances with DiffxPlatformEx
   implicit val diffForBoolean: Diff[Boolean] = Diff.useEquals[Boolean]
 
   implicit def diffForNumeric[T: Numeric]: Diff[T] = new DiffForNumeric[T]
+
   implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
       dv: Diff[V],
       dk: Diff[K],
       matcher: ObjectMatcher[MapEntry[K, V]]
   ): Diff[C[K, V]] = new DiffForMap[K, V, C](matcher, dk, dv)
+
   implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = new DiffForOption[T](ddt)
+
   implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
       dt: Diff[T],
       matcher: ObjectMatcher[SetEntry[T]]
   ): Diff[C[T]] = new DiffForSet[T, C](dt, matcher)
+
   implicit def diffForEither[L, R](implicit ld: Diff[L], rd: Diff[R]): Diff[Either[L, R]] =
     new DiffForEither[L, R](ld, rd)
 }
@@ -91,7 +95,7 @@ object Derived {
   def apply[T: Derived]: Derived[T] = implicitly[Derived[T]]
 }
 
-case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
+case class DiffLens[T, U](outer: Diff[T], path: List[String]) extends DiffLensMacro[T, U] {
   def setTo(d: Diff[U]): Diff[T] = using(_ => d)
 
   def using(mod: Diff[U] => Diff[U]): Diff[T] = {
@@ -99,10 +103,9 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
   }
 
   def ignore(implicit config: DiffConfiguration): Diff[T] = outer.modifyUnsafe(path: _*)(config.makeIgnored)
-
-  def useMatcher[M](matcher: ObjectMatcher[M]): Diff[T] = macro ModifyMacro.withObjectMatcher[T, U, M]
 }
-case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
+
+case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) extends DerivedDiffLensMacro[T, U] {
   def setTo(d: Diff[U]): Derived[Diff[T]] = using(_ => d)
 
   def using(mod: Diff[U] => Diff[U]): Derived[Diff[T]] = {
@@ -112,6 +115,4 @@ case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) {
   def ignore(implicit config: DiffConfiguration): Derived[Diff[T]] = Derived(
     outer.modifyUnsafe(path: _*)(config.makeIgnored)
   )
-
-  def useMatcher[M](matcher: ObjectMatcher[M]): Derived[Diff[T]] = macro ModifyMacro.withObjectMatcherDerived[T, U, M]
 }
