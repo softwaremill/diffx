@@ -6,7 +6,7 @@ import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 
 val scala212 = "2.12.14"
 val scala213 = "2.13.6"
-val scala3 = "3.0.0"
+val scala3 = "3.0.1"
 
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
@@ -56,7 +56,7 @@ lazy val core = (projectMatrix in file("core"))
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((3, _)) =>
           Seq(
-            "com.softwaremill.magnolia" %%% "magnolia-core" % "2.0.0-M9"
+            "com.softwaremill.magnolia1_3" %% "magnolia" % "1.0.0-M5"
           )
         case _ =>
           Seq(

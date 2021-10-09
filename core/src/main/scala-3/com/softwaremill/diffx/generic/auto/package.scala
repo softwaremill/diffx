@@ -7,8 +7,10 @@ import com.softwaremill.diffx.{Diff, Derived}
 package object auto extends AutoDerivation
 
 trait AutoDerivation extends DiffMagnoliaDerivation {
-  inline implicit def diffForCaseClass[T](implicit m: Mirror.Of[T]): Derived[Diff[T]] = Derived(derived[T])
+  inline given diffForCaseClass[T](using Mirror.Of[T]): Diff[T] = derived[T]
 
 //  // Implicit conversion
 //  implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
+
+//  inline given unwrapDerivedDiff[T] : Conversion[Derived[Diff[T]], Diff[T]] = _.value
 }
