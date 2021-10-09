@@ -54,3 +54,7 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
 trait LowPriorityObjectMatcher {
   implicit def default[T]: ObjectMatcher[T] = (l: T, r: T) => l == r
 }
+
+trait ListMatcher[T] extends ObjectMatcher[ObjectMatcher.IterableEntry[T]]
+trait SetMatcher[T] extends ObjectMatcher[ObjectMatcher.SetEntry[T]]
+trait MapMatcher[K,V] extends ObjectMatcher[ObjectMatcher.MapEntry[K,V]]

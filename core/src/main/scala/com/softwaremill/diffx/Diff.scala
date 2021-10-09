@@ -3,7 +3,7 @@ package com.softwaremill.diffx
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
 import com.softwaremill.diffx.instances._
 
-trait Diff[T] { outer =>
+trait Diff[T] extends DiffMacro[T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, DiffContext.Empty)
   def apply(left: T, right: T, context: DiffContext): DiffResult
 
@@ -44,12 +44,12 @@ object Diff extends LowPriorityDiff with DiffTupleInstances with DiffxPlatformEx
 
   /** Create a Diff instance using [[Object#equals]] */
   def useEquals[T]: Diff[T] = (left: T, right: T, _: DiffContext) => {
-      if (left != right) {
-        DiffResultValue(left, right)
-      } else {
-        IdenticalValue(left)
-      }
+    if (left != right) {
+      DiffResultValue(left, right)
+    } else {
+      IdenticalValue(left)
     }
+  }
 
   def approximate[T: Numeric](epsilon: T): Diff[T] =
     new ApproximateDiffForNumeric[T](epsilon)

@@ -19,7 +19,12 @@ trait DiffMagnoliaDerivation extends Derivation[Diff]{
             val map = ListMap(ctx.params.map { p =>
               val lType = p.deref(left)
               val pType = p.deref(right)
-              val fieldDiff = context.getOverride(p.label).map(_.asInstanceOf[Diff[p.PType]]).getOrElse(p.typeclass)
+              val fieldDiffMod =
+                context
+                  .getOverride(p.label)
+                  .map(_.asInstanceOf[Diff[p.PType] => Diff[p.PType]])
+                  .getOrElse(identity[Diff[p.PType]] _)
+              val fieldDiff = fieldDiffMod(p.typeclass)
               p.label -> fieldDiff(lType, pType, context.getNextStep(p.label))
             }: _*)
             DiffResultObject(ctx.typeInfo.short, map)

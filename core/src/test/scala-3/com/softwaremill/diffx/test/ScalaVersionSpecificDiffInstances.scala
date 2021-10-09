@@ -9,4 +9,7 @@ trait ScalaVersionSpecificDiffInstances {
   given Diff[TsDirection.Incoming.type] = Diff.derived[TsDirection.Incoming.type]
   given Diff[TsDirection.Outgoing.type] = Diff.derived[TsDirection.Outgoing.type]
   given Diff[TsDirection] = Diff.derived[TsDirection]
+  given Diff[Startup] = Diff.derived[Startup]
+  given Diff[KeyModel] = Diff.derived[KeyModel]
+  given Diff[MyLookup] = Diff.derived[MyLookup]
 }
