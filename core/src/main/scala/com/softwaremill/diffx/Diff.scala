@@ -91,10 +91,6 @@ trait LowPriorityDiff {
 
 case class Derived[T](value: T) extends AnyVal
 
-object Derived {
-//  def apply[T: Derived]: Derived[T] = implicitly[Derived[T]]
-}
-
 case class DiffLens[T, U](outer: Diff[T], path: List[String]) extends DiffLensMacro[T, U] {
   def setTo(d: Diff[U]): Diff[T] = using(_ => d)
 

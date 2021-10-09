@@ -84,7 +84,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
     }
 
 //    "ignored fields should be different than identical" in {
-//      implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("name")(ignored)
+//      implicit val d: Diff[Person] = Diff.derived[Person].modifyUnsafe("name")(ignored)
 //      compare(p1, p1.copy(name = "other")) shouldBe DiffResultObject(
 //        "Person",
 //        Map(
@@ -97,7 +97,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 
 //    "ignoring given fields" in {
 //      implicit val d: Diff[Person] =
-//        Derived[Diff[Person]]
+//        Diff.derived[Person]
 //          .modifyUnsafe("name")(ignored)
 //          .modifyUnsafe("age")(ignored)
 //      val p3 = p2.copy(in = Instant.now())
@@ -144,7 +144,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //    "nested products ignoring nested fields" in {
 //      val f1 = Family(p1, p2)
 //      val f2 = Family(p1, p1)
-//      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second", "name")(ignored)
+//      implicit val d: Diff[Family] = Diff.derivedDiff[Family].modifyUnsafe("second", "name")(ignored) //TODO why derived doesn't work here?!
 //      compare(f1, f2) shouldBe DiffResultObject(
 //        "Family",
 //        Map(
@@ -172,7 +172,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      val p1p = p1.copy(name = "other")
 //      val f1 = Family(p1, p2)
 //      val f2 = Family(p1p, p2.copy(name = "other"))
-//      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second", "name")(ignored)
+//      implicit val d: Diff[Family] = Diff.derivedDiff[Family].modifyUnsafe("second", "name")(ignored)
 //      compare(f1, f2) shouldBe DiffResultObject(
 //        "Family",
 //        Map(
@@ -199,7 +199,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //    "nested products ignoring nested products" in {
 //      val f1 = Family(p1, p2)
 //      val f2 = Family(p1, p1)
-//      implicit val d: Diff[Family] = Derived[Diff[Family]].modifyUnsafe("second")(ignored)
+//      implicit val d: Diff[Family] = Diff.derivedDiff[Family].modifyUnsafe("second")(ignored)
 //      compare(f1, f2).isIdentical shouldBe true
 //    }
 
@@ -284,11 +284,10 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      List(1234),
 //      Some(right)
 //    )
-//
+
     "sealed trait objects" - {
       "identity" in {
-        val result = compare[TsDirection](TsDirection.Outgoing, TsDirection.Outgoing)
-        result.isIdentical shouldBe true
+        compare[TsDirection](TsDirection.Outgoing, TsDirection.Outgoing).isIdentical shouldBe true
       }
       "diff" in {
         compare[TsDirection](TsDirection.Outgoing, TsDirection.Incoming) shouldBe DiffResultValue(
@@ -301,7 +300,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //    "identity" in {
 //      compare(left, left).isIdentical shouldBe true
 //    }
-//
+
     "nullable" in {
       compare[TsDirection](TsDirection.Outgoing, null: TsDirection) shouldBe DiffResultValue(TsDirection.Outgoing, null)
     }
@@ -328,11 +327,11 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      final case class SubtypeTwo(id: Int, name: String) extends Base
 //      val left: Base = SubtypeOne(2, "one")
 //      val right: Base = SubtypeOne(1, "one")
-//      implicit val diff: Diff[Base] = Derived[Diff[Base]].ignoreUnsafe("id")
+//      implicit val diff: Diff[Base] = Diff.derived[Base].ignoreUnsafe("id")
 //      compare(left, right) shouldBe an[Identical[Base]]
 //    }
   }
-//
+
   "collections" - {
     "list" - {
       "identical" in {
@@ -361,7 +360,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      "use ignored fields from elements" in {
 //        val o1 = Organization(List(p1, p2))
 //        val o2 = Organization(List(p1, p1, p1))
-//        implicit val d: Diff[Organization] = Derived[Diff[Organization]].modifyUnsafe("people", "name")(ignored)
+//        implicit val d: Diff[Organization] = Diff.derived[Organization].modifyUnsafe("people", "name")(ignored)
 //        compare(o1, o2) shouldBe DiffResultObject(
 //          "Organization",
 //          Map(
@@ -417,7 +416,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      "compare lists using explicit object matcher comparator" in {
 //        val o1 = Organization(List(p1, p2))
 //        val o2 = Organization(List(p2, p1))
-//        implicit val orgDiff: Diff[Organization] = Derived[Diff[Organization]]
+//        implicit val orgDiff: Diff[Organization] = Diff.derived[Organization]
 //          .modifyMatcherUnsafe("people")(ObjectMatcher.list[Person].byValue(_.name))
 //        compare(o1, o2).isIdentical shouldBe true
 //      }
@@ -437,7 +436,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //        val result = compare(o1, o2)
 //        result.isIdentical shouldBe true
 //      }
-//
+
       "should preserve order of elements" in {
         val l1 = List(1, 2, 3, 4, 5, 6)
         val l2 = List(1, 2, 3, 4, 5, 7)
@@ -453,7 +452,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
           )
         )
       }
-//
+
 //      "should not use values when matching using default key strategy" in {
 //        val l1 = List(1, 2, 3, 4, 5, 6)
 //        val l2 = List(1, 2, 4, 5, 6)
@@ -491,7 +490,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       }
 //      "ignored fields from elements" in {
 //        val p2m = p2.copy(age = 33, in = Instant.now())
-//        implicit val d: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
+//        implicit val d: Diff[Person] = Diff.derived[Person].modifyUnsafe("age")(ignored)
 //        implicit val im = ObjectMatcher.set[Person].by(_.name)
 //        compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
 //          Set(
@@ -514,7 +513,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //          )
 //        )
 //      }
-//
+
       "mutable set" in {
         import scala.collection.{Set => mSet}
         val diffResult = compare(mSet(1, 2, 3, 4, 5), mSet(1, 2, 3, 4)).asInstanceOf[DiffResultSet]
@@ -529,7 +528,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 
 //      "identical when products are identical using ignored" in {
 //        val p2m = p2.copy(age = 33, in = Instant.now())
-//        implicit val d: Diff[Person] = Derived[Diff[Person]]
+//        implicit val d: Diff[Person] = Diff.derived[Person]
 //          .modifyUnsafe("age")(ignored)
 //          .modifyUnsafe("in")(ignored)
 //        compare(Set(p1, p2), Set(p1, p2m)).isIdentical shouldBe true
@@ -538,7 +537,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      "propagate ignore fields to elements" in {
 //        val p2m = p2.copy(in = Instant.now())
 //        implicit val im = ObjectMatcher.set[Person].by(_.name)
-//        implicit val ds: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
+//        implicit val ds: Diff[Person] = Diff.derived[Person].modifyUnsafe("age")(ignored)
 //        compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
 //          Set(
 //            DiffResultObject(
@@ -637,7 +636,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
       }
 //
 //      "propagate ignored fields to elements" in {
-//        implicit val dm: Diff[Person] = Derived[Diff[Person]].modifyUnsafe("age")(ignored)
+//        implicit val dm: Diff[Person] = Diff.derived[Person].modifyUnsafe("age")(ignored)
 //        compare(Map("first" -> p1), Map("first" -> p2)) shouldBe DiffResultMap(
 //          Map(
 //            IdenticalValue("first") -> DiffResultObject(
@@ -660,7 +659,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //
 //      "identical when products are identical using ignore" in {
 //        implicit val dm: Diff[Person] =
-//          Derived[Diff[Person]]
+//          Diff.derived[Person]
 //            .modifyUnsafe("age")(ignored)
 //            .modifyUnsafe("name")(ignored)
 //        compare(Map("first" -> p1), Map("first" -> p2)).isIdentical shouldBe true
@@ -678,7 +677,7 @@ class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffIn
 //      }
 //
 //      "ignore part of map's key using keys's diff specification" in {
-//        implicit def dm: Diff[KeyModel] = Derived[Diff[KeyModel]].ignore(_.id)
+//        implicit def dm: Diff[KeyModel] = Diff.derived[KeyModel].ignore(_.id)
 //
 //        val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
 //        val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
