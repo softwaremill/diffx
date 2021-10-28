@@ -6,25 +6,22 @@ import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.matchers.{MatchResult, Matcher}
 
-trait DiffShouldMatcher extends DiffShouldMatcherImp {
-
-  def matchTo[A](right: A): A = right
-
+trait DiffShouldMatcher {
   implicit def convertToAnyShouldMatcher[T: Diff](
       any: T
-  )(implicit pos: source.Position, prettifier: Prettifier): AnyShouldWrapper[T] =
-    new AnyShouldWrapper[T](any, pos, prettifier)
-}
+  )(implicit pos: source.Position, prettifier: Prettifier, c: ConsoleColorConfig): AnyShouldWrapper[T] =
+    new AnyShouldWrapper[T](any, pos, prettifier, c, Diff[T])
 
-trait DiffShouldMatcherImp {
-  class AnyShouldWrapper[T: Diff](
+  final class AnyShouldWrapper[T](
       val leftValue: T,
       val pos: source.Position,
-      val prettifier: Prettifier
+      val prettifier: Prettifier,
+      val c: ConsoleColorConfig,
+      val d: Diff[T]
   ) extends Matchers {
 
-    def should(rightValue: T)(implicit c: ConsoleColorConfig): Assertion = {
-      Matchers.convertToAnyShouldWrapper[T](leftValue)(pos, prettifier).should(matchTo[T](rightValue))
+    def shouldMatchTo(rightValue: T): Assertion = {
+      Matchers.convertToAnyShouldWrapper[T](leftValue)(pos, prettifier).should(matchTo[T](rightValue)(d, c))
     }
 
     private def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>

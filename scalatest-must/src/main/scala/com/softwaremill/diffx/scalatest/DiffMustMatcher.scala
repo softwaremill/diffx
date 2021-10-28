@@ -8,21 +8,23 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 
 trait DiffMustMatcher {
 
-  def matchTo[A](right: A): A = right
-
-  implicit def convertToMustWrapper[T: Diff](
+  implicit def convertToAnyMustMatcher[T: Diff](
       any: T
-  )(implicit pos: source.Position, prettifier: Prettifier): AnyMustWrapper[T] =
-    new AnyMustWrapper[T](any, pos, prettifier)
+  )(implicit pos: source.Position, prettifier: Prettifier, consoleColorConfig: ConsoleColorConfig): AnyMustWrapper[T] =
+    new AnyMustWrapper[T](any, pos, prettifier, consoleColorConfig, Diff[T])
 
-  class AnyMustWrapper[T: Diff](
+  final class AnyMustWrapper[T](
       val leftValue: T,
       val pos: source.Position,
-      val prettifier: Prettifier
+      val prettifier: Prettifier,
+      val consoleColorConfig: ConsoleColorConfig,
+      val diff: Diff[T]
   ) extends Matchers {
 
-    def must(rightValue: T)(implicit c: ConsoleColorConfig): Assertion = {
-      Matchers.convertToAnyMustWrapper(leftValue)(pos, prettifier).must(matchTo(rightValue))
+    def mustMatchTo(rightValue: T): Assertion = {
+      Matchers
+        .convertToAnyMustWrapper[T](leftValue)(pos, prettifier)
+        .must(matchTo[T](rightValue)(diff, consoleColorConfig))
     }
 
     private def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>
