@@ -35,7 +35,6 @@ Then, depending on the chosen matcher style extend or import relevant trait/obje
 After that you will be able to use syntax such as:
 
 ```scala mdoc:compile-only
-import org.scalatest.matchers.should.Matchers._
 import com.softwaremill.diffx.scalatest.DiffShouldMatcher._
 import com.softwaremill.diffx.generic.auto._
 
@@ -55,5 +54,5 @@ val left: Foo = Foo(
     Some(right)
 )
 
-left should matchTo(right)
+left shouldMatchTo(right)
 ```
