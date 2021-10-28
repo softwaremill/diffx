@@ -68,7 +68,43 @@ lazy val core = (projectMatrix in file("core"))
     scalaVersions = List(scala212, scala213)
   )
 
-lazy val scalatest = (projectMatrix in file("scalatest"))
+lazy val scalatestMust = (projectMatrix in file("scalatest-must"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-scalatest-must",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest-mustmatchers" % scalatestVersion,
+      "org.scalatest" %%% "scalatest-matchers-core" % scalatestVersion,
+      "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test
+    )
+  )
+  .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+
+lazy val scalatestShould = (projectMatrix in file("scalatest-should"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-scalatest-should",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion,
+      "org.scalatest" %%% "scalatest-matchers-core" % scalatestVersion,
+      "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test
+    )
+  )
+  .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213)
+  )
+
+lazy val scalatestLegacy = (projectMatrix in file("scalatest"))
   .settings(commonSettings)
   .settings(
     name := "diffx-scalatest",
@@ -209,14 +245,14 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     ),
     mdocOut := file("generated-docs/out")
   )
-  .dependsOn(core, scalatest, specs2, utest, refined, tagging, cats, munit)
+  .dependsOn(core, scalatestShould, specs2, utest, refined, tagging, cats, munit)
   .jvmPlatform(scalaVersions = List(scala213))
 
 val testJVM = taskKey[Unit]("Test JVM projects")
 val testJS = taskKey[Unit]("Test JS projects")
 
 val allAggregates =
-  core.projectRefs ++ scalatest.projectRefs ++
+  core.projectRefs ++ scalatestMust.projectRefs ++ scalatestShould.projectRefs ++ scalatestLegacy.projectRefs ++
     specs2.projectRefs ++ utest.projectRefs ++ cats.projectRefs ++
     refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs ++ munit.projectRefs
 

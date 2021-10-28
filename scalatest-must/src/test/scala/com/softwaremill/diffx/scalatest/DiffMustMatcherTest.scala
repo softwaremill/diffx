@@ -3,9 +3,9 @@ package com.softwaremill.diffx.scalatest
 import com.softwaremill.diffx.generic.auto._
 import org.scalatest.OptionValues
 import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.matchers.must.Matchers
 
-class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMatcher with OptionValues {
+class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMustMatcher with OptionValues {
   val right: Foo = Foo(
     Bar("asdf", 5, Map("a" -> 2)),
     List(123, 1234),
@@ -18,7 +18,11 @@ class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMatcher with Op
   )
 
   ignore should "work" in {
-    left should matchTo(right)
+    left must matchTo(right)
+  }
+
+  it should "work with option and some" in {
+    Option("test") must matchTo(Some("test"))
   }
 }
 sealed trait Parent
