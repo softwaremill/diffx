@@ -30,7 +30,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
   "should compile with generic.auto._" in {
     assertCompiles("""
                      |import com.softwaremill.diffx._
-                     |import com.softwaremill.diffx.generic.auto._
+                     |import com.softwaremill.diffx.generic.auto.diffForCaseClass
                      |final case class P1(f1: String)
                      |final case class P2(f1: P1)
                      |

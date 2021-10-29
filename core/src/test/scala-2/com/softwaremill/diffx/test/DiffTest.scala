@@ -10,7 +10,7 @@ import java.time.Instant
 import java.util.UUID
 import scala.collection.immutable.ListMap
 
-class DiffTest extends AnyFreeSpec with Matchers with ScalaVersionSpecificDiffInstances {
+class DiffTest extends AnyFreeSpec with Matchers {
   val ignored = DiffConfiguration.Default.makeIgnored
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
