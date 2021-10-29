@@ -1,7 +1,6 @@
 package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx.ModifyMacro
-import com.softwaremill.diffx.DiffxSupport._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

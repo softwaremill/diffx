@@ -12,8 +12,8 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
         |final case class P1(f1: String)
         |final case class P2(f1: P1)
         |
-        |implicit val p1: Derived[Diff[P1]] = Diff.derived[P1]
-        |implicit val p2: Derived[Diff[P2]] = Diff.derived[P2]
+        |implicit val p1: Diff[P1] = Diff.derived[P1]
+        |implicit val p2: Diff[P2] = Diff.derived[P2]
         |""".stripMargin)
   }
 
@@ -23,7 +23,7 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
                      |final case class P1(f1: String)
                      |final case class P2(f1: P1)
                      |
-                     |implicit val p2: Derived[Diff[P2]] = Diff.derived[P2]
+                     |implicit val p2: Diff[P2] = Diff.derived[P2]
                      |""".stripMargin)
   }
 
@@ -39,19 +39,19 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
   }
 
   "should work for coproducts" in {
-    implicit val dACoproduct: Derived[Diff[ACoproduct]] = Diff.derived[ACoproduct]
+    implicit val dACoproduct: Diff[ACoproduct] = Diff.derived[ACoproduct]
 
     Diff.compare[ACoproduct](ProductA("1"), ProductA("1")).isIdentical shouldBe true
   }
 
   "should allow ignoring on derived diffs" in {
-    implicit val dACoproduct: Derived[Diff[ProductA]] = Diff.derived[ProductA].ignore(_.id)
+    implicit val dACoproduct: Diff[ProductA] = Diff.derived[ProductA].ignore(_.id)
 
     Diff.compare[ProductA](ProductA("1"), ProductA("2")).isIdentical shouldBe true
   }
 
   "should allow modifying derived diffs" in {
-    implicit val dACoproduct: Derived[Diff[ProductA]] = Diff.derived[ProductA].modify(_.id).ignore
+    implicit val dACoproduct: Diff[ProductA] = Diff.derived[ProductA].modify(_.id).ignore
 
     Diff.compare[ProductA](ProductA("1"), ProductA("2")).isIdentical shouldBe true
   }
