@@ -1,9 +1,10 @@
 package com.softwaremill.diffx
+
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
 import com.softwaremill.diffx.generic.{DiffMagnoliaDerivation, MagnoliaDerivedMacro}
 import com.softwaremill.diffx.instances._
 
-trait Diff[-T] { outer =>
+trait Diff[T] { outer =>
   def apply(left: T, right: T): DiffResult = apply(left, right, DiffContext.Empty)
   def apply(left: T, right: T, context: DiffContext): DiffResult
 
