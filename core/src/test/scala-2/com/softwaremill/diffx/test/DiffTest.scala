@@ -315,21 +315,20 @@ class DiffTest extends AnyFreeSpec with Matchers {
         )
       )
     }
-// TODO: uncomment once https://github.com/propensive/magnolia/issues/277 is resolved
-//
-//    "coproduct types with ignored fields" in {
-//      sealed trait Base {
-//        def id: Int
-//        def name: String
-//      }
-//
-//      final case class SubtypeOne(id: Int, name: String) extends Base
-//      final case class SubtypeTwo(id: Int, name: String) extends Base
-//      val left: Base = SubtypeOne(2, "one")
-//      val right: Base = SubtypeOne(1, "one")
-//      implicit val diff: Diff[Base] = Diff.derivedDiff[Base].ignoreUnsafe("id")
-//      compare(left, right) shouldBe an[Identical[Base]]
-//    }
+
+    "coproduct types with ignored fields" in {
+      sealed trait Base {
+        def id: Int
+        def name: String
+      }
+
+      final case class SubtypeOne(id: Int, name: String) extends Base
+      final case class SubtypeTwo(id: Int, name: String) extends Base
+      val left: Base = SubtypeOne(2, "one")
+      val right: Base = SubtypeOne(1, "one")
+      implicit val diff: Diff[Base] = Diff.derivedDiff[Base].modifyUnsafe("id")(ignored)
+      compare(left, right).isIdentical shouldBe true
+    }
   }
 
   "collections" - {

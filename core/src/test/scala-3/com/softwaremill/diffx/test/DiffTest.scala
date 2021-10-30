@@ -275,16 +275,16 @@ class DiffTest extends AnyFreeSpec with Matchers {
   }
 
   "coproducts" - {
-//    val right: Foo = Foo(
-//      Bar("asdf", 5),
-//      List(123, 1234),
-//      Some(Bar("asdf", 5))
-//    )
-//    val left: Foo = Foo(
-//      Bar("asdf", 66),
-//      List(1234),
-//      Some(right)
-//    )
+    val right: Foo = Foo(
+      Bar("asdf", 5),
+      List(123, 1234),
+      Some(Bar("asdf", 5))
+    )
+    val left: Foo = Foo(
+      Bar("asdf", 66),
+      List(1234),
+      Some(right)
+    )
 
     "sealed trait objects" - {
       "identity" in {
@@ -297,7 +297,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
         )
       }
     }
-//
+
 //    "identity" in {
 //      compare(left, left).isIdentical shouldBe true
 //    }
@@ -305,7 +305,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
     "nullable" in {
       compare[TsDirection](TsDirection.Outgoing, null: TsDirection) shouldBe DiffResultValue(TsDirection.Outgoing, null)
     }
-//
+
 //    "diff" in {
 //      compare(left, right) shouldBe DiffResultObject(
 //        "Foo",
@@ -316,21 +316,20 @@ class DiffTest extends AnyFreeSpec with Matchers {
 //        )
 //      )
 //    }
-// TODO: uncomment once https://github.com/propensive/magnolia/issues/277 is resolved
-//
-//    "coproduct types with ignored fields" in {
-//      sealed trait Base {
-//        def id: Int
-//        def name: String
-//      }
-//
-//      final case class SubtypeOne(id: Int, name: String) extends Base
-//      final case class SubtypeTwo(id: Int, name: String) extends Base
-//      val left: Base = SubtypeOne(2, "one")
-//      val right: Base = SubtypeOne(1, "one")
-//      implicit val diff: Diff[Base] = Diff.derivedDiff[Base].ignoreUnsafe("id")
-//      compare(left, right) shouldBe an[Identical[Base]]
-//    }
+
+    "coproduct types with ignored fields" in {
+      sealed trait Base {
+        def id: Int
+        def name: String
+      }
+
+      final case class SubtypeOne(id: Int, name: String) extends Base
+      final case class SubtypeTwo(id: Int, name: String) extends Base
+      val left: Base = SubtypeOne(2, "one")
+      val right: Base = SubtypeOne(1, "one")
+      implicit val diff: Diff[Base] = Diff.derivedDiff[Base].modifyUnsafe("id")(ignored)
+      compare(left, right).isIdentical shouldBe true
+    }
   }
 
   "collections" - {
