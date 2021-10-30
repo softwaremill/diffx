@@ -178,7 +178,7 @@ lazy val munit = (projectMatrix in file("munit"))
   )
   .dependsOn(core)
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213),

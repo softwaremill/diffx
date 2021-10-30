@@ -3,6 +3,8 @@ package com.softwaremill.diffx.refined
 import com.softwaremill.diffx.{DiffResultObject, DiffResultString, DiffResultValue, IdenticalValue, _}
 import eu.timepit.refined.types.numeric.PosInt
 import eu.timepit.refined.auto._
+import com.softwaremill.diffx.refined.refinedDiff
+import com.softwaremill.diffx.generic.auto.diffForCaseClass
 import eu.timepit.refined.types.string.NonEmptyString
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers

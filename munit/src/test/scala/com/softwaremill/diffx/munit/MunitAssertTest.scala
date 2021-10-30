@@ -1,5 +1,7 @@
 package com.softwaremill.diffx.munit
 
+import com.softwaremill.diffx.generic.auto.diffForCaseClass
+
 class MunitAssertTest extends munit.FunSuite with DiffxAssertions {
 //   uncomment to run
 //  test("failing test") {
