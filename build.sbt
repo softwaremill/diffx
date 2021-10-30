@@ -92,7 +92,7 @@ lazy val scalatestMust = (projectMatrix in file("scalatest-must"))
   )
   .dependsOn(core)
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213)
@@ -110,7 +110,7 @@ lazy val scalatestShould = (projectMatrix in file("scalatest-should"))
   )
   .dependsOn(core)
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213)
@@ -128,7 +128,7 @@ lazy val scalatestLegacy = (projectMatrix in file("scalatest"))
   )
   .dependsOn(core)
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213)
