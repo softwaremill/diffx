@@ -67,7 +67,7 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
   private def processWordDiffs(words: List[DiffRow[String]]): List[DiffResult] = {
     words.map { wordDiff =>
       wordDiff.tag match {
-        case Tag.INSERT => DiffResultMissingChunk(wordDiff.newLine.get) //TODO convert Row to ADT
+        case Tag.INSERT => DiffResultMissingChunk(wordDiff.newLine.get) // TODO convert Row to ADT
         case Tag.DELETE => DiffResultAdditionalChunk(wordDiff.oldLine.get)
         case Tag.CHANGE =>
           if (wordDiff.newLine.get.isEmpty) {
