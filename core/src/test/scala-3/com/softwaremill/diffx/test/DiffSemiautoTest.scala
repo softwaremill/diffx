@@ -56,9 +56,3 @@ class DiffSemiautoTest extends AnyFreeSpec with Matchers {
     Diff.compare[ProductA](ProductA("1"), ProductA("2")).isIdentical shouldBe true
   }
 }
-
-sealed trait ACoproduct
-object ACoproduct {
-  case class ProductA(id: String) extends ACoproduct
-  case class ProductB(id: String) extends ACoproduct
-}
