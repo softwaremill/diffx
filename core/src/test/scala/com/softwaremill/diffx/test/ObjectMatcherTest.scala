@@ -1,17 +1,21 @@
 package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx._
-import com.softwaremill.diffx.generic.auto._
-import com.softwaremill.diffx.{DiffResultAdditional, DiffResultMissing, DiffResultObject, DiffResultValue, IdenticalValue, ObjectMatcher}
+import com.softwaremill.diffx.generic.auto.diffForCaseClass
+import com.softwaremill.diffx.{
+  DiffResultAdditional,
+  DiffResultMissing,
+  DiffResultObject,
+  DiffResultValue,
+  IdenticalValue,
+  ObjectMatcher
+}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.immutable.ListMap
 
 class ObjectMatcherTest extends AnyFreeSpec with Matchers {
-
-  given Diff[Example] = Diff.derived[Example]
-  given Diff[OptionalExample] = Diff.derived[OptionalExample]
 
   "list" - {
     "list full of duplicates should be equal to itself" in {
@@ -194,5 +198,4 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
 }
 
 case class Example(a: Int, b: Int)
-
 case class OptionalExample(a: Option[Int], b: Int)

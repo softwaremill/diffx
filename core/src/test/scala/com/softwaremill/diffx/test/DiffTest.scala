@@ -1,7 +1,7 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
-import com.softwaremill.diffx.*
+import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
+import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -10,7 +10,7 @@ import java.util.UUID
 import scala.collection.immutable.ListMap
 import com.softwaremill.diffx.generic.auto.diffForCaseClass
 
-class DiffTest extends AnyFreeSpec with Matchers {
+class DiffTest extends AnyFreeSpec with Matchers with DiffVersionSpecificTest {
   val ignored = DiffConfiguration.Default.makeIgnored
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -275,17 +275,6 @@ class DiffTest extends AnyFreeSpec with Matchers {
   }
 
   "coproducts" - {
-    val right: Foo = Foo(
-      Bar("asdf", 5),
-      List(123, 1234),
-      Some(Bar("asdf", 5))
-    )
-    val left: Foo = Foo(
-      Bar("asdf", 66),
-      List(1234),
-      Some(right)
-    )
-
     "sealed trait objects" - {
       "identity" in {
         compare[TsDirection](TsDirection.Outgoing, TsDirection.Outgoing).isIdentical shouldBe true
@@ -298,24 +287,9 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
     }
 
-//    "identity" in {
-//      compare(left, left).isIdentical shouldBe true
-//    }
-
     "nullable" in {
       compare[TsDirection](TsDirection.Outgoing, null: TsDirection) shouldBe DiffResultValue(TsDirection.Outgoing, null)
     }
-
-//    "diff" in {
-//      compare(left, right) shouldBe DiffResultObject(
-//        "Foo",
-//        Map(
-//          "bar" -> DiffResultObject("Bar", Map("s" -> IdenticalValue("asdf"), "i" -> DiffResultValue(66, 5))),
-//          "b" -> DiffResultObject("List", Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234))),
-//          "parent" -> DiffResultValue("com.softwaremill.diffx.test.Foo", "com.softwaremill.diffx.test.Bar")
-//        )
-//      )
-//    }
 
     "coproduct types with ignored fields" in {
       sealed trait Base {
@@ -492,7 +466,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       "ignored fields from elements" in {
         val p2m = p2.copy(age = 33, in = Instant.now())
         implicit val d: Diff[Person] = Diff.autoDerive[Person].modifyUnsafe("age")(ignored)
-        implicit val im: ObjectMatcher[ObjectMatcher.SetEntry[Person]] = ObjectMatcher.set[Person].by(_.name)
+        implicit val im: SetMatcher[Person] = ObjectMatcher.set[Person].by(_.name)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
             DiffResultObject(
@@ -538,7 +512,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       "propagate ignore fields to elements" in {
         val p2m = p2.copy(in = Instant.now())
-        implicit val im: ObjectMatcher[ObjectMatcher.SetEntry[Person]] = ObjectMatcher.set[Person].by(_.name)
+        implicit val im: SetMatcher[Person] = ObjectMatcher.set[Person].by(_.name)
         implicit val ds: Diff[Person] = Diff.autoDerive[Person].modifyUnsafe("age")(ignored)
         compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
@@ -563,7 +537,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
       }
       "set of products" in {
         val p2m = p2.copy(age = 33)
-        compare(Set[Person](p1, p2), Set[Person](p1, p2m)) shouldBe DiffResultSet(
+        compare[Set[Person]](Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
           Set(
             DiffResultAdditional(p2),
             DiffResultMissing(p2m),
@@ -681,6 +655,7 @@ class DiffTest extends AnyFreeSpec with Matchers {
 
       "ignore part of map's key using keys's diff specification" in {
         implicit def dm: Diff[KeyModel] = Diff.autoDerive[KeyModel].ignore(_.id)
+
         val a1 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
         val a2 = MyLookup(Map(KeyModel(UUID.randomUUID(), "k1") -> "val1"))
         compare(a1, a2).isIdentical shouldBe true

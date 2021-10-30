@@ -93,8 +93,8 @@ trait LowPriorityDiff {
     */
   implicit def derivedDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 
-  /** Returns unwrapped instance of Diff[T] from implicitly summoned Derived[Diff[T]] Useful to overcome forward
-    * reference error.
+  /** Returns unwrapped instance of Diff[T] from implicitly summoned Derived[Diff[T]]. Use this method when you want to
+    * modify auto derived instance of diff and put it back into the implicit scope.
     * @param dd
     * @tparam T
     * @return
