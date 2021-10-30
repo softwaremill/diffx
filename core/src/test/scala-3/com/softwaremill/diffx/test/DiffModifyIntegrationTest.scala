@@ -14,7 +14,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
   val p2 = Person("p2", 11, instant)
 
   it should "allow importing and exporting implicits" in {
-    implicit val d: Diff[Person] = Diff.derivedDiff[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.autoDerive[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
@@ -22,7 +22,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
   }
 
   it should "allow importing and exporting implicits using macro on derived instance" in {
-    implicit val d: Diff[Person] = Diff.derivedDiff[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.autoDerive[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
@@ -31,7 +31,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
 
   it should "allow calling ignore multiple times" in {
     implicit val d: Diff[Person] = Diff
-      .derivedDiff[Person]
+      .autoDerive[Person]
       .ignore(_.name)
       .ignore(_.age)
     compare(p1, p2).isIdentical shouldBe true
@@ -53,7 +53,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     val e1 = Wrapper(Right(p1))
     val e2 = Wrapper(Right(p1.copy(name = p1.name + "_modified")))
 
-    implicit val wrapperDiff: Diff[Wrapper] = Diff.derivedDiff[Wrapper].ignore(_.e.eachRight.name)
+    implicit val wrapperDiff: Diff[Wrapper] = Diff.autoDerive[Wrapper].ignore(_.e.eachRight.name)
 
     compare(e1, e2).isIdentical shouldBe true
 
@@ -68,7 +68,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     val e1 = Wrapper(Right(p1))
     val e2 = Wrapper(Right(p1.copy(name = p1.name + "_modified")))
 
-    implicit val wrapperDiff: Diff[Wrapper] = Diff.derivedDiff[Wrapper].ignore(_.e.eachLeft.name)
+    implicit val wrapperDiff: Diff[Wrapper] = Diff.autoDerive[Wrapper].ignore(_.e.eachLeft.name)
 
     compare(e1, e2).isIdentical shouldBe false
     val e3 = Wrapper(Left(p1))
@@ -155,7 +155,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
           )
         }
     )
-    implicit val d: Diff[Person] = Diff.derivedDiff[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.autoDerive[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map(

@@ -85,8 +85,21 @@ trait LowPriorityDiff {
       matcher: ObjectMatcher[IterableEntry[T]]
   ): Diff[C[T]] = new DiffForIterable[T, C](dt, matcher)
 
-  // Implicit instance of Diff[T] created from implicit Derived[Diff[T]]
+  /** Implicit instance of Diff[T] created from implicit Derived[Diff[T]]. Should not be called explicitly from clients
+    * code. Use `autoDerive` instead.
+    * @param dd
+    * @tparam T
+    * @return
+    */
   implicit def derivedDiff[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
+
+  /** Returns unwrapped instance of Diff[T] from implicitly summoned Derived[Diff[T]] Useful to overcome forward
+    * reference error.
+    * @param dd
+    * @tparam T
+    * @return
+    */
+  def autoDerive[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 }
 
 case class Derived[T](value: T) extends AnyVal
