@@ -1,11 +1,12 @@
 package com.softwaremill.diffx.tagging.test
 
 import com.softwaremill.diffx.{Diff, DiffResultObject, DiffResultValue, IdenticalValue}
-import com.softwaremill.diffx.tagging._
+import com.softwaremill.diffx.tagging.taggedDiff
 import com.softwaremill.tagging._
 import com.softwaremill.tagging.@@
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
+import com.softwaremill.diffx.generic.auto.diffForCaseClass
 
 class DiffTaggingSupportTest extends AnyFlatSpec with Matchers {
   it should "work for tagged types" in {
