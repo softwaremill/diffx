@@ -43,3 +43,16 @@ object TsDirection {
 case class KeyModel(id: UUID, name: String)
 
 case class MyLookup(map: Map[KeyModel, String])
+
+class NonCaseClass(private val field: String) {
+  override def toString: String = s"NonCaseClass($field)"
+
+  override def equals(obj: Any): Boolean = {
+    if (obj.isInstanceOf[NonCaseClass]) {
+      val other = obj.asInstanceOf[NonCaseClass]
+      return other.field == this.field
+    } else {
+      return false
+    }
+  }
+}
