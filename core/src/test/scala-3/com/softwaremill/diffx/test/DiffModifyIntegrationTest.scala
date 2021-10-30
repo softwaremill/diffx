@@ -37,16 +37,17 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     compare(p1, p2).isIdentical shouldBe true
   }
 
-//  it should "compare lists using explicit object matcher comparator" in {
-//    val o1 = Organization(List(p1, p2))
-//    val o2 = Organization(List(p2, p1))
-//    implicit val orgDiff: Diff[Organization] = Diff.derived[Organization]
-//      .modify(_.people)
-//      .useMatcher(
-//        ObjectMatcher.list[Person].byValue(_.name)
-//      )
-//    compare(o1, o2).isIdentical shouldBe true
-//  }
+  it should "compare lists using explicit object matcher comparator" in {
+    val o1 = Organization(List(p1, p2))
+    val o2 = Organization(List(p2, p1))
+    implicit val orgDiff: Diff[Organization] = Diff
+      .derived[Organization]
+      .modify(_.people)
+      .useMatcher(
+        ObjectMatcher.list[Person].byValue(_.name)
+      )
+    compare(o1, o2).isIdentical shouldBe true
+  }
 
   it should "ignore only on right" in {
     case class Wrapper(e: Either[Person, Person])
@@ -77,74 +78,76 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
     compare(e3, e4).isIdentical shouldBe true
   }
 
-//  it should "match map entries by values" in {
-//    implicit val lookupDiff: Diff[MyLookup] = Diff.derived[MyLookup]
-//      .modify(_.map)
-//      .useMatcher(
-//        ObjectMatcher.map[KeyModel, String].byValue
-//      )
-//    val uuid1 = UUID.randomUUID()
-//    val uuid2 = UUID.randomUUID()
-//    val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
-//    val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
-//    compare(a1, a2) shouldBe DiffResultObject(
-//      "MyLookup",
-//      Map(
-//        "map" -> DiffResultMap(
-//          Map(
-//            DiffResultObject(
-//              "KeyModel",
-//              Map(
-//                "id" -> DiffResultValue(uuid1, uuid2),
-//                "name" -> IdenticalValue("k1")
-//              )
-//            ) -> IdenticalValue("val1")
-//          )
-//        )
-//      )
-//    )
-//  }
+  it should "match map entries by values" in {
+    implicit val lookupDiff: Diff[MyLookup] = Diff
+      .derived[MyLookup]
+      .modify(_.map)
+      .useMatcher(
+        ObjectMatcher.map[KeyModel, String].byValue
+      )
+    val uuid1 = UUID.randomUUID()
+    val uuid2 = UUID.randomUUID()
+    val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+    val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+    compare(a1, a2) shouldBe DiffResultObject(
+      "MyLookup",
+      Map(
+        "map" -> DiffResultMap(
+          Map(
+            DiffResultObject(
+              "KeyModel",
+              Map(
+                "id" -> DiffResultValue(uuid1, uuid2),
+                "name" -> IdenticalValue("k1")
+              )
+            ) -> IdenticalValue("val1")
+          )
+        )
+      )
+    )
+  }
 
-//  it should "use overrided object matcher when comparing set" in {
-//    implicit val lookupDiff: Diff[Startup] = Diff.derived[Startup]
-//      .modify(_.workers)
-//      .useMatcher(ObjectMatcher.set[Person].by(_.name))
-//    val p2m = p2.copy(age = 33)
-//    compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
-//      "Startup",
-//      Map(
-//        "workers" -> DiffResultSet(
-//          Set(
-//            DiffResultObject(
-//              "Person",
-//              Map(
-//                "name" -> IdenticalValue(p1.name),
-//                "age" -> IdenticalValue(p1.age),
-//                "in" -> IdenticalValue(p1.in)
-//              )
-//            ),
-//            DiffResultObject(
-//              "Person",
-//              Map(
-//                "name" -> IdenticalValue(p2.name),
-//                "age" -> DiffResultValue(p2.age, p2m.age),
-//                "in" -> IdenticalValue(p1.in)
-//              )
-//            )
-//          )
-//        )
-//      )
-//    )
-//  }
+  it should "use overrided object matcher when comparing set" in {
+    implicit val lookupDiff: Diff[Startup] = Diff
+      .derived[Startup]
+      .modify(_.workers)
+      .useMatcher(ObjectMatcher.set[Person].by(_.name))
+    val p2m = p2.copy(age = 33)
+    compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
+      "Startup",
+      Map(
+        "workers" -> DiffResultSet(
+          Set(
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p1.name),
+                "age" -> IdenticalValue(p1.age),
+                "in" -> IdenticalValue(p1.in)
+              )
+            ),
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p2.name),
+                "age" -> DiffResultValue(p2.age, p2m.age),
+                "in" -> IdenticalValue(p1.in)
+              )
+            )
+          )
+        )
+      )
+    )
+  }
 
-//  it should "compare lists using object matcher comparator passed explicitly" in {
-//    val o1 = Organization(List(p1, p2))
-//    val o2 = Organization(List(p2, p1))
-//    val d = Diff[Organization]
-//      .modify(_.people)
-//      .useMatcher(ObjectMatcher.list[Person].byValue(_.name))
-//    compare(o1, o2)(d).isIdentical shouldBe true
-//  }
+  it should "compare lists using object matcher comparator passed explicitly" in {
+    val o1 = Organization(List(p1, p2))
+    val o2 = Organization(List(p2, p1))
+    val d = Diff[Organization]
+      .modify(_.people)
+      .useMatcher(ObjectMatcher.list[Person].byValue(_.name))
+    compare(o1, o2)(d).isIdentical shouldBe true
+  }
 
   it should "allow overriding how ignored diffs are produced" in {
     implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
