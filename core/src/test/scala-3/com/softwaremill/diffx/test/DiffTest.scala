@@ -561,23 +561,23 @@ class DiffTest extends AnyFreeSpec with Matchers {
           )
         )
       }
-//      "set of products" in {
-//        val p2m = p2.copy(age = 33)
-//        compare(Set(p1, p2), Set(p1, p2m)) shouldBe DiffResultSet(
-//          Set(
-//            DiffResultAdditional(p2),
-//            DiffResultMissing(p2m),
-//            DiffResultObject(
-//              "Person",
-//              Map(
-//                "name" -> IdenticalValue(p1.name),
-//                "age" -> IdenticalValue(p1.age),
-//                "in" -> IdenticalValue(p1.in)
-//              )
-//            )
-//          )
-//        )
-//      }
+      "set of products" in {
+        val p2m = p2.copy(age = 33)
+        compare(Set[Person](p1, p2), Set[Person](p1, p2m)) shouldBe DiffResultSet(
+          Set(
+            DiffResultAdditional(p2),
+            DiffResultMissing(p2m),
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p1.name),
+                "age" -> IdenticalValue(p1.age),
+                "in" -> IdenticalValue(p1.in)
+              )
+            )
+          )
+        )
+      }
       "override set instance" in {
         val p2m = p2.copy(age = 33)
         implicit def setDiff[T, C[W] <: scala.collection.Set[W]]: Diff[C[T]] =
