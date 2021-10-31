@@ -70,7 +70,9 @@ object ConsoleColorConfig {
     case Some("dark")  => dark
     case _             => normal
   }
-  implicit val default: ConsoleColorConfig = envDriven
+  implicit val default: ConsoleColorConfig = handleNoColorsEnv().getOrElse(envDriven)
+
+  private def handleNoColorsEnv(): Option[ConsoleColorConfig] = Option(System.getenv("NO_COLOR")).map(_ => noColors)
 
   def magenta: String => String = toColor(Console.MAGENTA)
   def green: String => String = toColor(Console.GREEN)
