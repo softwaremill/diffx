@@ -181,7 +181,7 @@ lazy val munit = (projectMatrix in file("munit"))
     scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
-    scalaVersions = List(scala212, scala213),
+    scalaVersions = List(scala212, scala213, scala3),
     settings = commonSettings ++ Seq(scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) })
   )
 
