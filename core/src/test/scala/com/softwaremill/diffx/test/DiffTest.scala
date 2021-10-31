@@ -335,6 +335,48 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
   }
 
   "collections" - {
+    "sequence" - {
+      "identical" in {
+        compare(Seq("a"), Seq("a")) shouldBe DiffResultObject("List", Map("0" -> IdenticalValue("a")))
+      }
+      "diff" in {
+        compare(List("a"), List("B")) shouldBe DiffResultObject(
+          "List",
+          Map(
+            "0" -> DiffResultString(
+              List(
+                DiffResultStringLine(
+                  List(DiffResultValue("a", "B"))
+                )
+              )
+            )
+          )
+        )
+      }
+      "mutable" - {
+        "identical" in {
+          compare(scala.collection.mutable.Seq("a"), scala.collection.mutable.Seq("a")) shouldBe DiffResultObject(
+            "List",
+            Map("0" -> IdenticalValue("a"))
+          )
+        }
+        "diff" in {
+          compare(scala.collection.mutable.Seq("a"), scala.collection.mutable.Seq("B")) shouldBe DiffResultObject(
+            "List",
+            Map(
+              "0" -> DiffResultString(
+                List(
+                  DiffResultStringLine(
+                    List(DiffResultValue("a", "B"))
+                  )
+                )
+              )
+            )
+          )
+        }
+      }
+    }
+
     "list" - {
       "identical" in {
         compare(List("a"), List("a")) shouldBe DiffResultObject("List", Map("0" -> IdenticalValue("a")))
