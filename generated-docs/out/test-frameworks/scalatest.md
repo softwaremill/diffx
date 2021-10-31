@@ -4,24 +4,38 @@ To use with scalatest, add the following dependency:
 
 ## sbt
 
+For use with `should` matchers:
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest" % "0.5.6" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest-should" % "0.6.0" % Test
+```
+
+For use with `must` matchers:
+```scala
+"com.softwaremill.diffx" %% "diffx-scalatest-should" % "0.6.0" % Test
 ```
 
 ## mill
 
+For use with `should` matchers:
 ```scala
-ivy"com.softwaremill.diffx::diffx-scalatest::0.5.6"
+ivy"com.softwaremill.diffx::diffx-scalatest-must::0.6.0"
+```
+
+For use with `must` matchers:
+```scala
+ivy"com.softwaremill.diffx::diffx-scalatest-must::0.6.0"
 ```
 
 ## Usage
 
-Then, extend the `com.softwaremill.diffx.scalatest.DiffMatcher` trait or `import com.softwaremill.diffx.scalatest.DiffMatcher._`.
+Then, depending on the chosen matcher style extend or import relevant trait/object:
+- should -> `com.softwaremill.diffx.scalatest.DiffShouldMatcher`
+- must -> `com.softwaremill.diffx.scalatest.DiffMustMatcher`
+
 After that you will be able to use syntax such as:
 
 ```scala
-import org.scalatest.matchers.should.Matchers._
-import com.softwaremill.diffx.scalatest.DiffMatcher._
+import com.softwaremill.diffx.scalatest.DiffShouldMatcher._
 import com.softwaremill.diffx.generic.auto._
 
 sealed trait Parent
@@ -40,5 +54,5 @@ val left: Foo = Foo(
     Some(right)
 )
 
-left should matchTo(right)
+left shouldMatchTo(right)
 ```
