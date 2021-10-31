@@ -33,7 +33,7 @@ Will result in:
 
 ![](https://github.com/softwaremill/diffx/blob/master/example.png?raw=true)
 
-`diffx` is available for Scala 2.12 and 2.13 both jvm and js.
+`diffx` is available for Scala 3, 2.13 and 2.12 both jvm and js.
 
 The core of `diffx` comes in a single jar.
 
