@@ -8,7 +8,7 @@ import org.scalatest.matchers.should.Matchers
 import java.time.Instant
 import java.util.UUID
 import scala.collection.immutable.ListMap
-import com.softwaremill.diffx.generic.auto.diffForCaseClass
+import com.softwaremill.diffx.generic.auto.given
 
 class DiffTest extends AnyFreeSpec with Matchers with DiffVersionSpecificTest {
   val ignored = DiffConfiguration.Default.makeIgnored
@@ -796,6 +796,15 @@ class DiffTest extends AnyFreeSpec with Matchers with DiffVersionSpecificTest {
           Map("_1" -> IdenticalValue(1), "_2" -> IdenticalValue(2), "_3" -> DiffResultValue(3, 4))
         )
       }
+    }
+  }
+
+  "non case class instance with auto fallback" - {
+    "identical" in {
+      compare(new NonCaseClass("a"), new NonCaseClass("a")).isIdentical shouldBe true
+    }
+    "diff" in {
+      compare(new NonCaseClass("a"), new NonCaseClass("b")).isIdentical shouldBe false
     }
   }
 }

@@ -35,12 +35,4 @@ trait DiffVersionSpecificTest { self: DiffTest =>
       )
     }
   }
-  "non case class instance" - {
-    "identical" in {
-      compare(new NonCaseClass("a"), new NonCaseClass("a")).isIdentical shouldBe true
-    }
-    "diff" in {
-      compare(new NonCaseClass("a"), new NonCaseClass("b")).isIdentical shouldBe false
-    }
-  }
 }

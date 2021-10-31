@@ -1,13 +1,12 @@
 package com.softwaremill.diffx.generic
 
-import com.softwaremill.diffx.{Diff, DiffContext, DiffResult, DiffResultObject, DiffResultValue}
+import com.softwaremill.diffx.{Derived, Diff, DiffContext, DiffResult, DiffResultObject, DiffResultValue, nullGuard}
 
 import scala.collection.mutable
 import magnolia1.*
 
 import scala.collection.immutable.ListMap
 import scala.deriving.Mirror
-import com.softwaremill.diffx.nullGuard
 
 trait DiffMagnoliaDerivation extends Derivation[Diff]{
 

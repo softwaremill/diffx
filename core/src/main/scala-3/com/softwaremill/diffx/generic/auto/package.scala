@@ -1,16 +1,15 @@
 package com.softwaremill.diffx.generic
 
 import com.softwaremill.diffx.generic.DiffMagnoliaDerivation
+import com.softwaremill.diffx.generic.auto.DiffAutoDerivationOn
+
 import scala.deriving.Mirror
-import com.softwaremill.diffx.{Diff, Derived}
+import com.softwaremill.diffx.{Derived, Diff}
 
 package object auto extends AutoDerivation
 
 trait AutoDerivation extends DiffMagnoliaDerivation {
   inline given diffForCaseClass[T](using Mirror.Of[T]): Derived[Diff[T]] = Derived(derived[T])
 
-//  // Implicit conversion
-//  implicit def unwrapDerivedDiff[T](dd: Derived[Diff[T]]): Diff[T] = dd.value
-
-  inline given unwrapDerivedDiff[T] : Conversion[Derived[Diff[T]], Diff[T]] = _.value
+  given indicator: DiffAutoDerivationOn = new DiffAutoDerivationOn {}
 }
