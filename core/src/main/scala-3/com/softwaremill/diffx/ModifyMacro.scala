@@ -85,6 +85,9 @@ object ModifyMacro {
   )(matcher: Expr[ObjectMatcher[M]])(using Quotes): Expr[Diff[T]] = {
     import quotes.reflect.*
 
+    def reportErrror =
+      report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
+
     (Type.of[U], Type.of[M]) match {
       case ('[scala.collection.Set[xu]], '[com.softwaremill.diffx.ObjectMatcher.SetEntry[xm]]) =>
         if (TypeRepr.of[xu].typeSymbol != TypeRepr.of[xm].typeSymbol) {
@@ -99,8 +102,17 @@ object ModifyMacro {
           report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
         }
       case ('[Iterable[xu]], '[com.softwaremill.diffx.ObjectMatcher.IterableEntry[xm]]) =>
-        if (TypeRepr.of[xu].typeSymbol != TypeRepr.of[xm].typeSymbol) {
-          report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
+        Type.of[U] match {
+          case '[scala.collection.Set[_]] =>
+            report.throwError(
+              s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}"
+            )
+          case _ =>
+            if (TypeRepr.of[xu].typeSymbol != TypeRepr.of[xm].typeSymbol) {
+              report.throwError(
+                s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}"
+              )
+            }
         }
       case _ =>
         report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
