@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.generic.auto.diffForCaseClass
+import com.softwaremill.diffx.generic.auto.given
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 

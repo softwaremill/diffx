@@ -1,5 +1,6 @@
 package com.softwaremill.diffx.utest
 
+import com.softwaremill.diffx.generic.auto.given
 import utest._
 
 object UtestAssertTest extends TestSuite with DiffxAssertions {
