@@ -86,11 +86,11 @@ object ModifyMacro {
     import quotes.reflect.*
 
     (Type.of[U], Type.of[M]) match {
-      case ('[Set[xu]], '[com.softwaremill.diffx.ObjectMatcher.SetEntry[xm]]) =>
+      case ('[scala.collection.Set[xu]], '[com.softwaremill.diffx.ObjectMatcher.SetEntry[xm]]) =>
         if (TypeRepr.of[xu].typeSymbol != TypeRepr.of[xm].typeSymbol) {
           report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
         }
-      case ('[Map[ku, vu]], '[com.softwaremill.diffx.ObjectMatcher.MapEntry[km, vm]]) =>
+      case ('[scala.collection.Map[ku, vu]], '[com.softwaremill.diffx.ObjectMatcher.MapEntry[km, vm]]) =>
         if (
           TypeRepr.of[ku].typeSymbol != TypeRepr.of[km].typeSymbol || TypeRepr.of[vu].typeSymbol != TypeRepr
             .of[vm]
@@ -98,7 +98,7 @@ object ModifyMacro {
         ) {
           report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
         }
-      case ('[List[xu]], '[com.softwaremill.diffx.ObjectMatcher.IterableEntry[xm]]) =>
+      case ('[Iterable[xu]], '[com.softwaremill.diffx.ObjectMatcher.IterableEntry[xm]]) =>
         if (TypeRepr.of[xu].typeSymbol != TypeRepr.of[xm].typeSymbol) {
           report.throwError(s"Invalid objectMather type ${Type.show[U]} for given lens(${Type.show[T]},${Type.show[M]}")
         }

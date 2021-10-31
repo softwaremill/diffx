@@ -188,4 +188,34 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       )
     )
   }
+
+  it should "allow to use object matcher with mutable seq" in {
+    assertCompiles("""
+        |import com.softwaremill.diffx._
+        |case class P1(v: Int)
+        |case class O1(l: scala.collection.mutable.Seq[P1])
+        |
+        |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.list[P1].byValue(_.v))
+        |""".stripMargin)
+  }
+
+  it should "allow to use object matcher with mutable map" in {
+    assertCompiles("""
+       |import com.softwaremill.diffx._
+       |case class P1(v: Int)
+       |case class O1(l: scala.collection.mutable.Map[String,P1])
+       |
+       |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.map[String, P1].byValue(_.v))
+       |""".stripMargin)
+  }
+
+  it should "allow to use object matcher with mutable set" in {
+    assertCompiles("""
+       |import com.softwaremill.diffx._
+       |case class P1(v: Int)
+       |case class O1(l: scala.collection.mutable.Set[P1])
+       |
+       |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.set[P1].by(_.v))
+       |""".stripMargin)
+  }
 }

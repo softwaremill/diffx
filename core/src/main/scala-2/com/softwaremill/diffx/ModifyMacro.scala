@@ -98,8 +98,8 @@ object ModifyMacro {
     val m = weakTypeOf[M]
 
     val baseIsIterable = u <:< typeOf[Iterable[_]]
-    val baseIsSet = u <:< typeOf[Set[_]]
-    val baseIsMap = u <:< typeOf[Map[_, _]]
+    val baseIsSet = u <:< typeOf[scala.collection.Set[_]]
+    val baseIsMap = u <:< typeOf[scala.collection.Map[_, _]]
     val typeArgsTheSame = u.typeArgs == m.typeArgs
     val setRequirements = baseIsSet && typeArgsTheSame && m <:< typeOf[SetEntry[_]]
     val iterableRequirements = !baseIsSet && baseIsIterable && typeArgsTheSame && m <:< typeOf[IterableEntry[_]]
