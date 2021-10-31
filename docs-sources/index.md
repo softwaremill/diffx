@@ -57,7 +57,7 @@ There is a number of similar projects from which diffx draws inspiration.
 Below is a list of some of them, which I am aware of, with their main differences:
 - [xotai/diff](https://github.com/xdotai/diff) - based on shapeless, seems not to be activly developed anymore
 - [ratatool-diffy](https://github.com/spotify/ratatool/tree/master/ratatool-diffy) - the main purpose is to compare large data sets stored on gs or hdfs
-
+- [difflicious](https://github.com/jatcwang/difflicious) - very similar feature set, different design under the hood, no auto-derivation
 
 ## Sponsors
 
