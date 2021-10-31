@@ -99,7 +99,7 @@ trait LowPriorityDiff {
     * @tparam T
     * @return
     */
-  def autoDerive[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
+  def autoDerived[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 }
 
 case class Derived[T](value: T) extends AnyVal
