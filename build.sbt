@@ -200,7 +200,7 @@ lazy val tagging = (projectMatrix in file("tagging"))
     scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
 
 lazy val cats = (projectMatrix in file("cats"))
