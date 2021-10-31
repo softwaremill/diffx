@@ -113,15 +113,3 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) extends DiffLensMa
 
   def ignore(implicit config: DiffConfiguration): Diff[T] = outer.modifyUnsafe(path: _*)(config.makeIgnored)
 }
-
-case class DerivedDiffLens[T, U](outer: Diff[T], path: List[String]) extends DerivedDiffLensMacro[T, U] {
-  def setTo(d: Diff[U]): Derived[Diff[T]] = using(_ => d)
-
-  def using(mod: Diff[U] => Diff[U]): Derived[Diff[T]] = {
-    Derived(outer.modifyUnsafe(path: _*)(mod))
-  }
-
-  def ignore(implicit config: DiffConfiguration): Derived[Diff[T]] = Derived(
-    outer.modifyUnsafe(path: _*)(config.makeIgnored)
-  )
-}

@@ -8,32 +8,6 @@ import scala.reflect.macros.blackbox
 object ModifyMacro {
   private val ShapeInfo = "Path must have shape: _.field1.field2.each.field3.(...)"
 
-  def derivedModifyMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
-      c: blackbox.Context
-  )(path: c.Expr[T => U]): c.Tree =
-    applyDerivedModified[T, U](c)(modifiedFromPathMacro(c)(path))
-
-  private def applyDerivedModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
-      path: c.Expr[List[String]]
-  ): c.Tree = {
-    import c.universe._
-    q"""com.softwaremill.diffx.DerivedDiffLens(${c.prefix}.dd.value, $path)"""
-  }
-
-  def derivedIgnoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
-      c: blackbox.Context
-  )(path: c.Expr[T => U])(conf: c.Expr[DiffConfiguration]): c.Tree =
-    applyIgnoredModified[T, U](c)(modifiedFromPathMacro(c)(path), conf)
-
-  private def applyIgnoredModified[T: c.WeakTypeTag, U: c.WeakTypeTag](c: blackbox.Context)(
-      path: c.Expr[List[String]],
-      conf: c.Expr[DiffConfiguration]
-  ): c.Tree = {
-    import c.universe._
-    val lens = applyDerivedModified[T, U](c)(path)
-    q"""$lens.ignore($conf)"""
-  }
-
   def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
   )(path: c.Expr[T => U])(conf: c.Expr[DiffConfiguration]): c.Tree =
@@ -56,7 +30,7 @@ object ModifyMacro {
   )(path: c.Expr[List[String]]): c.Tree = {
     import c.universe._
     q"""{
-      com.softwaremill.diffx.DiffLens(${c.prefix}.d, $path)
+      com.softwaremill.diffx.DiffLens(${c.prefix}, $path)
      }"""
   }
 
@@ -114,14 +88,6 @@ object ModifyMacro {
 
   private[diffx] def modifiedFromPath[T, U](path: T => U): List[String] =
     macro modifiedFromPathMacro[T, U]
-
-  def withObjectMatcherDerived[T: c.WeakTypeTag, U: c.WeakTypeTag, M: c.WeakTypeTag](
-      c: blackbox.Context
-  )(matcher: c.Expr[ObjectMatcher[M]]): c.Tree = {
-    import c.universe._
-    val diff = withObjectMatcher[T, U, M](c)(matcher)
-    q"com.softwaremill.diffx.Derived($diff)"
-  }
 
   def withObjectMatcher[T: c.WeakTypeTag, U: c.WeakTypeTag, M: c.WeakTypeTag](
       c: blackbox.Context
