@@ -11,10 +11,9 @@ trait DiffMustMatcher {
   implicit def convertToAnyMustMatcher[T: Diff](
       any: T
   )(implicit pos: source.Position, prettifier: Prettifier, consoleColorConfig: ConsoleColorConfig): AnyMustWrapper[T] =
-    new AnyMustWrapper[T](any, pos, prettifier, consoleColorConfig, Diff[T])
+    new AnyMustWrapper[T](any)
 
-  final class AnyMustWrapper[T](
-      val leftValue: T,
+  final class AnyMustWrapper[T](val leftValue: T)(implicit
       val pos: source.Position,
       val prettifier: Prettifier,
       val consoleColorConfig: ConsoleColorConfig,
@@ -22,12 +21,10 @@ trait DiffMustMatcher {
   ) extends Matchers {
 
     def mustMatchTo(rightValue: T): Assertion = {
-      Matchers
-        .convertToAnyMustWrapper[T](leftValue)(pos, prettifier)
-        .must(matchTo[T](rightValue)(diff, consoleColorConfig))
+      leftValue must matchTo[T](rightValue)
     }
 
-    private def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>
+    private def matchTo[A: Diff](right: A): Matcher[A] = { left =>
       val result = Diff[A].apply(left, right)
       if (!result.isIdentical) {
         val diff =

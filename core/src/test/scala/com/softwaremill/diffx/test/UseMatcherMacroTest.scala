@@ -3,10 +3,9 @@ package com.softwaremill.diffx.test
 import org.scalatest.freespec.AnyFreeSpec
 
 class UseMatcherMacroTest extends AnyFreeSpec {
-  case class Organization(people: Set[Person])
 
   "should compile when using with set matcher" in {
-    assertCompiles("""import com.softwaremill.diffx.generic.auto._
+    assertCompiles("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
         |import com.softwaremill.diffx.{Diff, ObjectMatcher}
         |
         |case class Organization(people: Set[Person])
@@ -17,7 +16,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should compile when using with list matcher" in {
-    assertCompiles("""import com.softwaremill.diffx.generic.auto._
+    assertCompiles("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
         |import com.softwaremill.diffx.{Diff, ObjectMatcher}
         |
         |case class Organization(people: List[Person])
@@ -28,7 +27,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should compile when using with map matcher" in {
-    assertCompiles("""import com.softwaremill.diffx.generic.auto._
+    assertCompiles("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
         |import com.softwaremill.diffx.{Diff, ObjectMatcher}
         |
         |case class Organization(people: Map[String, Person])
@@ -39,7 +38,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should not compile when trying to use map matcher with list" in {
-    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
                      |import com.softwaremill.diffx.{Diff, ObjectMatcher}
                      |
                      |case class Organization(people: List[Person])
@@ -50,7 +49,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should not compile when trying to use map matcher with set" in {
-    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
                            |import com.softwaremill.diffx.{Diff, ObjectMatcher}
                            |
                            |case class Organization(people: Set[Person])
@@ -61,7 +60,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should not compile when trying to use list matcher with set" in {
-    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
                      |import com.softwaremill.diffx.{Diff, ObjectMatcher}
                      |
                      |case class Organization(people: Set[Person])
@@ -72,7 +71,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should not compile when trying to use list matcher with map" in {
-    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
                      |import com.softwaremill.diffx.{Diff, ObjectMatcher}
                      |
                      |case class Organization(people: Map[String, Person])
@@ -83,7 +82,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should not compile when trying to use set matcher with list" in {
-    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
                      |import com.softwaremill.diffx.{Diff, ObjectMatcher}
                      |
                      |case class Organization(people: List[Person])
@@ -94,7 +93,7 @@ class UseMatcherMacroTest extends AnyFreeSpec {
   }
 
   "should not compile when trying to use set matcher with map" in {
-    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto._
+    assertDoesNotCompile("""import com.softwaremill.diffx.generic.auto.diffForCaseClass
                      |import com.softwaremill.diffx.{Diff, ObjectMatcher}
                      |
                      |case class Organization(people: Map[String, Person])

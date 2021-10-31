@@ -9,11 +9,10 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 trait DiffShouldMatcher {
   implicit def convertToAnyShouldMatcher[T: Diff](
       any: T
-  )(implicit pos: source.Position, prettifier: Prettifier, c: ConsoleColorConfig): AnyShouldWrapper[T] =
-    new AnyShouldWrapper[T](any, pos, prettifier, c, Diff[T])
+  )(implicit pos: source.Position, prettifier: Prettifier, c: ConsoleColorConfig): DiffAnyShouldWrapper[T] =
+    new DiffAnyShouldWrapper[T](any)
 
-  final class AnyShouldWrapper[T](
-      val leftValue: T,
+  final class DiffAnyShouldWrapper[T](val leftValue: T)(implicit
       val pos: source.Position,
       val prettifier: Prettifier,
       val c: ConsoleColorConfig,
@@ -21,10 +20,10 @@ trait DiffShouldMatcher {
   ) extends Matchers {
 
     def shouldMatchTo(rightValue: T): Assertion = {
-      Matchers.convertToAnyShouldWrapper[T](leftValue)(pos, prettifier).should(matchTo[T](rightValue)(d, c))
+      leftValue should matchTo[T](rightValue)
     }
 
-    private def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>
+    private def matchTo[A: Diff](right: A): Matcher[A] = { left =>
       val result = Diff[A].apply(left, right)
       if (!result.isIdentical) {
         val diff =

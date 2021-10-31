@@ -20,7 +20,7 @@ instance of the `Diff` typeclass into the implicit scope. The whole process look
 
 ```scala mdoc:silent
 case class Person(name:String, age:Int)
-implicit val modifiedDiff: Diff[Person] = Derived[Diff[Person]].ignore(_.age)
+implicit val modifiedDiff: Diff[Person] = Diff.derived[Person].ignore(_.age)
 ```
 ```scala mdoc
 compare(Person("bob", 25), Person("bob", 30))

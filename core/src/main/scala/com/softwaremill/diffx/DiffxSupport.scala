@@ -5,6 +5,9 @@ import com.softwaremill.diffx.DiffxSupport._
 
 trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with DiffxOptionSupport {
   type FieldPath = List[String]
+  type ListMatcher[T] = ObjectMatcher[ObjectMatcher.IterableEntry[T]]
+  type SetMatcher[T] = ObjectMatcher[ObjectMatcher.SetEntry[T]]
+  type MapMatcher[K, V] = ObjectMatcher[ObjectMatcher.MapEntry[K, V]]
 
   def compare[T](left: T, right: T)(implicit d: Diff[T]): DiffResult = d.apply(left, right)
 
@@ -26,10 +29,10 @@ object DiffxSupport {
 
 trait DiffxEitherSupport {
   implicit class DiffxEither[T[_, _], L, R](e: T[L, R])(implicit f: DiffxEitherFunctor[T, L, R]) {
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachLeft"))
+//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachLeft"))
     def eachLeft: L = sys.error("")
 
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachRight"))
+//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachRight"))
     def eachRight: R = sys.error("")
   }
 
@@ -79,17 +82,17 @@ object ConsoleColorConfig {
   def red: String => String = toColor(Console.RED)
   def black: String => String = toColor(Console.BLACK)
 
-  private def toColor(color: String) = { s: String => color + s + Console.RESET }
+  private def toColor(color: String) = { (s: String) => color + s + Console.RESET }
 }
 
 trait DiffxOptionSupport {
   implicit class DiffxEach[F[_], T](t: F[T])(implicit f: DiffxFunctor[F, T]) {
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
+//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each: T = sys.error("")
   }
 
   trait DiffxFunctor[F[_], A] {
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
+//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
     def each(fa: F[A])(f: A => A): F[A] = sys.error("")
   }
 

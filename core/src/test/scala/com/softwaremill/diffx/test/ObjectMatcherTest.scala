@@ -1,46 +1,39 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.Diff.compare
-import com.softwaremill.diffx.generic.auto._
-import com.softwaremill.diffx.{
-  DiffResultAdditional,
-  DiffResultMissing,
-  DiffResultObject,
-  DiffResultValue,
-  IdenticalValue,
-  ObjectMatcher
-}
+import com.softwaremill.diffx._
+import com.softwaremill.diffx.generic.AutoDerivation
+import com.softwaremill.diffx.{DiffResultAdditional, DiffResultMissing, DiffResultObject, DiffResultValue, IdenticalValue, ObjectMatcher}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 import scala.collection.immutable.ListMap
 
-class ObjectMatcherTest extends AnyFreeSpec with Matchers {
+class ObjectMatcherTest extends AnyFreeSpec with Matchers with AutoDerivation {
 
   "list" - {
     "list full of duplicates should be equal to itself" in {
       val left = List(Example(1, 1), Example(1, 1), Example(1, 1), Example(1, 1), Example(1, 1))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, left).isIdentical shouldBe true
     }
 
     "should prefer identical matches when there are multiple possible choices" in {
       val left = List(Example(1, 1), Example(1, 2))
       val right = List(Example(1, 2), Example(1, 1))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right).isIdentical shouldBe true
     }
 
     "should match list by value using whole object" in {
       val left = List(Example(1, 1), Example(2, 2))
-      implicit val om = ObjectMatcher.list[Example].byValue
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue
       compare(left, left.reverse).isIdentical shouldBe true
     }
 
     "should match list by value using object property" in {
       val left = List(Example(2, 2), Example(1, 1))
       val right = List(Example(1, -1), Example(2, -2))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -53,7 +46,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should match list by value using object optional property" in {
       val left = List(OptionalExample(None, 2), OptionalExample(Some(1), 1))
       val right = List(OptionalExample(Some(1), -1), OptionalExample(None, -2))
-      implicit val om = ObjectMatcher.list[OptionalExample].byValue(_.a)
+      implicit val om: ListMatcher[OptionalExample] = ObjectMatcher.list[OptionalExample].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -69,7 +62,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should preserve order even if there are missing or additional entities" in {
       val left = List(Example(2, 2), Example(3, 3), Example(4, 4))
       val right = List(Example(0, 0), Example(1, -1), Example(2, -2))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -85,7 +78,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should preserve order even if there are missing or additional entities - 2" in {
       val left = List(Example(1, 1), Example(3, 3), Example(4, 4))
       val right = List(Example(0, 0), Example(1, -1), Example(2, -2), Example(3, -3))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -101,7 +94,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should preserve order even if there are missing or additional entities - 3" in {
       val left = List(Example(1, 1), Example(2, -2), Example(3, 3), Example(4, 4))
       val right = List(Example(0, 0), Example(1, -1), Example(3, -3))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -117,7 +110,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should preserve order even if there are missing or additional entities - 4" in {
       val left = List(Example(0, 0), Example(1, -1), Example(2, 2))
       val right = List(Example(2, -2), Example(3, 3), Example(4, 4))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -133,7 +126,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should preserve order even if there are missing or additional entities - cross match" in {
       val left = List(Example(1, 1), Example(0, 0), Example(2, 2))
       val right = List(Example(2, -2), Example(3, 3), Example(1, -1))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -148,7 +141,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should preserve order even if there are missing or additional entities and duplicates" in {
       val left = List(Example(2, 2), Example(3, 3), Example(4, 4))
       val right = List(Example(0, 0), Example(1, -1), Example(2, -2), Example(2, -2))
-      implicit val om = ObjectMatcher.list[Example].byValue(_.a)
+      implicit val om: ListMatcher[Example] = ObjectMatcher.list[Example].byValue(_.a)
       compare(left, right) shouldBe DiffResultObject(
         "List",
         ListMap(
@@ -165,7 +158,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
   "set" - {
     "set full of duplicates according to object matcher should be identical to itself" in {
       val left = Set(Example(1, 1), Example(1, 2), Example(1, 3), Example(1, 4), Example(1, 5))
-      implicit val om = ObjectMatcher.set[Example].by(_.a)
+      implicit val om: SetMatcher[Example] = ObjectMatcher.set[Example].by(_.a)
 
       val result = compare(left, left)
       result.isIdentical shouldBe true
@@ -174,7 +167,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should prefer identical matches when there are multiple possible choices" in {
       val left = Set(Example(1, 1), Example(1, 2))
       val right = Set(Example(1, 2), Example(1, 1))
-      implicit val om = ObjectMatcher.set[Example].by(_.a)
+      implicit val om: SetMatcher[Example] = ObjectMatcher.set[Example].by(_.a)
       compare(left, right).isIdentical shouldBe true
     }
   }
@@ -182,7 +175,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
   "map" - {
     "map full of duplicates according to object matcher should be identical to itself" in {
       val left = Map(1 -> Example(1, 1), 2 -> Example(1, 2), 3 -> Example(1, 3), 4 -> Example(1, 4), 5 -> Example(1, 5))
-      implicit val om = ObjectMatcher.map[Int, Example].byValue(_.a)
+      implicit val om: MapMatcher[Int, Example] = ObjectMatcher.map[Int, Example].byValue(_.a)
 
       val result = compare(left, left)
       result.isIdentical shouldBe true
@@ -191,7 +184,7 @@ class ObjectMatcherTest extends AnyFreeSpec with Matchers {
     "should prefer identical matches when there are multiple possible choices" in {
       val left = Map(Example(1, 1) -> Example(5, 5), Example(1, 2) -> Example(4, 4))
       val right = Map(Example(1, 2) -> Example(4, 4), Example(1, 1) -> Example(5, 5))
-      implicit val om = ObjectMatcher.map[Example, Example].byValue(_.a)
+      implicit val om: MapMatcher[Example, Example] = ObjectMatcher.map[Example, Example].byValue(_.a)
       compare(left, right).isIdentical shouldBe true
     }
   }
