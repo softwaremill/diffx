@@ -1,5 +1,3 @@
 package com.softwaremill.diffx
 
-trait DerivedDiffLensMacro[T,U] {
-
-}
+trait DerivedDiffLensMacro[T, U] {}

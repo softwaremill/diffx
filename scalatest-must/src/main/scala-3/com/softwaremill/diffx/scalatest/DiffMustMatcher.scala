@@ -8,10 +8,13 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 
 trait DiffMustMatcher {
 
-  extension [T](leftSideValue: T)(using pos: source.Position, prettifier: Prettifier, diff: Diff[T], c: ConsoleColorConfig) def mustMatchTo(rightValue: T): Assertion = {
-    import Matchers.must
-    leftSideValue must matchTo(rightValue)
-  }
+  extension [T](
+      leftSideValue: T
+  )(using pos: source.Position, prettifier: Prettifier, diff: Diff[T], c: ConsoleColorConfig)
+    def mustMatchTo(rightValue: T): Assertion = {
+      import Matchers.must
+      leftSideValue must matchTo(rightValue)
+    }
 
   private def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>
     val result = Diff[A].apply(left, right)

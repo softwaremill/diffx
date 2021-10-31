@@ -8,10 +8,10 @@ import magnolia1.*
 import scala.collection.immutable.ListMap
 import scala.deriving.Mirror
 
-trait DiffMagnoliaDerivation extends Derivation[Diff]{
+trait DiffMagnoliaDerivation extends Derivation[Diff] {
 
   def join[T](ctx: CaseClass[Diff, T]): Diff[T] = {
-    if(!ctx.isValueClass) {
+    if (!ctx.isValueClass) {
       new Diff[T] {
         override def apply(left: T, right: T, context: DiffContext): DiffResult = {
           nullGuard(left, right) { (left, right) =>
@@ -32,9 +32,9 @@ trait DiffMagnoliaDerivation extends Derivation[Diff]{
       }
     } else {
       Diff.useEquals[T]
-    } 
-  } 
-  
+    }
+  }
+
   override def split[T](ctx: SealedTrait[Diff, T]): Diff[T] = new Diff[T] {
     override def apply(left: T, right: T, context: DiffContext): DiffResult = {
       nullGuard(left, right) { (left, right) =>
