@@ -1,8 +1,9 @@
 package com.softwaremill.diffx.specs2
 
 import org.specs2.Specification
+import com.softwaremill.diffx.generic.AutoDerivation
 
-class DiffMatcherTest extends Specification with DiffMatcher {
+class DiffMatcherTest extends Specification with DiffMatcher with AutoDerivation {
   override def is = s2"""This is an empty specification"""
 
   val right: Foo = Foo(
