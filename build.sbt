@@ -56,7 +56,7 @@ lazy val core = (projectMatrix in file("core"))
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((3, _)) =>
           Seq(
-            "com.softwaremill.magnolia1_3" %% "magnolia" % "1.0.0-M6"
+            "com.softwaremill.magnolia1_3" %%% "magnolia" % "1.0.0-M7"
           )
         case _ =>
           Seq(
@@ -77,7 +77,7 @@ lazy val core = (projectMatrix in file("core"))
     scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
 
 lazy val scalatestMust = (projectMatrix in file("scalatest-must"))
