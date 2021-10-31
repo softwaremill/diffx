@@ -2,15 +2,15 @@ package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
 import com.softwaremill.diffx._
+import com.softwaremill.diffx.generic.AutoDerivation
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
 import java.time.Instant
 import java.util.UUID
 import scala.collection.immutable.ListMap
-import com.softwaremill.diffx.generic.auto.given
 
-class DiffTest extends AnyFreeSpec with Matchers with DiffVersionSpecificTest {
+class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
   val ignored = DiffConfiguration.Default.makeIgnored
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
@@ -303,6 +303,34 @@ class DiffTest extends AnyFreeSpec with Matchers with DiffVersionSpecificTest {
       val right: Base = SubtypeOne(1, "one")
       implicit val diff: Diff[Base] = Diff.autoDerived[Base].modifyUnsafe("id")(ignored)
       compare(left, right).isIdentical shouldBe true
+    }
+
+    "recursive coproducts" - {
+      val right: Foo = Foo(
+        Bar("asdf", 5),
+        List(123, 1234),
+        Some(Bar("asdf", 5))
+      )
+      val left: Foo = Foo(
+        Bar("asdf", 66),
+        List(1234),
+        Some(right)
+      )
+
+      "identity" in {
+        compare(left, left).isIdentical shouldBe true
+      }
+
+      "diff" in {
+        compare(left, right) shouldBe DiffResultObject(
+          "Foo",
+          ListMap(
+            "bar" -> DiffResultObject("Bar", ListMap("s" -> IdenticalValue("asdf"), "i" -> DiffResultValue(66, 5))),
+            "b" -> DiffResultObject("List", ListMap("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234))),
+            "parent" -> DiffResultValue("com.softwaremill.diffx.test.Foo", "com.softwaremill.diffx.test.Bar")
+          )
+        )
+      }
     }
   }
 

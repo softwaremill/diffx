@@ -1,9 +1,9 @@
 package com.softwaremill.diffx.utest
 
-import com.softwaremill.diffx.generic.auto.given
+import com.softwaremill.diffx.generic.AutoDerivation
 import utest._
 
-object UtestAssertTest extends TestSuite with DiffxAssertions {
+object UtestAssertTest extends TestSuite with DiffxAssertions with AutoDerivation {
   val tests = Tests {
 
     // uncomment to run

@@ -1,8 +1,8 @@
 package com.softwaremill.diffx.munit
 
-import com.softwaremill.diffx.generic.auto.diffForCaseClass
+import com.softwaremill.diffx.generic.AutoDerivation
 
-class MunitAssertTest extends munit.FunSuite with DiffxAssertions {
+class MunitAssertTest extends munit.FunSuite with DiffxAssertions with AutoDerivation {
 //   uncomment to run
 //  test("failing test") {
 //    val n = Person("n1", 11)

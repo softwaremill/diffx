@@ -1,14 +1,14 @@
 package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx._
+import com.softwaremill.diffx.generic.AutoDerivation
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import com.softwaremill.diffx.generic.auto.given
 
 import java.time.Instant
 import java.util.UUID
 
-class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers {
+class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDerivation {
   val instant: Instant = Instant.now()
   val p1 = Person("p1", 22, instant)
   val p2 = Person("p2", 11, instant)

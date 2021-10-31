@@ -1,10 +1,10 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.generic.auto.diffForCaseClass
+import com.softwaremill.diffx.generic.AutoDerivation
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.must.Matchers
 
-class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMustMatcher {
+class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMustMatcher with AutoDerivation {
   val right: Foo = Foo(
     Bar("asdf", 5, Map("a" -> 2)),
     List(123, 1234)
