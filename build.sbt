@@ -218,7 +218,7 @@ lazy val cats = (projectMatrix in file("cats"))
     scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
 
 lazy val refined = (projectMatrix in file("refined"))
