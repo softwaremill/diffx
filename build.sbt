@@ -233,12 +233,11 @@ lazy val refined = (projectMatrix in file("refined"))
   )
   .dependsOn(core)
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
   .jsPlatform(
-    scalaVersions = List(scala212, scala213)
+    scalaVersions = List(scala212, scala213, scala3)
   )
-//
 
 lazy val docs = (projectMatrix in file("generated-docs")) // important: it must not be docs/
   .enablePlugins(MdocPlugin)
