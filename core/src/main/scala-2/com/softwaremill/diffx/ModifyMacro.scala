@@ -1,7 +1,5 @@
 package com.softwaremill.diffx
 
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
-
 import scala.annotation.tailrec
 import scala.reflect.macros.blackbox
 
@@ -88,28 +86,4 @@ object ModifyMacro {
 
   private[diffx] def modifiedFromPath[T, U](path: T => U): List[String] =
     macro modifiedFromPathMacro[T, U]
-
-  def withObjectMatcher[T: c.WeakTypeTag, U: c.WeakTypeTag, M: c.WeakTypeTag](
-      c: blackbox.Context
-  )(matcher: c.Expr[ObjectMatcher[M]]): c.Tree = {
-    import c.universe._
-    val t = weakTypeOf[T]
-    val u = weakTypeOf[U]
-    val m = weakTypeOf[M]
-
-    val baseIsIterable = u <:< typeOf[Iterable[_]]
-    val baseIsSet = u <:< typeOf[scala.collection.Set[_]]
-    val baseIsMap = u <:< typeOf[scala.collection.Map[_, _]]
-    val typeArgsTheSame = u.typeArgs == m.typeArgs
-    val setRequirements = baseIsSet && typeArgsTheSame && m <:< typeOf[SetEntry[_]]
-    val iterableRequirements = !baseIsSet && baseIsIterable && typeArgsTheSame && m <:< typeOf[IterableEntry[_]]
-    val mapRequirements = baseIsMap && typeArgsTheSame && m <:< typeOf[MapEntry[_, _]]
-    if (!setRequirements && !iterableRequirements && !mapRequirements) { //  weakTypeOf[U] <:< tq"Iterable[${u.typeArgs.head.termSymbol}]"
-      c.abort(c.enclosingPosition, s"Invalid objectMather type $u for given lens($t,$m)")
-    }
-    q"""
-       val lens = ${c.prefix}
-       lens.outer.modifyMatcherUnsafe(lens.path: _*)($matcher)
-    """
-  }
 }

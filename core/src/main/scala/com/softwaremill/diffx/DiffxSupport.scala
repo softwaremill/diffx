@@ -1,8 +1,8 @@
 package com.softwaremill.diffx
 
-trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport {
+trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport with DiffLensToMatchByOps with DiffToMatchByOps {
   type FieldPath = List[String]
-  type ListMatcher[T] = ObjectMatcher[ObjectMatcher.IterableEntry[T]]
+  type SeqMatcher[T] = ObjectMatcher[ObjectMatcher.SeqEntry[T]]
   type SetMatcher[T] = ObjectMatcher[ObjectMatcher.SetEntry[T]]
   type MapMatcher[K, V] = ObjectMatcher[ObjectMatcher.MapEntry[K, V]]
 

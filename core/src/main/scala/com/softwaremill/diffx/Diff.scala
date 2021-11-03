@@ -1,6 +1,6 @@
 package com.softwaremill.diffx
 
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
+import com.softwaremill.diffx.ObjectMatcher.{MapEntry, SeqEntry, SetEntry}
 import com.softwaremill.diffx.instances._
 
 trait Diff[T] extends DiffMacro[T] { outer =>
@@ -61,29 +61,32 @@ object Diff extends LowPriorityDiff with DiffTupleInstances with DiffxPlatformEx
 
   implicit def diffForNumeric[T: Numeric]: Diff[T] = new DiffForNumeric[T]
 
-  implicit def diffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](implicit
+  implicit def diffForMap[C[_, _], K, V](implicit
       dv: Diff[V],
       dk: Diff[K],
-      matcher: ObjectMatcher[MapEntry[K, V]]
-  ): Diff[C[K, V]] = new DiffForMap[K, V, C](matcher, dk, dv)
+      matcher: ObjectMatcher[MapEntry[K, V]],
+      mapLike: MapLike[C]
+  ): Diff[C[K, V]] = new DiffForMap[C, K, V](matcher, dk, dv, mapLike)
 
   implicit def diffForOptional[T](implicit ddt: Diff[T]): Diff[Option[T]] = new DiffForOption[T](ddt)
 
-  implicit def diffForSet[T, C[W] <: scala.collection.Set[W]](implicit
+  implicit def diffForSet[C[_], T](implicit
       dt: Diff[T],
-      matcher: ObjectMatcher[SetEntry[T]]
-  ): Diff[C[T]] = new DiffForSet[T, C](dt, matcher)
+      matcher: ObjectMatcher[SetEntry[T]],
+      setLike: SetLike[C]
+  ): Diff[C[T]] = new DiffForSet[C, T](dt, matcher, setLike)
 
   implicit def diffForEither[L, R](implicit ld: Diff[L], rd: Diff[R]): Diff[Either[L, R]] =
     new DiffForEither[L, R](ld, rd)
+
+  implicit def diffForSeq[C[_], T](implicit
+      dt: Diff[T],
+      matcher: ObjectMatcher[SeqEntry[T]],
+      seqLike: SeqLike[C]
+  ): Diff[C[T]] = new DiffForSeq[C, T](dt, matcher, seqLike)
 }
 
 trait LowPriorityDiff {
-
-  implicit def diffForIterable[T, C[W] <: Iterable[W]](implicit
-      dt: Diff[T],
-      matcher: ObjectMatcher[IterableEntry[T]]
-  ): Diff[C[T]] = new DiffForIterable[T, C](dt, matcher)
 
   /** Implicit instance of Diff[T] created from implicit Derived[Diff[T]]. Should not be called explicitly from clients
     * code. Use `autoDerive` instead.
@@ -104,7 +107,7 @@ trait LowPriorityDiff {
 
 case class Derived[T](value: T) extends AnyVal
 
-case class DiffLens[T, U](outer: Diff[T], path: List[String]) extends DiffLensMacro[T, U] {
+case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
   def setTo(d: Diff[U]): Diff[T] = using(_ => d)
 
   def using(mod: Diff[U] => Diff[U]): Diff[T] = {

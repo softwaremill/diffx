@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.test
 
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry, SetEntry}
+import com.softwaremill.diffx.ObjectMatcher.{SeqEntry, MapEntry, SetEntry}
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.AutoDerivation
 import org.scalatest.freespec.AnyFreeSpec
@@ -445,7 +445,7 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
       "compare lists using object matcher comparator" in {
         val o1 = Organization(List(p1, p2))
         val o2 = Organization(List(p2, p1))
-        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(_.name)
+        implicit val om: SeqMatcher[Person] = ObjectMatcher.seq[Person].byValue(_.name)
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -453,7 +453,7 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
         val p2WithSameNameAsP1 = p2.copy(name = p1.name)
         val o1 = Organization(List(p1, p2WithSameNameAsP1))
         val o2 = Organization(List(p2WithSameNameAsP1, p1))
-        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(p => (p.name, p.age))
+        implicit val om: SeqMatcher[Person] = ObjectMatcher.seq[Person].byValue(p => (p.name, p.age))
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -462,7 +462,7 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
         val o2 = Organization(List(p2, p1))
         implicit val orgDiff: Diff[Organization] = Diff
           .autoDerived[Organization]
-          .modifyMatcherUnsafe("people")(ObjectMatcher.list[Person].byValue(_.name))
+          .modifyMatcherUnsafe("people")(ObjectMatcher.seq[Person].byValue(_.name))
         compare(o1, o2).isIdentical shouldBe true
       }
 
@@ -470,14 +470,14 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
         val p2WithSameNameAsP1 = p2.copy(name = p1.name)
         val o1 = Organization(List(p1, p2WithSameNameAsP1))
         val o2 = Organization(List(p2WithSameNameAsP1, p1))
-        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(identity(_))
+        implicit val om: SeqMatcher[Person] = ObjectMatcher.seq[Person].byValue(identity(_))
         compare(o1, o2).isIdentical shouldBe true
       }
 
       "compare correctly lists with duplicates using objectMatcher" in {
         val o1 = Organization(List(p1, p1))
         val o2 = Organization(List(p1, p1))
-        implicit val om: ListMatcher[Person] = ObjectMatcher.list[Person].byValue(identity(_))
+        implicit val om: SeqMatcher[Person] = ObjectMatcher.seq[Person].byValue(identity(_))
         val result = compare(o1, o2)
         result.isIdentical shouldBe true
       }

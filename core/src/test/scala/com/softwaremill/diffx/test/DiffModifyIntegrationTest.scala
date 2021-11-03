@@ -43,9 +43,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     implicit val orgDiff: Diff[Organization] = Diff
       .autoDerived[Organization]
       .modify(_.people)
-      .useMatcher(
-        ObjectMatcher.list[Person].byValue(_.name)
-      )
+      .matchByValue(_.name)
     compare(o1, o2).isIdentical shouldBe true
   }
 
@@ -82,9 +80,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     implicit val lookupDiff: Diff[MyLookup] = Diff
       .autoDerived[MyLookup]
       .modify(_.map)
-      .useMatcher(
-        ObjectMatcher.map[KeyModel, String].byValue
-      )
+      .matchByValue(identity)
     val uuid1 = UUID.randomUUID()
     val uuid2 = UUID.randomUUID()
     val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
@@ -111,7 +107,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     implicit val lookupDiff: Diff[Startup] = Diff
       .autoDerived[Startup]
       .modify(_.workers)
-      .useMatcher(ObjectMatcher.set[Person].by(_.name))
+      .matchBy(_.name)
     val p2m = p2.copy(age = 33)
     compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
       "Startup",
@@ -145,7 +141,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val o2 = Organization(List(p2, p1))
     val d = Diff[Organization]
       .modify(_.people)
-      .useMatcher(ObjectMatcher.list[Person].byValue(_.name))
+      .matchByValue(_.name)
     compare(o1, o2)(d).isIdentical shouldBe true
   }
 
@@ -187,35 +183,5 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
         "in" -> IdenticalValue(instant)
       )
     )
-  }
-
-  it should "allow to use object matcher with mutable seq" in {
-    assertCompiles("""
-        |import com.softwaremill.diffx._
-        |case class P1(v: Int)
-        |case class O1(l: scala.collection.mutable.Seq[P1])
-        |
-        |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.list[P1].byValue(_.v))
-        |""".stripMargin)
-  }
-
-  it should "allow to use object matcher with mutable map" in {
-    assertCompiles("""
-       |import com.softwaremill.diffx._
-       |case class P1(v: Int)
-       |case class O1(l: scala.collection.mutable.Map[String,P1])
-       |
-       |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.map[String, P1].byValue(_.v))
-       |""".stripMargin)
-  }
-
-  it should "allow to use object matcher with mutable set" in {
-    assertCompiles("""
-       |import com.softwaremill.diffx._
-       |case class P1(v: Int)
-       |case class O1(l: scala.collection.mutable.Set[P1])
-       |
-       |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.set[P1].by(_.v))
-       |""".stripMargin)
   }
 }

@@ -6,10 +6,12 @@ import com.softwaremill.diffx.instances.internal.MatchResult
 
 import scala.annotation.tailrec
 
-private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]](
+private[diffx] class DiffForMap[C[_, _], K, V](
     matcher: ObjectMatcher[MapEntry[K, V]],
     diffKey: Diff[K],
-    diffValue: Diff[V]
+    diffValue: Diff[V],
+    mapLike: MapLike[C],
+    typename: String = "Map"
 ) extends Diff[C[K, V]] {
   override def apply(
       left: C[K, V],
@@ -18,8 +20,8 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
   ): DiffResult = nullGuard(left, right) { (left, right) =>
     val adjustedMatcher = context.getMatcherOverride[MapEntry[K, V]].getOrElse(matcher)
     val matches = matchPairs(
-      left.toList.map { case (k, v) => MapEntry(k, v) },
-      right.toList.map { case (k, v) => MapEntry(k, v) },
+      mapLike.asMap(left).toList.map { case (k, v) => MapEntry(k, v) },
+      mapLike.asMap(right).toList.map { case (k, v) => MapEntry(k, v) },
       adjustedMatcher,
       List.empty,
       context
@@ -30,7 +32,7 @@ private[diffx] class DiffForMap[K, V, C[KK, VV] <: scala.collection.Map[KK, VV]]
       case MatchResult.Matched(lEntry, rEntry) =>
         diffKey(lEntry.key, rEntry.key, context) -> diffValue(lEntry.value, rEntry.value, context)
     }
-    DiffResultMap(diffs.toMap)
+    DiffResultMap(typename, diffs.toMap)
   }
 
   @tailrec

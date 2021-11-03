@@ -1,22 +1,24 @@
 package com.softwaremill.diffx.instances
 
-import com.softwaremill.diffx.ObjectMatcher.{IterableEntry, MapEntry}
+import com.softwaremill.diffx.ObjectMatcher.{SeqEntry, MapEntry}
 import com.softwaremill.diffx._
-import com.softwaremill.diffx.instances.DiffForIterable._
+import com.softwaremill.diffx.instances.DiffForSeq._
 import com.softwaremill.diffx.instances.internal.MatchResult
 
 import scala.annotation.tailrec
 import scala.collection.immutable.ListMap
 
-private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
+class DiffForSeq[C[_], T](
     dt: Diff[T],
-    matcher: ObjectMatcher[IterableEntry[T]]
+    matcher: ObjectMatcher[SeqEntry[T]],
+    seqLike: SeqLike[C],
+    typeName: String = "List"
 ) extends Diff[C[T]] {
   override def apply(left: C[T], right: C[T], context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
-      val adjustedMatcher = context.getMatcherOverride[IterableEntry[T]].getOrElse(matcher)
-      val leftWithIndex = left.zipWithIndex.map { case (lv, i) => MapEntry(i, lv) }.toList
-      val rightWithIndex = right.zipWithIndex.map { case (rv, i) => MapEntry(i, rv) }.toList
+      val adjustedMatcher = context.getMatcherOverride[SeqEntry[T]].getOrElse(matcher)
+      val leftWithIndex = seqLike.asSeq(left).zipWithIndex.map { case (lv, i) => MapEntry(i, lv) }
+      val rightWithIndex = seqLike.asSeq(right).zipWithIndex.map { case (rv, i) => MapEntry(i, rv) }
 
       val (matched, unmatched) = matchPairs(leftWithIndex, rightWithIndex, adjustedMatcher, List.empty, context)
 
@@ -33,16 +35,16 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
       }
       val reindexed = rawDiffs.zipWithIndex.map(_.swap)
       val diffs = ListMap(reindexed.map { case (k, v) => k.toString -> v }: _*)
-      DiffResultObject("List", diffs)
+      DiffResultObject(typeName, diffs)
   }
 
   @tailrec
   private def insertUnmatchedLeft(
-      matches: List[MatchResult[IterableEntry[T]]],
-      item: MatchResult.UnmatchedLeft[IterableEntry[T]],
-      bigHead: List[MatchResult[IterableEntry[T]]]
-  ): List[MatchResult[IterableEntry[T]]] = {
-    matches match {
+      matches: Seq[MatchResult[SeqEntry[T]]],
+      item: MatchResult.UnmatchedLeft[SeqEntry[T]],
+      bigHead: Seq[MatchResult[SeqEntry[T]]]
+  ): Seq[MatchResult[SeqEntry[T]]] = {
+    matches.toList match {
       case ::(head, tl) =>
         val shouldBeAfter = head match {
           case MatchResult.UnmatchedRight(_) => true
@@ -60,13 +62,13 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
 
   @tailrec
   private def matchPairs(
-      left: List[IterableEntry[T]],
-      right: List[IterableEntry[T]],
-      matcher: ObjectMatcher[IterableEntry[T]],
-      matched: List[MatchResult[IterableEntry[T]]],
+      left: Seq[SeqEntry[T]],
+      right: Seq[SeqEntry[T]],
+      matcher: ObjectMatcher[SeqEntry[T]],
+      matched: List[MatchResult[SeqEntry[T]]],
       context: DiffContext
-  ): (List[MatchResult[IterableEntry[T]]], List[MatchResult.UnmatchedLeft[IterableEntry[T]]]) = {
-    right match {
+  ): (Seq[MatchResult[SeqEntry[T]]], Seq[MatchResult.UnmatchedLeft[SeqEntry[T]]]) = {
+    right.toList match {
       case ::(rHead, tailRight) =>
         val maybeMatched = left
           .collect { case l if matcher.isSameObject(rHead, l) => l -> rHead }
@@ -88,22 +90,22 @@ private[diffx] class DiffForIterable[T, C[W] <: Iterable[W]](
   }
 }
 
-object DiffForIterable {
-  implicit def iterableEntryOrdering[T]: Ordering[IterableEntry[T]] = Ordering.by(_.key)
+object DiffForSeq {
+  implicit def iterableEntryOrdering[T]: Ordering[SeqEntry[T]] = Ordering.by(_.key)
 
-  implicit def diffResultOrdering[T]: Ordering[MatchResult[IterableEntry[T]]] =
-    new Ordering[MatchResult[IterableEntry[T]]] {
-      override def compare(x: MatchResult[IterableEntry[T]], y: MatchResult[IterableEntry[T]]): Int = {
+  implicit def diffResultOrdering[T]: Ordering[MatchResult[SeqEntry[T]]] =
+    new Ordering[MatchResult[SeqEntry[T]]] {
+      override def compare(x: MatchResult[SeqEntry[T]], y: MatchResult[SeqEntry[T]]): Int = {
         (x, y) match {
-          case (ur: MatchResult.UnmatchedRight[IterableEntry[T]], m: MatchResult.Matched[IterableEntry[T]]) =>
+          case (ur: MatchResult.UnmatchedRight[SeqEntry[T]], m: MatchResult.Matched[SeqEntry[T]]) =>
             iterableEntryOrdering.compare(ur.v, m.r)
-          case (m: MatchResult.Matched[IterableEntry[T]], ur: MatchResult.UnmatchedRight[IterableEntry[T]]) =>
+          case (m: MatchResult.Matched[SeqEntry[T]], ur: MatchResult.UnmatchedRight[SeqEntry[T]]) =>
             iterableEntryOrdering.compare(m.r, ur.v)
-          case (ur: MatchResult.UnmatchedRight[IterableEntry[T]], ur2: MatchResult.UnmatchedRight[IterableEntry[T]]) =>
+          case (ur: MatchResult.UnmatchedRight[SeqEntry[T]], ur2: MatchResult.UnmatchedRight[SeqEntry[T]]) =>
             iterableEntryOrdering.compare(ur.v, ur2.v)
-          case (m1: MatchResult.Matched[IterableEntry[T]], m2: MatchResult.Matched[IterableEntry[T]]) =>
+          case (m1: MatchResult.Matched[SeqEntry[T]], m2: MatchResult.Matched[SeqEntry[T]]) =>
             Ordering
-              .by[MatchResult.Matched[IterableEntry[T]], (IterableEntry[T], IterableEntry[T])](m => (m.r, m.l))
+              .by[MatchResult.Matched[SeqEntry[T]], (SeqEntry[T], SeqEntry[T])](m => (m.r, m.l))
               .compare(m1, m2)
           case (_: MatchResult.UnmatchedLeft[_], _) => throw new IllegalStateException("cannot happen")
           case (_, _: MatchResult.UnmatchedLeft[_]) => throw new IllegalStateException("cannot happen")

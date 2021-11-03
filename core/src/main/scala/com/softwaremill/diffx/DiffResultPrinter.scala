@@ -41,7 +41,9 @@ object DiffResultPrinter {
       .map { case (field, value) =>
         renderField(field) + renderValue(value)
       }
-    defaultColor(s"${resultObject.name}(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(")")
+    defaultColor(s"${resultObject.typename}(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(
+      ")"
+    )
   }
 
   private def showDiffResultMap(diffResultMap: DiffResultMap, indent: Int)(implicit
@@ -57,7 +59,9 @@ object DiffResultPrinter {
         val value = renderValue(v)
         key + separator + value
       }
-    defaultColor("Map(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(")")
+    defaultColor(s"${diffResultMap.typename}(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(
+      ")"
+    )
   }
 
   private def showDiffResultSet(diffResultSet: DiffResultSet, indent: Int)(implicit
@@ -65,7 +69,7 @@ object DiffResultPrinter {
   ): String = {
     val showFields = diffResultSet.diffs
       .map(f => s"${i(indent)}${showIndented(f, indent + IndentLevel)}")
-    showFields.mkString(defaultColor("Set(\n"), ",\n", defaultColor(")"))
+    showFields.mkString(defaultColor(s"${diffResultSet.typename}(\n"), ",\n", defaultColor(")"))
   }
 
   private def i(indent: Int): String = " " * indent
