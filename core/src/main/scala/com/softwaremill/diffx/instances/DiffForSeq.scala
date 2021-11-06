@@ -31,7 +31,7 @@ class DiffForSeq[C[_], T](
       val rawDiffs = allMatches.map {
         case MatchResult.UnmatchedLeft(v)  => DiffResultAdditional(v.value)
         case MatchResult.UnmatchedRight(v) => DiffResultMissing(v.value)
-        case MatchResult.Matched(l, r)     => dt.apply(l.value, r.value, context)
+        case MatchResult.Matched(l, r)     => dt.apply(l.value, r.value, context.getNextStep(ModifyPath.Each))
       }
       val reindexed = rawDiffs.zipWithIndex.map(_.swap)
       val diffs = ListMap(reindexed.map { case (k, v) => k.toString -> v }: _*)

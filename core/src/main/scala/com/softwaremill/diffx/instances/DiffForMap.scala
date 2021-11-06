@@ -30,7 +30,7 @@ private[diffx] class DiffForMap[C[_, _], K, V](
       case MatchResult.UnmatchedLeft(entry)  => DiffResultAdditional(entry.key) -> DiffResultAdditional(entry.value)
       case MatchResult.UnmatchedRight(entry) => DiffResultMissing(entry.key) -> DiffResultMissing(entry.value)
       case MatchResult.Matched(lEntry, rEntry) =>
-        diffKey(lEntry.key, rEntry.key, context) -> diffValue(lEntry.value, rEntry.value, context)
+        diffKey(lEntry.key, rEntry.key, context) -> diffValue(lEntry.value, rEntry.value, context) // TODO write test
     }
     DiffResultMap(typename, diffs.toMap)
   }

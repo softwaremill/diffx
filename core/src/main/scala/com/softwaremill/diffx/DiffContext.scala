@@ -2,15 +2,15 @@ package com.softwaremill.diffx
 
 case class DiffContext(
     overrides: Tree[Diff[Any] => Diff[Any]],
-    path: FieldPath,
+    path: List[ModifyPath],
     matcherOverrides: Tree[ObjectMatcher[_]]
 ) {
   def merge(other: DiffContext): DiffContext = {
     DiffContext(overrides.merge(other.overrides), List.empty, matcherOverrides.merge(other.matcherOverrides))
   }
 
-  def getOverride(label: String): Option[Diff[Any] => Diff[Any]] = {
-    treeOverride(label, overrides)
+  def getOverride(nextPath: ModifyPath): Option[Diff[Any] => Diff[Any]] = {
+    treeOverride(nextPath, overrides)
   }
 
   def getMatcherOverride[T]: Option[ObjectMatcher[T]] = {
@@ -20,21 +20,21 @@ case class DiffContext(
     }
   }
 
-  private def treeOverride[T](label: String, tree: Tree[T]) = {
+  private def treeOverride[T](nextPath: ModifyPath, tree: Tree[T]) = {
     tree match {
       case Tree.Leaf(_)     => throw new IllegalStateException(s"Expected node, got leaf at $path")
-      case Tree.Node(tries) => getOverrideFromNode(label, tries)
+      case Tree.Node(tries) => getOverrideFromNode(nextPath, tries)
     }
   }
 
-  private def getOverrideFromNode[T](label: String, tries: Map[String, Tree[T]]) = {
-    tries.get(label) match {
+  private def getOverrideFromNode[T](nextPath: ModifyPath, tries: Map[ModifyPath, Tree[T]]) = {
+    tries.get(nextPath) match {
       case Some(Tree.Leaf(v)) => Some(v)
       case _                  => None
     }
   }
 
-  def getNextStep(label: String): DiffContext = {
+  def getNextStep(label: ModifyPath): DiffContext = {
     val currentPath = path :+ label
     (getNextOverride(label, overrides), getNextOverride(label, matcherOverrides)) match {
       case (Some(d), Some(m)) => DiffContext(d, currentPath, m)
@@ -44,19 +44,19 @@ case class DiffContext(
     }
   }
 
-  private def getNextOverride[T](label: String, tree: Tree[T]) = {
+  private def getNextOverride[T](nextPath: ModifyPath, tree: Tree[T]) = {
     tree match {
       case Tree.Leaf(_)     => None
-      case Tree.Node(tries) => tries.get(label)
+      case Tree.Node(tries) => tries.get(nextPath)
     }
   }
 }
 
 object DiffContext {
   val Empty: DiffContext = DiffContext(Tree.empty, List.empty, Tree.empty)
-  def atPath(path: FieldPath, mod: Diff[Any] => Diff[Any]): DiffContext =
+  def atPath(path: List[ModifyPath], mod: Diff[Any] => Diff[Any]): DiffContext =
     Empty.copy(overrides = Tree.fromList(path, mod))
-  def atPath(path: FieldPath, matcher: ObjectMatcher[_]): DiffContext =
+  def atPath(path: List[ModifyPath], matcher: ObjectMatcher[_]): DiffContext =
     Empty.copy(matcherOverrides = Tree.fromList(path, matcher))
 }
 
@@ -69,7 +69,7 @@ object Tree {
   case class Leaf[T](v: T) extends Tree[T] {
     override def merge(tree: Tree[T]): Tree[T] = tree
   }
-  case class Node[T](tries: Map[String, Tree[T]]) extends Tree[T] {
+  case class Node[T](tries: Map[ModifyPath, Tree[T]]) extends Tree[T] {
     override def merge(tree: Tree[T]): Tree[T] = {
       tree match {
         case Leaf(v) => Leaf(v)
@@ -86,7 +86,7 @@ object Tree {
       }
     }
   }
-  def fromList[T](path: FieldPath, obj: T): Tree[T] = {
+  def fromList[T](path: List[ModifyPath], obj: T): Tree[T] = {
     path.reverse.foldLeft(Leaf(obj): Tree[T])((acc, item) => Node(Map(item -> acc)))
   }
 }

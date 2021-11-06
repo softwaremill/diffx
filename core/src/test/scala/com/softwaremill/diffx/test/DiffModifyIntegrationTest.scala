@@ -89,6 +89,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       "MyLookup",
       Map(
         "map" -> DiffResultMap(
+          "Map",
           Map(
             DiffResultObject(
               "KeyModel",
@@ -113,6 +114,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       "Startup",
       Map(
         "workers" -> DiffResultSet(
+          "Set",
           Set(
             DiffResultObject(
               "Person",

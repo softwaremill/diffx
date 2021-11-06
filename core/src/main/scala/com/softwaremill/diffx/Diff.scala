@@ -12,7 +12,7 @@ trait Diff[T] extends DiffMacro[T] { outer =>
       outer(f(left), f(right), context)
     }
 
-  def modifyUnsafe[U](path: String*)(mod: Diff[U] => Diff[U]): Diff[T] =
+  def modifyUnsafe[U](path: ModifyPath*)(mod: Diff[U] => Diff[U]): Diff[T] =
     new Diff[T] {
       override def apply(left: T, right: T, context: DiffContext): DiffResult =
         outer.apply(
@@ -24,7 +24,7 @@ trait Diff[T] extends DiffMacro[T] { outer =>
         )
     }
 
-  def modifyMatcherUnsafe(path: String*)(matcher: ObjectMatcher[_]): Diff[T] =
+  def modifyMatcherUnsafe(path: ModifyPath*)(matcher: ObjectMatcher[_]): Diff[T] =
     new Diff[T] {
       override def apply(left: T, right: T, context: DiffContext): DiffResult =
         outer.apply(
@@ -107,7 +107,7 @@ trait LowPriorityDiff {
 
 case class Derived[T](value: T) extends AnyVal
 
-case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
+case class DiffLens[T, U](outer: Diff[T], path: List[ModifyPath]) {
   def setTo(d: Diff[U]): Diff[T] = using(_ => d)
 
   def using(mod: Diff[U] => Diff[U]): Diff[T] = {
@@ -115,4 +115,11 @@ case class DiffLens[T, U](outer: Diff[T], path: List[String]) {
   }
 
   def ignore(implicit config: DiffConfiguration): Diff[T] = outer.modifyUnsafe(path: _*)(config.makeIgnored)
+}
+
+sealed trait ModifyPath extends Product with Serializable
+object ModifyPath {
+  case class Field(name: String) extends ModifyPath
+  case object Each extends ModifyPath
+  case class Subtype[T](owner: String, short: String) extends ModifyPath
 }
