@@ -54,4 +54,11 @@ class ModifyMacroTest extends AnyFlatSpec with Matchers {
       ModifyPath.Field("name")
     )
   }
+
+  it should "ignore part of set value" in {
+    ModifyMacro.modifiedFromPath[Set[Person], String](_.each.name) shouldBe List(
+      ModifyPath.Each,
+      ModifyPath.Field("name")
+    )
+  }
 }

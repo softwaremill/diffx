@@ -25,7 +25,7 @@ private[diffx] class DiffForSet[C[_], T](
       val diffs = matches.map {
         case MatchResult.UnmatchedLeft(v)  => DiffResultAdditional(v)
         case MatchResult.UnmatchedRight(v) => DiffResultMissing(v)
-        case MatchResult.Matched(l, r)     => dt.apply(l, r, context) // TODO write test
+        case MatchResult.Matched(l, r)     => dt.apply(l, r, context.getNextStep(ModifyPath.Each))
       }
       DiffResultSet(typename, diffs.toSet)
   }
