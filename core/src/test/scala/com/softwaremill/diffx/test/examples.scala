@@ -43,6 +43,7 @@ object TsDirection {
 case class KeyModel(id: UUID, name: String)
 
 case class MyLookup(map: Map[KeyModel, String])
+case class MyLookupReversed(map: Map[String, KeyModel])
 
 class NonCaseClass(private val field: String) {
   override def toString: String = s"NonCaseClass($field)"

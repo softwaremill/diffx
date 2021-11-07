@@ -104,6 +104,62 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     )
   }
 
+  it should "ignore part of each key in map" in {
+    implicit val lookupDiff: Diff[MyLookup] = Diff
+      .autoDerived[MyLookup]
+      .ignore(_.map.eachKey.id)
+      .modify(_.map)
+      .matchByKey(_.name)
+    val uuid1 = UUID.randomUUID()
+    val uuid2 = UUID.randomUUID()
+    val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+    val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+    compare(a1, a2) shouldBe DiffResultObject(
+      "MyLookup",
+      Map(
+        "map" -> DiffResultMap(
+          "Map",
+          Map(
+            DiffResultObject(
+              "KeyModel",
+              Map(
+                "id" -> DiffResult.Ignored,
+                "name" -> IdenticalValue("k1")
+              )
+            ) -> IdenticalValue("val1")
+          )
+        )
+      )
+    )
+  }
+
+  it should "ignore part of each value in map" in {
+    implicit val lookupDiff: Diff[MyLookupReversed] = Diff
+      .autoDerived[MyLookupReversed]
+      .ignore(_.map.eachValue.id)
+    val uuid1 = UUID.randomUUID()
+    val uuid2 = UUID.randomUUID()
+    val a1 = MyLookupReversed(Map("val1" -> KeyModel(uuid1, "k1")))
+    val a2 = MyLookupReversed(Map("val1" -> KeyModel(uuid2, "k1")))
+    compare(a1, a2) shouldBe DiffResultObject(
+      "MyLookupReversed",
+      Map(
+        "map" -> DiffResultMap(
+          "Map",
+          Map(
+            IdenticalValue("val1") -> DiffResultObject(
+              "KeyModel",
+              Map(
+                "id" -> DiffResult.Ignored,
+                "name" -> IdenticalValue("k1")
+              )
+            )
+          )
+        )
+      )
+    )
+  }
+
   it should "use overrided object matcher when comparing set" in {
     implicit val lookupDiff: Diff[Startup] = Diff
       .autoDerived[Startup]

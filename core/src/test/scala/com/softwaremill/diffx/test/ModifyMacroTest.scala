@@ -41,9 +41,16 @@ class ModifyMacroTest extends AnyFlatSpec with Matchers {
     )
   }
 
-  it should "ignore fields in map of products" in {
-    ModifyMacro.modifiedFromPath[Map[String, Person], String](_.each.name) shouldBe List(
-      ModifyPath.Each,
+  it should "ignore part of map value" in {
+    ModifyMacro.modifiedFromPath[Map[String, Person], String](_.eachValue.name) shouldBe List(
+      ModifyPath.EachValue,
+      ModifyPath.Field("name")
+    )
+  }
+
+  it should "ignore part of map key" in {
+    ModifyMacro.modifiedFromPath[Map[Person, String], String](_.eachKey.name) shouldBe List(
+      ModifyPath.EachKey,
       ModifyPath.Field("name")
     )
   }

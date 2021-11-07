@@ -121,5 +121,7 @@ sealed trait ModifyPath extends Product with Serializable
 object ModifyPath {
   case class Field(name: String) extends ModifyPath
   case object Each extends ModifyPath
+  case object EachKey extends ModifyPath
+  case object EachValue extends ModifyPath
   case class Subtype[T](owner: String, short: String) extends ModifyPath
 }

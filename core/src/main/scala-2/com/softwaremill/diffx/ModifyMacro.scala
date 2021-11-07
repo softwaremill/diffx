@@ -90,6 +90,10 @@ object ModifyMacro {
           makeSubtype(symbolOf[Right[Any, Any]])
         case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "each" =>
           q"_root_.com.softwaremill.diffx.ModifyPath.Each"
+        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachKey" =>
+          q"_root_.com.softwaremill.diffx.ModifyPath.EachKey"
+        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachValue" =>
+          q"_root_.com.softwaremill.diffx.ModifyPath.EachValue"
         case SubtypePathElement(subtype) =>
           makeSubtype(subtype)
       }}"
