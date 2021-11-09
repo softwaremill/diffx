@@ -2,7 +2,14 @@ package com.softwaremill.diffx.test
 
 import com.softwaremill.diffx._
 import com.softwaremill.diffx.generic.AutoDerivation
-import com.softwaremill.diffx.{DiffResultAdditional, DiffResultMissing, DiffResultObject, DiffResultValue, IdenticalValue, ObjectMatcher}
+import com.softwaremill.diffx.{
+  DiffResultAdditional,
+  DiffResultMissing,
+  DiffResultObject,
+  DiffResultValue,
+  IdenticalValue,
+  ObjectMatcher
+}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 

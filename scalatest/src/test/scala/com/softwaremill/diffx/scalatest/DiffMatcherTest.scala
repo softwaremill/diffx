@@ -7,11 +7,11 @@ import org.scalatest.matchers.should.Matchers
 class DiffMatcherTest extends AnyFlatSpec with Matchers with DiffMatcher with AutoDerivation {
   val right: Foo = Foo(
     Bar("asdf", 5, Map("a" -> 2)),
-    List(123, 1234),
+    List(123, 1234)
   )
   val left: Foo = Foo(
     Bar("asdf", 66, Map("b" -> 3)),
-    List(1234),
+    List(1234)
   )
 
   ignore should "work" in {
