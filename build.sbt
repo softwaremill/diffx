@@ -208,7 +208,7 @@ lazy val cats = (projectMatrix in file("cats"))
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.6.1",
+      "org.typelevel" %%% "cats-core" % "2.7.0",
       "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -246,7 +246,7 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     publishArtifact := false,
     name := "docs",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.6.1",
+      "org.typelevel" %% "cats-core" % "2.7.0",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
     ),
     mdocIn := file("docs-sources"),
