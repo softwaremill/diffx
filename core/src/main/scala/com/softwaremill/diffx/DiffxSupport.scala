@@ -59,21 +59,21 @@ object ShowConfig {
       arrow = identity,
       right = identity,
       left = identity,
-      transformer = DiffResultTransformer.identity
+      transformer = identity(_)
     )
   val dark: ShowConfig = ShowConfig(
     left = magenta,
     right = green,
     default = cyan,
     arrow = red,
-    transformer = DiffResultTransformer.identity
+    transformer = identity(_)
   )
   val light: ShowConfig = ShowConfig(
     default = black,
     arrow = red,
     left = magenta,
     right = blue,
-    transformer = DiffResultTransformer.identity
+    transformer = identity(_)
   )
   val normal: ShowConfig =
     ShowConfig(
@@ -81,7 +81,7 @@ object ShowConfig {
       arrow = red,
       right = green,
       left = red,
-      transformer = DiffResultTransformer.identity
+      transformer = identity(_)
     )
   val envDriven: ShowConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {
     case Some("light") => light
@@ -103,22 +103,17 @@ object ShowConfig {
 }
 
 trait DiffResultTransformer {
-  def apply[A <: DiffResult](diffResult: A): A
+  def apply(diffResult: DiffResult): DiffResult
 }
 
 object DiffResultTransformer {
-  val identity: DiffResultTransformer = new DiffResultTransformer {
-    override def apply[A <: DiffResult](diffResult: A): A = diffResult
-  }
-  val skipIdentical: DiffResultTransformer = new DiffResultTransformer {
-    override def apply[A <: DiffResult](diffResult: A): A = diffResult match {
-      case d: DiffResultObject => d.copy(fields = d.fields.filter { case (_, v) => !v.isIdentical }).asInstanceOf[A]
-      case d: DiffResultMap =>
-        d.copy(entries = d.entries.filter { case (k, v) => !v.isIdentical || !k.isIdentical }).asInstanceOf[A]
-      case d: DiffResultSet      => d.copy(diffs = d.diffs.filter(df => !df.isIdentical)).asInstanceOf[A]
-      case d: DiffResultIterable => d.copy(items = d.items.filter { case (_, v) => !v.isIdentical }).asInstanceOf[A]
-      case other                 => other
-    }
+  val skipIdentical: DiffResultTransformer = {
+    case d: DiffResultObject => d.copy(fields = d.fields.filter { case (_, v) => !v.isIdentical })
+    case d: DiffResultMap =>
+      d.copy(entries = d.entries.filter { case (k, v) => !v.isIdentical || !k.isIdentical })
+    case d: DiffResultSet      => d.copy(diffs = d.diffs.filter(df => !df.isIdentical))
+    case d: DiffResultIterable => d.copy(items = d.items.filter { case (_, v) => !v.isIdentical })
+    case other                 => other
   }
 }
 

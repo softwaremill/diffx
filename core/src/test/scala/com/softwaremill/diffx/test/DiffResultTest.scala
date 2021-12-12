@@ -106,7 +106,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
           arrow = identity,
           right = s => "+" + s,
           left = s => "-" + s,
-          transformer = DiffResultTransformer.identity
+          transformer = identity(_)
         )
 
       val output = DiffResultObject(
