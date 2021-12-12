@@ -36,7 +36,7 @@ original comparison into ignored output:
 implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
   (original: Diff[Any]) =>
     (left: Any, right: Any, context: DiffContext) => {
-      IdenticalValue(s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}")
+      IdenticalValue(s"Ignored but was: ${original.apply(left, right, context).show()(ShowConfig.noColors)}")
     }
 )
 val d = Diff[Person].ignore(_.age)

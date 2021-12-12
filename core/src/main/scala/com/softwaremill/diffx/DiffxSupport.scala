@@ -1,8 +1,5 @@
 package com.softwaremill.diffx
 
-import scala.annotation.compileTimeOnly
-import com.softwaremill.diffx.DiffxSupport._
-
 trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport {
   type FieldPath = List[String]
   type ListMatcher[T] = ObjectMatcher[ObjectMatcher.IterableEntry[T]]
@@ -50,16 +47,42 @@ case class ShowConfig(
     right: String => String,
     default: String => String,
     arrow: String => String,
-    renderIdentical: Boolean
-)
+    transformer: DiffResultTransformer
+) {
+  def skipIdentical: ShowConfig = this.copy(transformer = DiffResultTransformer.skipIdentical)
+}
 
 object ShowConfig {
   val noColors: ShowConfig =
-    ShowConfig(default = identity, arrow = identity, right = identity, left = identity, renderIdentical = true)
-  val dark: ShowConfig = ShowConfig(left = magenta, right = green, default = cyan, arrow = red, renderIdentical = true)
-  val light: ShowConfig = ShowConfig(default = black, arrow = red, left = magenta, right = blue, renderIdentical = true)
+    ShowConfig(
+      default = identity,
+      arrow = identity,
+      right = identity,
+      left = identity,
+      transformer = DiffResultTransformer.identity
+    )
+  val dark: ShowConfig = ShowConfig(
+    left = magenta,
+    right = green,
+    default = cyan,
+    arrow = red,
+    transformer = DiffResultTransformer.identity
+  )
+  val light: ShowConfig = ShowConfig(
+    default = black,
+    arrow = red,
+    left = magenta,
+    right = blue,
+    transformer = DiffResultTransformer.identity
+  )
   val normal: ShowConfig =
-    ShowConfig(default = identity, arrow = red, right = green, left = red, renderIdentical = true)
+    ShowConfig(
+      default = identity,
+      arrow = red,
+      right = green,
+      left = red,
+      transformer = DiffResultTransformer.identity
+    )
   val envDriven: ShowConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {
     case Some("light") => light
     case Some("dark")  => dark
@@ -77,6 +100,26 @@ object ShowConfig {
   def black: String => String = toColor(Console.BLACK)
 
   private def toColor(color: String) = { (s: String) => color + s + Console.RESET }
+}
+
+trait DiffResultTransformer {
+  def apply[A <: DiffResult](diffResult: A): A
+}
+
+object DiffResultTransformer {
+  val identity: DiffResultTransformer = new DiffResultTransformer {
+    override def apply[A <: DiffResult](diffResult: A): A = diffResult
+  }
+  val skipIdentical: DiffResultTransformer = new DiffResultTransformer {
+    override def apply[A <: DiffResult](diffResult: A): A = diffResult match {
+      case d: DiffResultObject => d.copy(fields = d.fields.filter { case (_, v) => !v.isIdentical }).asInstanceOf[A]
+      case d: DiffResultMap =>
+        d.copy(entries = d.entries.filter { case (k, v) => !v.isIdentical || !k.isIdentical }).asInstanceOf[A]
+      case d: DiffResultSet      => d.copy(diffs = d.diffs.filter(df => !df.isIdentical)).asInstanceOf[A]
+      case d: DiffResultIterable => d.copy(items = d.items.filter { case (_, v) => !v.isIdentical }).asInstanceOf[A]
+      case other                 => other
+    }
+  }
 }
 
 trait DiffxOptionSupport {

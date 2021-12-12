@@ -43,7 +43,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
     }
     "it shouldn't render identical elements" in {
       val output = DiffResultSet(Set(IdenticalValue("a"), DiffResultValue("1", "2")))
-        .show()(showConfig.copy(renderIdentical = false))
+        .show()(showConfig.skipIdentical)
       output shouldBe
         s"""Set(
            |     1 -> 2)""".stripMargin
@@ -90,7 +90,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
             IdenticalValue("d") -> IdenticalValue(4)
           )
         )
-          .show()(showConfig.copy(renderIdentical = false))
+          .show()(showConfig.skipIdentical)
       output shouldBe
         s"""Map(
            |     a: 1 -> 2,
@@ -106,7 +106,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
           arrow = identity,
           right = s => "+" + s,
           left = s => "-" + s,
-          renderIdentical = true
+          transformer = DiffResultTransformer.identity
         )
 
       val output = DiffResultObject(
@@ -126,7 +126,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
         "List",
         Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> IdenticalValue(1234))
       )
-        .show()(showConfig.copy(renderIdentical = false))
+        .show()(showConfig.skipIdentical)
       output shouldBe
         s"""List(
            |     0: 1234 -> 123,

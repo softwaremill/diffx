@@ -2,7 +2,7 @@ package com.softwaremill.diffx
 
 import DiffResult._
 
-trait DiffResult extends Product with Serializable {
+sealed trait DiffResult extends Product with Serializable {
   def isIdentical: Boolean
 
   def show()(implicit c: ShowConfig): String =
@@ -44,10 +44,9 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
   override private[diffx] def showIndented(indent: Int)(implicit
       c: ShowConfig
   ): String = {
-    val showFields = fields
-      .filter { case (_, v) =>
-        c.renderIdentical || !v.isIdentical
-      }
+    val showFields = c
+      .transformer[DiffResultObject](this)
+      .fields
       .map { case (field, value) =>
         renderField(indent, field) + renderValue(indent, value)
       }
@@ -69,14 +68,39 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
   override def isIdentical: Boolean = fields.values.forall(_.isIdentical)
 }
 
+case class DiffResultIterable(name: String, items: Map[String, DiffResult]) extends DiffResult {
+  override private[diffx] def showIndented(indent: Int)(implicit c: ShowConfig): String = {
+    val showFields = c
+      .transformer(this)
+      .items
+      .map { case (field, value) =>
+        renderField(indent, field) + renderValue(indent, value)
+      }
+    defaultColor(s"$name(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(")")
+  }
+
+  private def renderValue(indent: Int, value: DiffResult)(implicit
+      c: ShowConfig
+  ) = {
+    s"${value.showIndented(indent + indentLevel)}"
+  }
+
+  private def renderField(indent: Int, field: String)(implicit
+      c: ShowConfig
+  ) = {
+    s"${i(indent)}${defaultColor(s"$field: ")}"
+  }
+
+  override def isIdentical: Boolean = items.values.forall(_.isIdentical)
+}
+
 case class DiffResultMap(entries: Map[DiffResult, DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int)(implicit
       c: ShowConfig
   ): String = {
-    val showFields = entries
-      .filter { case (k, v) =>
-        c.renderIdentical || !v.isIdentical || !k.isIdentical
-      }
+    val showFields = c
+      .transformer(this)
+      .entries
       .map { case (k, v) =>
         val key = renderKey(indent, k)
         val separator = defaultColor(": ")
@@ -105,8 +129,9 @@ case class DiffResultSet(diffs: Set[DiffResult]) extends DiffResult {
   override private[diffx] def showIndented(indent: Int)(implicit
       c: ShowConfig
   ): String = {
-    val showFields = diffs
-      .filter(df => c.renderIdentical || !df.isIdentical)
+    val showFields = c
+      .transformer(this)
+      .diffs
       .map(f => s"${i(indent)}${f.showIndented(indent + indentLevel)}")
     showFields.mkString(defaultColor("Set(\n"), ",\n", defaultColor(")"))
   }
