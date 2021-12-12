@@ -1,11 +1,11 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.{ConsoleColorConfig, Diff}
+import com.softwaremill.diffx.{ShowConfig, Diff}
 import org.scalatest.matchers.{MatchResult, Matcher}
 
 @deprecated("Use DiffShouldMatcher or DiffMustMatcher instead")
 trait DiffMatcher {
-  def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>
+  def matchTo[A: Diff](right: A)(implicit c: ShowConfig): Matcher[A] = { left =>
     val result = Diff[A].apply(left, right)
     if (!result.isIdentical) {
       val diff =

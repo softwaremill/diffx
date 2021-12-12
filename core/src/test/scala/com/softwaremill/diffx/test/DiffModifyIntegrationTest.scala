@@ -154,7 +154,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       (original: Diff[Any]) =>
         (left: Any, right: Any, context: DiffContext) => {
           IdenticalValue(
-            s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}"
+            s"Ignored but was: ${original.apply(left, right, context).show()(ShowConfig.noColors)}"
           )
         }
     )
@@ -174,7 +174,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       (original: Diff[Any]) =>
         (left: Any, right: Any, context: DiffContext) => {
           IdenticalValue(
-            s"Ignored but was: ${original.apply(left, right, context).show()(ConsoleColorConfig.noColors)}"
+            s"Ignored but was: ${original.apply(left, right, context).show()(ShowConfig.noColors)}"
           )
         }
     )

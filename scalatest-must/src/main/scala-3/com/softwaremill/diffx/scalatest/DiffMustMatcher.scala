@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.{ConsoleColorConfig, Diff}
+import com.softwaremill.diffx.{ShowConfig, Diff}
 import org.scalactic.{Prettifier, source}
 import org.scalatest.Assertion
 import org.scalatest.matchers.must.Matchers
@@ -10,13 +10,13 @@ trait DiffMustMatcher {
 
   extension [T](
       leftSideValue: T
-  )(using pos: source.Position, prettifier: Prettifier, diff: Diff[T], c: ConsoleColorConfig)
+  )(using pos: source.Position, prettifier: Prettifier, diff: Diff[T], c: ShowConfig)
     def mustMatchTo(rightValue: T): Assertion = {
       import Matchers.must
       leftSideValue must matchTo(rightValue)
     }
 
-  private def matchTo[A: Diff](right: A)(implicit c: ConsoleColorConfig): Matcher[A] = { left =>
+  private def matchTo[A: Diff](right: A)(implicit c: ShowConfig): Matcher[A] = { left =>
     val result = Diff[A].apply(left, right)
     if (!result.isIdentical) {
       val diff =
