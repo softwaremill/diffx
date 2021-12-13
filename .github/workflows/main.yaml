@@ -18,10 +18,10 @@ jobs:
       - uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.11
-      - name: Compile docs
-        run: sbt compileDocs
       - name: Run tests with sbt
         run: sbt test
+      - name: Compile docs
+        run: sbt compileDocs
 
   publish:
     name: Publish release
