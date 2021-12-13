@@ -17,15 +17,20 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport with DiffL
       compareNotNull(left, right)
     }
   }
+
+//  trait DiffxSubtypeSelector[T] {
+//    def subtype[S <: T]: S = sys.error("")
+//  }
+//
+//  implicit def toSubtypeSelector[A](a: A): DiffxSubtypeSelector[A] = new DiffxSubtypeSelector[A] {}
+  implicit class DiffxSubtypeSelector[T](parent: T) {
+    def subtype[S <: T](implicit classTag: ClassTag[S]): S = sys.error("")
+  }
 }
 
 object DiffxSupport {
   private[diffx] def canOnlyBeUsedInsideIgnore(method: String) =
     s"$method can only be used inside ignore"
-
-  implicit class DiffxSubtypeSelector[T](parent: T) {
-    def subtype[S <: T](implicit classTag: ClassTag[S]): S = sys.error("")
-  }
 }
 
 trait DiffxEitherSupport {

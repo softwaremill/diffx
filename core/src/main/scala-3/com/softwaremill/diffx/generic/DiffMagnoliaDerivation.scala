@@ -1,6 +1,15 @@
 package com.softwaremill.diffx.generic
 
-import com.softwaremill.diffx.{Derived, Diff, DiffContext, DiffResult, DiffResultObject, DiffResultValue, nullGuard}
+import com.softwaremill.diffx.{
+  Derived,
+  Diff,
+  DiffContext,
+  DiffResult,
+  DiffResultObject,
+  DiffResultValue,
+  ModifyPath,
+  nullGuard
+}
 
 import scala.collection.mutable
 import magnolia1.*
@@ -20,11 +29,11 @@ trait DiffMagnoliaDerivation extends Derivation[Diff] {
               val pType = p.deref(right)
               val fieldDiffMod =
                 context
-                  .getOverride(p.label)
+                  .getOverride(ModifyPath.Field(p.label))
                   .map(_.asInstanceOf[Diff[p.PType] => Diff[p.PType]])
                   .getOrElse(identity[Diff[p.PType]] _)
               val fieldDiff = fieldDiffMod(p.typeclass)
-              p.label -> fieldDiff(lType, pType, context.getNextStep(p.label))
+              p.label -> fieldDiff(lType, pType, context.getNextStep(ModifyPath.Field(p.label)))
             }: _*)
             DiffResultObject(ctx.typeInfo.short, map)
           }
@@ -41,7 +50,11 @@ trait DiffMagnoliaDerivation extends Derivation[Diff] {
         val lType = ctx.choose(left)(a => a)
         val rType = ctx.choose(right)(a => a)
         if (lType.typeInfo == rType.typeInfo) {
-          lType.typeclass(lType.cast(left), lType.cast(right), context)
+          lType.typeclass(
+            lType.cast(left),
+            lType.cast(right),
+            context.getNextStep(ModifyPath.Subtype(lType.typeInfo.owner, lType.typeInfo.short)).merge(context)
+          )
         } else {
           DiffResultValue(lType.typeInfo.full, rType.typeInfo.full)
         }
