@@ -18,11 +18,6 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport with DiffL
     }
   }
 
-//  trait DiffxSubtypeSelector[T] {
-//    def subtype[S <: T]: S = sys.error("")
-//  }
-//
-//  implicit def toSubtypeSelector[A](a: A): DiffxSubtypeSelector[A] = new DiffxSubtypeSelector[A] {}
   implicit class DiffxSubtypeSelector[T](parent: T) {
     def subtype[S <: T](implicit classTag: ClassTag[S]): S = sys.error("")
   }
