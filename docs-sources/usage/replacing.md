@@ -20,7 +20,7 @@ First we need to acquire a lens at given path using `modify` method,
 and then we can call `setTo` to replace a particular instance.
 
 ```scala mdoc:silent
-implicit val diffPerson: Diff[Person] = Diff.autoDerived[Person].modify(_.weight)
+implicit val diffPerson: Diff[Person] = Diff.summon[Person].modify(_.weight)
         .setTo(Diff.approximate(epsilon=5))
 ```
 
@@ -34,7 +34,7 @@ with the `Diff.ignore` instance.
 You can use the same mechanism to set particular object matcher for given nested collection in the hierarchy.
 ```scala mdoc:silent
 case class Organization(peopleList: List[Person], peopleSet: Set[Person], peopleMap: Map[String, Person])
-implicit val diffOrg: Diff[Organization] = Diff.autoDerived[Organization]
+implicit val diffOrg: Diff[Organization] = Diff.summon[Organization]
         .modify(_.peopleList).useMatcher(ObjectMatcher.list[Person].byValue(_.age))
         .modify(_.peopleSet).useMatcher(ObjectMatcher.set[Person].by(_.age))
         .modify(_.peopleMap).useMatcher(ObjectMatcher.map[String, Person].byValue(_.age))

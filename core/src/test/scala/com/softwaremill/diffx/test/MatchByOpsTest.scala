@@ -8,7 +8,7 @@ class MatchByOpsTest extends AnyFlatSpec with AutoDerivation {
     assertCompiles("""
         |import com.softwaremill.diffx.Diff
         |
-        |Diff.autoDerived[Organization].modify(_.people).matchByValue(_.age)
+        |Diff.summon[Organization].modify(_.people).matchByValue(_.age)
         |""".stripMargin)
   }
 
@@ -16,7 +16,7 @@ class MatchByOpsTest extends AnyFlatSpec with AutoDerivation {
     assertCompiles("""
         |import com.softwaremill.diffx.Diff
         |
-        |Diff.autoDerived[List[Person]].matchByValue(_.age)
+        |Diff.summon[List[Person]].matchByValue(_.age)
         |""".stripMargin)
   }
 }
