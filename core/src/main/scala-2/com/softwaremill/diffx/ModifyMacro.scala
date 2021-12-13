@@ -55,9 +55,16 @@ object ModifyMacro {
       tree match {
         case q"$parent.$child " =>
           collectPathElements(parent, TermPathElement(child) :: acc)
-        case q"$tpname[..$_]($parent).subtype[$tp]" if typeSupported(tpname) =>
+        case q"$tpname[..$_]($parent).subtype[$tp]($_)" if typeSupported(tpname) =>
+          acc match {
+            case (_: TermPathElement) :: _ => // do nothing
+            case pathEl :: _ =>
+              c.abort(c.enclosingPosition, s"Invalid use of subtype element $pathEl. $ShapeInfo, got: ${path.tree}")
+            case Nil =>
+              c.abort(c.enclosingPosition, s"Invalid use of subtype element(Nil). $ShapeInfo, got: ${path.tree}")
+          }
           collectPathElements(parent, SubtypePathElement(tp.tpe.typeSymbol) :: acc)
-        case q"$tpname[..$_]($t)($f) " if typeSupported(tpname) =>
+        case q"$tpname[..$_]($t)($f)" if typeSupported(tpname) =>
           val newAcc = acc match {
             // replace the term controlled by quicklens
             case TermPathElement(term, xargs @ _*) :: rest => FunctorPathElement(f, term, xargs: _*) :: rest
@@ -67,8 +74,9 @@ object ModifyMacro {
               c.abort(c.enclosingPosition, s"Invalid use of path element(Nil). $ShapeInfo, got: ${path.tree}")
           }
           collectPathElements(t, newAcc)
-        case t: Ident => acc
-        case _        => c.abort(c.enclosingPosition, s"Unsupported path element. $ShapeInfo, got: $tree")
+        case _: Ident => acc
+        case _ =>
+          c.abort(c.enclosingPosition, s"Unsupported path element. $ShapeInfo, got: $tree")
       }
     }
 

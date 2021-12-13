@@ -5,8 +5,6 @@ import com.softwaremill.diffx.ModifyMacro
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-import scala.reflect.ClassTag
-
 class ModifyMacroTest extends AnyFlatSpec with Matchers {
   it should "ignore field in nested products" in {
     ModifyMacro.modifiedFromPath[Family, String](_.first.name) shouldBe List(

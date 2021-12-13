@@ -24,7 +24,7 @@ object DiffxSupport {
     s"$method can only be used inside ignore"
 
   implicit class DiffxSubtypeSelector[T](parent: T) {
-    def subtype[S <: T](implicit classTag: ClassTag[S]) = sys.error("")
+    def subtype[S <: T](implicit classTag: ClassTag[S]): S = sys.error("")
   }
 }
 
