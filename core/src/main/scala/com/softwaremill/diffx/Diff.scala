@@ -89,7 +89,7 @@ object Diff extends LowPriorityDiff with DiffTupleInstances with DiffxPlatformEx
 trait LowPriorityDiff {
 
   /** Implicit instance of Diff[T] created from implicit Derived[Diff[T]]. Should not be called explicitly from clients
-    * code. Use `autoDerive` instead.
+    * code. Use `summon` instead.
     * @param dd
     * @tparam T
     * @return
@@ -102,7 +102,7 @@ trait LowPriorityDiff {
     * @tparam T
     * @return
     */
-  def autoDerived[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
+  def summon[T](implicit dd: Derived[Diff[T]]): Diff[T] = dd.value
 }
 
 case class Derived[T](value: T) extends AnyVal

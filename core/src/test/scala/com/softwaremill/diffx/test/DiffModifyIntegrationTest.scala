@@ -14,7 +14,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
   val p2 = Person("p2", 11, instant)
 
   it should "allow importing and exporting implicits" in {
-    implicit val d: Diff[Person] = Diff.autoDerived[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.summon[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
@@ -22,7 +22,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
   }
 
   it should "allow importing and exporting implicits using macro on derived instance" in {
-    implicit val d: Diff[Person] = Diff.autoDerived[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.summon[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
@@ -31,7 +31,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "allow calling ignore multiple times" in {
     implicit val d: Diff[Person] = Diff
-      .autoDerived[Person]
+      .summon[Person]
       .ignore(_.name)
       .ignore(_.age)
     compare(p1, p2).isIdentical shouldBe true
@@ -41,7 +41,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p2, p1))
     implicit val orgDiff: Diff[Organization] = Diff
-      .autoDerived[Organization]
+      .summon[Organization]
       .modify(_.people)
       .matchByValue(_.name)
     compare(o1, o2).isIdentical shouldBe true
@@ -52,7 +52,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val e1 = Wrapper(Right(p1))
     val e2 = Wrapper(Right(p1.copy(name = p1.name + "_modified")))
 
-    implicit val wrapperDiff: Diff[Wrapper] = Diff.autoDerived[Wrapper].ignore(_.e.eachRight.name)
+    implicit val wrapperDiff: Diff[Wrapper] = Diff.summon[Wrapper].ignore(_.e.eachRight.name)
 
     compare(e1, e2).isIdentical shouldBe true
 
@@ -67,7 +67,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val e1 = Wrapper(Right(p1))
     val e2 = Wrapper(Right(p1.copy(name = p1.name + "_modified")))
 
-    implicit val wrapperDiff: Diff[Wrapper] = Diff.autoDerived[Wrapper].ignore(_.e.eachLeft.name)
+    implicit val wrapperDiff: Diff[Wrapper] = Diff.summon[Wrapper].ignore(_.e.eachLeft.name)
 
     compare(e1, e2).isIdentical shouldBe false
     val e3 = Wrapper(Left(p1))
@@ -78,7 +78,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "match map entries by values" in {
     implicit val lookupDiff: Diff[MyLookup] = Diff
-      .autoDerived[MyLookup]
+      .summon[MyLookup]
       .modify(_.map)
       .matchByValue(identity)
     val uuid1 = UUID.randomUUID()
@@ -106,7 +106,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "ignore part of each key in map" in {
     implicit val lookupDiff: Diff[MyLookup] = Diff
-      .autoDerived[MyLookup]
+      .summon[MyLookup]
       .ignore(_.map.eachKey.id)
       .modify(_.map)
       .matchByKey(_.name)
@@ -135,7 +135,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "ignore part of each value in map" in {
     implicit val lookupDiff: Diff[MyLookupReversed] = Diff
-      .autoDerived[MyLookupReversed]
+      .summon[MyLookupReversed]
       .ignore(_.map.eachValue.id)
     val uuid1 = UUID.randomUUID()
     val uuid2 = UUID.randomUUID()
@@ -162,7 +162,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "ignore part of each value in a set" in {
     implicit val lookupDiff: Diff[Startup] = Diff
-      .autoDerived[Startup]
+      .summon[Startup]
       .ignore(_.workers.each.age)
       .modify(_.workers)
       .matchBy(_.name)
@@ -197,7 +197,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "use overrided object matcher when comparing set" in {
     implicit val lookupDiff: Diff[Startup] = Diff
-      .autoDerived[Startup]
+      .summon[Startup]
       .modify(_.workers)
       .matchBy(_.name)
     val p2m = p2.copy(age = 33)
@@ -247,7 +247,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
           )
         }
     )
-    implicit val d: Diff[Person] = Diff.autoDerived[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.summon[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map(
@@ -276,5 +276,10 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
         "in" -> IdenticalValue(instant)
       )
     )
+  }
+
+  it should "allow modifying auto-derived diff instance for built-in collection" in {
+    implicit val a: Diff[List[Person]] = Diff.summon[List[Person]].matchByValue(_.age)
+    a.apply(List(p1), List(p2)).isIdentical shouldBe false
   }
 }
