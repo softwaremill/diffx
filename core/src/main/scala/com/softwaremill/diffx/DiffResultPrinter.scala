@@ -1,7 +1,7 @@
 package com.softwaremill.diffx
 
 object DiffResultPrinter {
-  private final val IndentLevel = 5
+  private[diffx] final val IndentLevel = 5
 
   def showIndented(diffResult: DiffResult, indent: Int)(implicit sc: ShowConfig): String = {
     diffResult match {
