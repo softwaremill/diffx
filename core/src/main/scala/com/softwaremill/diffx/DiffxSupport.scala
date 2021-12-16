@@ -1,9 +1,6 @@
 package com.softwaremill.diffx
 
-import scala.annotation.compileTimeOnly
-import com.softwaremill.diffx.DiffxSupport._
-
-trait DiffxSupport extends DiffxEitherSupport with DiffxConsoleSupport with DiffxOptionSupport {
+trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport {
   type FieldPath = List[String]
   type ListMatcher[T] = ObjectMatcher[ObjectMatcher.IterableEntry[T]]
   type SetMatcher[T] = ObjectMatcher[ObjectMatcher.SetEntry[T]]
@@ -45,37 +42,55 @@ trait DiffxEitherSupport {
     new DiffxEitherFunctor[Either, L, R] {}
 }
 
-trait DiffxConsoleSupport {
-  def leftColor(s: String)(implicit c: ConsoleColorConfig): String = c.left(s)
-  def rightColor(s: String)(implicit c: ConsoleColorConfig): String = c.right(s)
-  def defaultColor(s: String)(implicit c: ConsoleColorConfig): String = c.default(s)
-  def arrowColor(s: String)(implicit c: ConsoleColorConfig): String = c.arrow(s)
-  def showChange(l: String, r: String)(implicit c: ConsoleColorConfig): String =
-    leftColor(l) + arrowColor(" -> ") + rightColor(r)
-}
-
-case class ConsoleColorConfig(
+case class ShowConfig(
     left: String => String,
     right: String => String,
     default: String => String,
-    arrow: String => String
-)
+    arrow: String => String,
+    transformer: DiffResultTransformer
+) {
+  def skipIdentical: ShowConfig = this.copy(transformer = DiffResultTransformer.skipIdentical)
+}
 
-object ConsoleColorConfig {
-  val noColors: ConsoleColorConfig =
-    ConsoleColorConfig(default = identity, arrow = identity, right = identity, left = identity)
-  val dark: ConsoleColorConfig = ConsoleColorConfig(left = magenta, right = green, default = cyan, arrow = red)
-  val light: ConsoleColorConfig = ConsoleColorConfig(default = black, arrow = red, left = magenta, right = blue)
-  val normal: ConsoleColorConfig =
-    ConsoleColorConfig(default = identity, arrow = red, right = green, left = red)
-  val envDriven: ConsoleColorConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {
+object ShowConfig {
+  val noColors: ShowConfig =
+    ShowConfig(
+      default = identity,
+      arrow = identity,
+      right = identity,
+      left = identity,
+      transformer = identity(_)
+    )
+  val dark: ShowConfig = ShowConfig(
+    left = magenta,
+    right = green,
+    default = cyan,
+    arrow = red,
+    transformer = identity(_)
+  )
+  val light: ShowConfig = ShowConfig(
+    default = black,
+    arrow = red,
+    left = magenta,
+    right = blue,
+    transformer = identity(_)
+  )
+  val normal: ShowConfig =
+    ShowConfig(
+      default = identity,
+      arrow = red,
+      right = green,
+      left = red,
+      transformer = identity(_)
+    )
+  val envDriven: ShowConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {
     case Some("light") => light
     case Some("dark")  => dark
     case _             => normal
   }
-  implicit val default: ConsoleColorConfig = handleNoColorsEnv().getOrElse(envDriven)
+  implicit val default: ShowConfig = handleNoColorsEnv().getOrElse(envDriven)
 
-  private def handleNoColorsEnv(): Option[ConsoleColorConfig] = Option(System.getenv("NO_COLOR")).map(_ => noColors)
+  private def handleNoColorsEnv(): Option[ShowConfig] = Option(System.getenv("NO_COLOR")).map(_ => noColors)
 
   def magenta: String => String = toColor(Console.MAGENTA)
   def green: String => String = toColor(Console.GREEN)
@@ -85,6 +100,21 @@ object ConsoleColorConfig {
   def black: String => String = toColor(Console.BLACK)
 
   private def toColor(color: String) = { (s: String) => color + s + Console.RESET }
+}
+
+trait DiffResultTransformer {
+  def apply(diffResult: DiffResult): DiffResult
+}
+
+object DiffResultTransformer {
+  val skipIdentical: DiffResultTransformer = {
+    case d: DiffResultObject => d.copy(fields = d.fields.filter { case (_, v) => !v.isIdentical })
+    case d: DiffResultMap =>
+      d.copy(entries = d.entries.filter { case (k, v) => !v.isIdentical || !k.isIdentical })
+    case d: DiffResultSet      => d.copy(diffs = d.diffs.filter(df => !df.isIdentical))
+    case d: DiffResultIterable => d.copy(items = d.items.filter { case (_, v) => !v.isIdentical })
+    case other                 => other
+  }
 }
 
 trait DiffxOptionSupport {

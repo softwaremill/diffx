@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.scalatest
 
-import com.softwaremill.diffx.{ConsoleColorConfig, Diff}
+import com.softwaremill.diffx.{ShowConfig, Diff}
 import org.scalactic.{Prettifier, source}
 import org.scalatest.Assertion
 import org.scalatest.matchers.should.Matchers
@@ -9,13 +9,13 @@ import org.scalatest.matchers.{MatchResult, Matcher}
 trait DiffShouldMatcher {
   implicit def convertToAnyShouldMatcher[T: Diff](
       any: T
-  )(implicit pos: source.Position, prettifier: Prettifier, c: ConsoleColorConfig): DiffAnyShouldWrapper[T] =
+  )(implicit pos: source.Position, prettifier: Prettifier, c: ShowConfig): DiffAnyShouldWrapper[T] =
     new DiffAnyShouldWrapper[T](any)
 
   final class DiffAnyShouldWrapper[T](val leftValue: T)(implicit
       val pos: source.Position,
       val prettifier: Prettifier,
-      val c: ConsoleColorConfig,
+      val c: ShowConfig,
       val d: Diff[T]
   ) extends Matchers {
 

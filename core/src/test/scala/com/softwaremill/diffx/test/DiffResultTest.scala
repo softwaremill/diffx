@@ -4,8 +4,8 @@ import com.softwaremill.diffx._
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
-class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport {
-  implicit val colorConfig: ConsoleColorConfig = ConsoleColorConfig.noColors
+class DiffResultTest extends AnyFreeSpec with Matchers {
+  implicit val showConfig: ShowConfig = ShowConfig.noColors
 
   "diff set output" - {
     "it should show a simple difference" in {
@@ -42,7 +42,8 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
            |     null -> null)""".stripMargin
     }
     "it shouldn't render identical elements" in {
-      val output = DiffResultSet(Set(IdenticalValue("a"), DiffResultValue("1", "2"))).show(renderIdentical = false)
+      val output = DiffResultSet(Set(IdenticalValue("a"), DiffResultValue("1", "2")))
+        .show()(showConfig.skipIdentical)
       output shouldBe
         s"""Set(
            |     1 -> 2)""".stripMargin
@@ -89,7 +90,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
             IdenticalValue("d") -> IdenticalValue(4)
           )
         )
-          .show(renderIdentical = false)
+          .show()(showConfig.skipIdentical)
       output shouldBe
         s"""Map(
            |     a: 1 -> 2,
@@ -99,8 +100,14 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
 
   "diff object output" - {
     "it should show an indented diff with plus and minus signs" in {
-      val colorConfigWithPlusMinus: ConsoleColorConfig =
-        ConsoleColorConfig(default = identity, arrow = identity, right = s => "+" + s, left = s => "-" + s)
+      val colorConfigWithPlusMinus: ShowConfig =
+        ShowConfig(
+          default = identity,
+          arrow = identity,
+          right = s => "+" + s,
+          left = s => "-" + s,
+          transformer = identity(_)
+        )
 
       val output = DiffResultObject(
         "List",
@@ -119,7 +126,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers with DiffxConsoleSupport 
         "List",
         Map("0" -> DiffResultValue(1234, 123), "1" -> DiffResultMissing(1234), "2" -> IdenticalValue(1234))
       )
-        .show(renderIdentical = false)
+        .show()(showConfig.skipIdentical)
       output shouldBe
         s"""List(
            |     0: 1234 -> 123,
