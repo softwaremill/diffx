@@ -52,7 +52,7 @@ object ModifyMacro {
 
     def toPath(tree: Tree, acc: List[PathElement]): Seq[PathElement] = {
       def typeSupported(modifyType: String) =
-        Seq("DiffxEach", "DiffxEither", "DiffxEachMap", "DiffxSubtypeSelector")
+        Seq("DiffxEach", "DiffxEither", "DiffxEachMap", "toSubtypeSelector")
           .exists(modifyType.endsWith)
 
       tree match {
@@ -69,10 +69,8 @@ object ModifyMacro {
               report.throwError(s"Invalid use of path elements [${elements.mkString(", ")}]. $ShapeInfo, got: ${tree}")
           }
           idents.flatMap(toPath(_, newAcc))
-        case x @ Apply(
-              TypeApply(Select(Apply(TypeApply(Ident(f), superType :: Nil), rest :: Nil), _), subtype :: Nil),
-              _
-            ) if typeSupported(f) =>
+        case x @ TypeApply(Select(Apply(TypeApply(Ident(f), superType :: Nil), rest :: Nil), _), subtype :: Nil)
+            if typeSupported(f) =>
           if (superType.symbol.children.contains(subtype.symbol)) {
             acc match {
               case (_: PathElement.TermPathElement) :: _ => // do nothing

@@ -35,7 +35,7 @@ You can use the same mechanism to set particular object matcher for given nested
 ```scala mdoc:silent
 case class Organization(peopleList: List[Person], peopleSet: Set[Person], peopleMap: Map[String, Person])
 implicit val diffOrg: Diff[Organization] = Diff.summon[Organization]
-        .modify(_.peopleList).useMatcher(ObjectMatcher.list[Person].byValue(_.age))
-        .modify(_.peopleSet).useMatcher(ObjectMatcher.set[Person].by(_.age))
-        .modify(_.peopleMap).useMatcher(ObjectMatcher.map[String, Person].byValue(_.age))
+        .modify(_.peopleList).matchByValue(_.age)
+        .modify(_.peopleSet).matchBy(_.age)
+        .modify(_.peopleMap).matchByValue(_.age)
 ```

@@ -5,6 +5,7 @@ import scala.reflect.macros.blackbox
 
 object ModifyMacro {
   private val ShapeInfo = "Path must have shape: _.field1.field2.each.field3.(...)"
+  private val SubtypeShapeInfo = "Path must have shape: _.subtype[T].field1.(...)"
 
   def ignoreMacro[T: c.WeakTypeTag, U: c.WeakTypeTag](
       c: blackbox.Context
@@ -49,21 +50,22 @@ object ModifyMacro {
     @tailrec
     def collectPathElements(tree: c.Tree, acc: List[PathElement]): List[PathElement] = {
       def typeSupported(diffxIgnoreType: c.Tree) =
-        Seq("DiffxEach", "DiffxEither", "DiffxEachMap", "DiffxSubtypeSelector")
+        Seq("DiffxEach", "DiffxEither", "DiffxEachMap", "toSubtypeSelector")
           .exists(diffxIgnoreType.toString.endsWith)
 
       tree match {
         case q"$parent.$child " =>
           collectPathElements(parent, TermPathElement(child) :: acc)
-        case q"$tpname[..$_]($parent).subtype[$tp]($_)" if typeSupported(tpname) =>
+        case q"$tpname[$supertype]($rest).subtype[$tp]" if typeSupported(tpname) =>
+          //TODO check if this is indeed a subtype
           acc match {
             case (_: TermPathElement) :: _ => // do nothing
             case pathEl :: _ =>
-              c.abort(c.enclosingPosition, s"Invalid use of subtype element $pathEl. $ShapeInfo, got: ${path.tree}")
+              c.abort(c.enclosingPosition, s"Invalid use of subtype element $pathEl. $SubtypeShapeInfo, got: ${path.tree}")
             case Nil =>
-              c.abort(c.enclosingPosition, s"Invalid use of subtype element(Nil). $ShapeInfo, got: ${path.tree}")
+              c.abort(c.enclosingPosition, s"Invalid use of subtype element(Nil). $SubtypeShapeInfo, got: ${path.tree}")
           }
-          collectPathElements(parent, SubtypePathElement(tp.tpe.typeSymbol) :: acc)
+          collectPathElements(rest, SubtypePathElement(tp.tpe.typeSymbol) :: acc)
         case q"$tpname[..$_]($t)($f)" if typeSupported(tpname) =>
           val newAcc = acc match {
             // replace the term controlled by quicklens
