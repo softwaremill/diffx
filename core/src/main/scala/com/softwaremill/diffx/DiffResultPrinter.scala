@@ -1,7 +1,7 @@
 package com.softwaremill.diffx
 
 object DiffResultPrinter {
-  private[diffx] final val IndentLevel = 5
+  private final val IndentLevel = 5
 
   def showIndented(diffResult: DiffResult, indent: Int)(implicit sc: ShowConfig): String = {
     diffResult match {
@@ -89,10 +89,10 @@ object DiffResultPrinter {
       }
   }
 
-  private[diffx] def leftColor(s: String)(implicit c: ShowConfig): String = c.left(s)
-  private[diffx] def rightColor(s: String)(implicit c: ShowConfig): String = c.right(s)
-  private[diffx] def defaultColor(s: String)(implicit c: ShowConfig): String = c.default(s)
-  private[diffx] def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)
-  private[diffx] def showChange(l: String, r: String)(implicit c: ShowConfig): String =
+  private def leftColor(s: String)(implicit c: ShowConfig): String = c.left(s)
+  private def rightColor(s: String)(implicit c: ShowConfig): String = c.right(s)
+  private def defaultColor(s: String)(implicit c: ShowConfig): String = c.default(s)
+  private def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)
+  private def showChange(l: String, r: String)(implicit c: ShowConfig): String =
     leftColor(l) + arrowColor(" -> ") + rightColor(r)
 }
