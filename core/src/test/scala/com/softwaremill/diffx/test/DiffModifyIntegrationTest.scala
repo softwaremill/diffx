@@ -280,6 +280,17 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "allow modifying auto-derived diff instance for built-in collection" in {
     implicit val a: Diff[List[Person]] = Diff.summon[List[Person]].matchByValue(_.age)
-    a.apply(List(p1), List(p2)).isIdentical shouldBe false
+    compare(List(p1), List(p2))(a).isIdentical shouldBe false
+  }
+
+  it should "ignore fields on multiple levels regardless of the invocation order" in {
+    val f1 = Family(p1, p2)
+    val f2 = Family(p1.copy(name = "qwe", age = 0), p2.copy(name = "qwe"))
+
+    val d1 = Diff[Family].modify(_.first).ignore.modify(_.second.name).ignore
+    compare(f1, f2)(d1).isIdentical shouldBe true
+
+    val d2 = Diff[Family].modify(_.second.name).ignore.modify(_.first).ignore
+    compare(f1, f2)(d2).isIdentical shouldBe true
   }
 }

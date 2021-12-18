@@ -72,17 +72,6 @@ object ModifyMacro {
         case x @ TypeApply(Select(Apply(TypeApply(Ident(f), superType :: Nil), rest :: Nil), _), subtype :: Nil)
             if typeSupported(f) =>
           if (superType.symbol.children.contains(subtype.symbol)) {
-            acc match {
-              case (_: PathElement.TermPathElement) :: _ => // do nothing
-              case pathEl :: _ =>
-                report.throwError(
-                  s"Invalid use of subtype element $pathEl. $ShapeInfo, got: ${tree}"
-                )
-              case Nil =>
-                report.throwError(
-                  s"Invalid use of subtype element(Nil). $ShapeInfo, got: ${tree}"
-                )
-            }
             toPath(
               rest,
               PathElement.SubtypePathElement(superType.symbol.fullName.toString, resolveSubTypeName(subtype)) :: acc

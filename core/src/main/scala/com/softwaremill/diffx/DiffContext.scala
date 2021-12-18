@@ -22,7 +22,7 @@ case class DiffContext(
 
   private def treeOverride[T](nextPath: ModifyPath, tree: Tree[T]) = {
     tree match {
-      case Tree.Leaf(_)     => throw new IllegalStateException(s"Expected node, got leaf at $path")
+      case Tree.Leaf(v)     => Some(v)
       case Tree.Node(tries) => getOverrideFromNode(nextPath, tries)
     }
   }
@@ -67,7 +67,7 @@ object Tree {
   def empty[T]: Node[T] = Tree.Node[T](Map.empty)
 
   case class Leaf[T](v: T) extends Tree[T] {
-    override def merge(tree: Tree[T]): Tree[T] = tree
+    override def merge(tree: Tree[T]): Tree[T] = this
   }
   case class Node[T](tries: Map[ModifyPath, Tree[T]]) extends Tree[T] {
     override def merge(tree: Tree[T]): Tree[T] = {

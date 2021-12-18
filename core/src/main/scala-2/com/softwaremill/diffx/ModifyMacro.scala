@@ -57,14 +57,6 @@ object ModifyMacro {
         case q"$parent.$child " =>
           collectPathElements(parent, TermPathElement(child) :: acc)
         case q"$tpname[$supertype]($rest).subtype[$tp]" if typeSupported(tpname) =>
-          //TODO check if this is indeed a subtype
-          acc match {
-            case (_: TermPathElement) :: _ => // do nothing
-            case pathEl :: _ =>
-              c.abort(c.enclosingPosition, s"Invalid use of subtype element $pathEl. $SubtypeShapeInfo, got: ${path.tree}")
-            case Nil =>
-              c.abort(c.enclosingPosition, s"Invalid use of subtype element(Nil). $SubtypeShapeInfo, got: ${path.tree}")
-          }
           collectPathElements(rest, SubtypePathElement(tp.tpe.typeSymbol) :: acc)
         case q"$tpname[..$_]($t)($f)" if typeSupported(tpname) =>
           val newAcc = acc match {

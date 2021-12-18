@@ -15,8 +15,8 @@ package object diffx extends DiffxSupport {
     new DiffxFunctor[F, A] {}
 
   trait DiffxMapAtFunctor[F[_, _], K, T] {
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
-    def each(fa: F[K, T])(f: T => T): F[K, T] = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("each"))
+    def each(fa: F[K, T])(f: T => T): F[K, T] = sys.error(canOnlyBeUsedInsideDiffxMacro("each"))
   }
 
   implicit def mapDiffxFunctor[M[KT, TT] <: Map[KT, TT], K, T](implicit
@@ -24,7 +24,9 @@ package object diffx extends DiffxSupport {
   ): DiffxMapAtFunctor[M, K, T] = new DiffxMapAtFunctor[M, K, T] {}
 
   implicit class DiffxEachMap[F[_, _], K, T](t: F[K, T])(implicit f: DiffxMapAtFunctor[F, K, T]) {
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
-    def each: T = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("eachKey"))
+    def eachKey: K = sys.error(canOnlyBeUsedInsideDiffxMacro("eachKey"))
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("eachValue"))
+    def eachValue: T = sys.error(canOnlyBeUsedInsideDiffxMacro("eachValue"))
   }
 }

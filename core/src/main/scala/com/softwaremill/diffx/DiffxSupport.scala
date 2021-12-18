@@ -1,5 +1,8 @@
 package com.softwaremill.diffx
 
+import scala.annotation.compileTimeOnly
+import DiffxSupport.canOnlyBeUsedInsideDiffxMacro
+
 trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport with DiffLensToMatchByOps with DiffToMatchByOps {
   type FieldPath = List[String]
   type SeqMatcher[T] = ObjectMatcher[ObjectMatcher.SeqEntry[T]]
@@ -26,17 +29,17 @@ trait DiffxSupport extends DiffxEitherSupport with DiffxOptionSupport with DiffL
 }
 
 object DiffxSupport {
-  private[diffx] def canOnlyBeUsedInsideIgnore(method: String) =
-    s"$method can only be used inside ignore"
+  def canOnlyBeUsedInsideDiffxMacro(method: String) =
+    s"$method can only be used inside one of Diffx macros('ignore', 'modify')"
 }
 
 trait DiffxEitherSupport {
   implicit class DiffxEither[T[_, _], L, R](e: T[L, R])(implicit f: DiffxEitherFunctor[T, L, R]) {
-//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachLeft"))
-    def eachLeft: L = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("eachLeft"))
+    def eachLeft: L = sys.error(canOnlyBeUsedInsideDiffxMacro("eachLeft"))
 
-//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("eachRight"))
-    def eachRight: R = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("eachRight"))
+    def eachRight: R = sys.error(canOnlyBeUsedInsideDiffxMacro("eachRight"))
   }
 
   trait DiffxEitherFunctor[T[_, _], L, R] {
@@ -125,13 +128,13 @@ object DiffResultTransformer {
 
 trait DiffxOptionSupport {
   implicit class DiffxEach[F[_], T](t: F[T])(implicit f: DiffxFunctor[F, T]) {
-//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
-    def each: T = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("each"))
+    def each: T = sys.error(canOnlyBeUsedInsideDiffxMacro("each"))
   }
 
   trait DiffxFunctor[F[_], A] {
-//    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
-    def each(fa: F[A])(f: A => A): F[A] = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("each"))
+    def each(fa: F[A])(f: A => A): F[A] = sys.error(canOnlyBeUsedInsideDiffxMacro("each"))
   }
 
   implicit def optionDiffxFunctor[A]: DiffxFunctor[Option, A] =

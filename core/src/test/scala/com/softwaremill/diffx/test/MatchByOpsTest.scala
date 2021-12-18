@@ -23,8 +23,11 @@ class MatchByOpsTest extends AnyFlatSpec with AutoDerivation with Matchers {
     coproductDiff(ProductB("ignored"), ProductB("ignored-again")).isIdentical shouldBe false
   }
 
-  ignore should "fail to compile when using subtype selector alone" in {
-    // this fails to compile on a clean build
-    // assertDoesNotCompile("Diff[ACoproduct].modify(_.subtype[ProductA]).ignore")
+  it should "should ignore diffs on particular subtype" in {
+    import com.softwaremill.diffx._
+    val coproductDiff = Diff[ACoproduct].modify(_.subtype[ProductA]).ignore
+
+    coproductDiff(ProductA("ignored"), ProductA("ignored-again")).isIdentical shouldBe true
+    coproductDiff(ProductB("ignored"), ProductB("ignored-again")).isIdentical shouldBe false
   }
 }
