@@ -54,6 +54,8 @@ trait DiffxEitherSupport {
 case class ShowConfig(
     left: String => String,
     right: String => String,
+    missing: String => String,
+    additional: String => String,
     default: String => String,
     arrow: String => String,
     transformer: DiffResultTransformer
@@ -68,11 +70,15 @@ object ShowConfig {
       arrow = identity,
       right = identity,
       left = identity,
+      missing = s => s"-$s",
+      additional = s => s"+$s",
       transformer = identity(_)
     )
   val dark: ShowConfig = ShowConfig(
     left = magenta,
     right = green,
+    missing = magenta,
+    additional = green,
     default = cyan,
     arrow = red,
     transformer = identity(_)
@@ -81,7 +87,9 @@ object ShowConfig {
     default = black,
     arrow = red,
     left = magenta,
+    missing = magenta,
     right = blue,
+    additional = blue,
     transformer = identity(_)
   )
   val normal: ShowConfig =
@@ -89,7 +97,9 @@ object ShowConfig {
       default = identity,
       arrow = red,
       right = green,
+      additional = green,
       left = red,
+      missing = red,
       transformer = identity(_)
     )
   val envDriven: ShowConfig = Option(System.getenv("DIFFX_COLOR_THEME")) match {

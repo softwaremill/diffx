@@ -15,10 +15,10 @@ object DiffResultPrinter {
       case dr: DiffResultChunk         => arrowColor("[") + showChange(s"${dr.left}", s"${dr.right}") + arrowColor("]")
       case dr: DiffResultValue[_]      => showChange(s"${dr.left}", s"${dr.right}")
       case dr: IdenticalValue[_]       => defaultColor(s"${dr.value}")
-      case dr: DiffResultMissing[_]    => leftColor(s"${dr.value}")
-      case dr: DiffResultMissingChunk  => leftColor(s"[${dr.value}]")
-      case dr: DiffResultAdditional[_] => rightColor(s"${dr.value}")
-      case dr: DiffResultAdditionalChunk => rightColor(s"[${dr.value}]")
+      case dr: DiffResultMissing[_]    => missingColor(s"${dr.value}")
+      case dr: DiffResultMissingChunk  => missingColor(s"[${dr.value}]")
+      case dr: DiffResultAdditional[_] => additionalColor(s"${dr.value}")
+      case dr: DiffResultAdditionalChunk => additionalColor(s"[${dr.value}]")
     }
   }
 
@@ -90,6 +90,8 @@ object DiffResultPrinter {
   }
 
   private def leftColor(s: String)(implicit c: ShowConfig): String = c.left(s)
+  private def missingColor(s: String)(implicit c: ShowConfig): String = c.missing(s)
+  private def additionalColor(s: String)(implicit c: ShowConfig): String = c.additional(s)
   private def rightColor(s: String)(implicit c: ShowConfig): String = c.right(s)
   private def defaultColor(s: String)(implicit c: ShowConfig): String = c.default(s)
   private def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)

@@ -62,7 +62,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
       output shouldBe
         s"""Map(
            |     a: 1 -> 2,
-           |     b: 3)""".stripMargin
+           |     -b: -3)""".stripMargin
     }
 
     "it should show an indented diff" in {
@@ -75,7 +75,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
       output shouldBe
         s"""Map(
            |     a: 1 -> 2,
-           |     b: 3)""".stripMargin
+           |     -b: -3)""".stripMargin
     }
 
     "it should show a nested diff" in {
@@ -111,14 +111,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
 
   "diff object output" - {
     "it should show an indented diff with plus and minus signs" in {
-      val colorConfigWithPlusMinus: ShowConfig =
-        ShowConfig(
-          default = identity,
-          arrow = identity,
-          right = s => "+" + s,
-          left = s => "-" + s,
-          transformer = identity(_)
-        )
+      val colorConfigWithPlusMinus: ShowConfig = ShowConfig.noColors.copy(left = s => s"-$s", right = s => s"+$s")
 
       val output = DiffResultObject(
         "List",
@@ -141,7 +134,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
       output shouldBe
         s"""List(
            |     0: 1234 -> 123,
-           |     1: 1234)""".stripMargin
+           |     1: -1234)""".stripMargin
     }
 
     "multiple consecutive different characters should be grouped into a single chunk" in {
@@ -172,7 +165,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
             )
           )
         )
-      ).show() shouldBe "abc abc[ ]"
+      ).show() shouldBe "abc abc-[ ]"
     }
   }
 }
