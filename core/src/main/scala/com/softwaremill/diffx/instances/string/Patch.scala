@@ -7,7 +7,7 @@ private[instances] class Patch[T] {
   private val deltas: util.List[Delta[T]] = new util.ArrayList()
   private val comparator: Comparator[Delta[T]] = new Comparator[Delta[T]] {
     override def compare(o1: Delta[T], o2: Delta[T]): Int =
-      o1.getOriginal.position.compareTo(o2.getOriginal.position)
+      o1.original.position.compareTo(o2.original.position)
   }
   def addDelta(delta: Delta[T]): Unit = {
     deltas.add(delta)

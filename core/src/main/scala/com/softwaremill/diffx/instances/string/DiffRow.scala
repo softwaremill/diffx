@@ -1,14 +1,9 @@
 package com.softwaremill.diffx.instances.string
 
+private[instances] sealed trait DiffRow[T]
 private[instances] object DiffRow {
-
-  sealed trait Tag
-  object Tag {
-    case object INSERT extends Tag
-    case object DELETE extends Tag
-    case object CHANGE extends Tag
-    case object EQUAL extends Tag
-  }
+  case class Insert[T](newLine: T) extends DiffRow[T]
+  case class Delete[T](oldLine: T) extends DiffRow[T]
+  case class Change[T](oldLine: T, newLine: T) extends DiffRow[T]
+  case class Equal[T](oldLine: T, newLine: T) extends DiffRow[T]
 }
-
-private[instances] case class DiffRow[T](tag: DiffRow.Tag, oldLine: Option[T], newLine: Option[T])

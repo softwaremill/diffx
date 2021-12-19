@@ -40,7 +40,7 @@ private[instances] class DiffRowGenerator {
     }
     // Copy the final matching chunk if any.
     for (line <- original.subList(endPos, original.size).asScala) {
-      diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, Some(line), Some(line)))
+      diffRows.add(DiffRow.Equal(line, line))
     }
     diffRows
   }
@@ -57,27 +57,23 @@ private[instances] class DiffRowGenerator {
     val orig = delta.getSource
     val rev = delta.getTarget
     for (line <- original.subList(endPos, orig.position).asScala) {
-      diffRows.add(buildDiffRow(DiffRow.Tag.EQUAL, Some(line), Some(revised.get(rev.position - 1))))
+      diffRows.add(DiffRow.Equal(line, revised.get(rev.position - 1)))
     }
-    delta.getType match {
-      case Delta.TYPE.INSERT =>
-        for (line <- rev.lines) {
-          diffRows.add(buildDiffRow(DiffRow.Tag.INSERT, None, Some(line)))
+    delta match {
+      case InsertDelta(_, revised) =>
+        for (line <- revised.lines) {
+          diffRows.add(DiffRow.Insert(line))
         }
 
-      case Delta.TYPE.DELETE =>
-        for (line <- orig.lines) {
-          diffRows.add(buildDiffRow(DiffRow.Tag.DELETE, Some(line), None))
+      case DeleteDelta(original, _) =>
+        for (line <- original.lines) {
+          diffRows.add(DiffRow.Delete(line))
         }
 
-      case _ =>
-        for (j <- 0 until Math.max(orig.size, rev.size)) {
+      case ChangeDelta(original, revised) =>
+        for (j <- 0 until Math.max(original.size, revised.size)) {
           diffRows.add(
-            buildDiffRow(
-              DiffRow.Tag.CHANGE,
-              orig.lines.lift(j),
-              rev.lines.lift(j)
-            )
+            DiffRow.Change(original.lines(j), revised.lines(j))
           )
         }
     }
@@ -90,7 +86,7 @@ private[instances] class DiffRowGenerator {
     * @param deltaList
     */
   private def decompressDeltas[T](delta: Delta[T]): util.List[Delta[T]] = {
-    if ((delta.getType == Delta.TYPE.CHANGE) && delta.getSource.size != delta.getTarget.size) {
+    if (delta.isInstanceOf[ChangeDelta[T]] && delta.getSource.size != delta.getTarget.size) {
       val deltas = new util.ArrayList[Delta[T]]
       val minSize = Math.min(delta.getSource.size, delta.getTarget.size)
       val orig = delta.getSource
@@ -119,7 +115,4 @@ private[instances] class DiffRowGenerator {
     }
     Collections.singletonList(delta)
   }
-
-  private def buildDiffRow[T](`type`: DiffRow.Tag, orgline: Option[T], newline: Option[T]) =
-    new DiffRow(`type`, orgline, newline)
 }
