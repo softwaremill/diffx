@@ -15,15 +15,15 @@ case class DiffResultObject(name: String, fields: Map[String, DiffResult]) exten
   override def isIdentical: Boolean = fields.values.forall(_.isIdentical)
 }
 
-case class DiffResultIterable(name: String, items: Map[String, DiffResult]) extends DiffResult {
+case class DiffResultIterable(typename: String, items: Map[String, DiffResult]) extends DiffResult {
   override def isIdentical: Boolean = items.values.forall(_.isIdentical)
 }
 
-case class DiffResultMap(entries: Map[DiffResult, DiffResult]) extends DiffResult {
+case class DiffResultMap(typename: String, entries: Map[DiffResult, DiffResult]) extends DiffResult {
   override def isIdentical: Boolean = entries.forall { case (k, v) => k.isIdentical && v.isIdentical }
 }
 
-case class DiffResultSet(diffs: Set[DiffResult]) extends DiffResult {
+case class DiffResultSet(typename: String, diffs: Set[DiffResult]) extends DiffResult {
   override def isIdentical: Boolean = diffs.forall(_.isIdentical)
 }
 

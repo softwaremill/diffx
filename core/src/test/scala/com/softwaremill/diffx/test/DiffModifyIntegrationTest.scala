@@ -14,7 +14,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
   val p2 = Person("p2", 11, instant)
 
   it should "allow importing and exporting implicits" in {
-    implicit val d: Diff[Person] = Diff.autoDerived[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.summon[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
@@ -22,7 +22,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
   }
 
   it should "allow importing and exporting implicits using macro on derived instance" in {
-    implicit val d: Diff[Person] = Diff.autoDerived[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.summon[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map("name" -> IdenticalValue("<ignored>"), "age" -> DiffResultValue(22, 11), "in" -> IdenticalValue(instant))
@@ -31,7 +31,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "allow calling ignore multiple times" in {
     implicit val d: Diff[Person] = Diff
-      .autoDerived[Person]
+      .summon[Person]
       .ignore(_.name)
       .ignore(_.age)
     compare(p1, p2).isIdentical shouldBe true
@@ -41,11 +41,9 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val o1 = Organization(List(p1, p2))
     val o2 = Organization(List(p2, p1))
     implicit val orgDiff: Diff[Organization] = Diff
-      .autoDerived[Organization]
+      .summon[Organization]
       .modify(_.people)
-      .useMatcher(
-        ObjectMatcher.list[Person].byValue(_.name)
-      )
+      .matchByValue(_.name)
     compare(o1, o2).isIdentical shouldBe true
   }
 
@@ -54,7 +52,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val e1 = Wrapper(Right(p1))
     val e2 = Wrapper(Right(p1.copy(name = p1.name + "_modified")))
 
-    implicit val wrapperDiff: Diff[Wrapper] = Diff.autoDerived[Wrapper].ignore(_.e.eachRight.name)
+    implicit val wrapperDiff: Diff[Wrapper] = Diff.summon[Wrapper].ignore(_.e.eachRight.name)
 
     compare(e1, e2).isIdentical shouldBe true
 
@@ -69,7 +67,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val e1 = Wrapper(Right(p1))
     val e2 = Wrapper(Right(p1.copy(name = p1.name + "_modified")))
 
-    implicit val wrapperDiff: Diff[Wrapper] = Diff.autoDerived[Wrapper].ignore(_.e.eachLeft.name)
+    implicit val wrapperDiff: Diff[Wrapper] = Diff.summon[Wrapper].ignore(_.e.eachLeft.name)
 
     compare(e1, e2).isIdentical shouldBe false
     val e3 = Wrapper(Left(p1))
@@ -80,11 +78,9 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
   it should "match map entries by values" in {
     implicit val lookupDiff: Diff[MyLookup] = Diff
-      .autoDerived[MyLookup]
+      .summon[MyLookup]
       .modify(_.map)
-      .useMatcher(
-        ObjectMatcher.map[KeyModel, String].byValue
-      )
+      .matchByValue(identity)
     val uuid1 = UUID.randomUUID()
     val uuid2 = UUID.randomUUID()
     val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
@@ -93,6 +89,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       "MyLookup",
       Map(
         "map" -> DiffResultMap(
+          "Map",
           Map(
             DiffResultObject(
               "KeyModel",
@@ -107,16 +104,108 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     )
   }
 
-  it should "use overrided object matcher when comparing set" in {
+  it should "ignore part of each key in map" in {
+    implicit val lookupDiff: Diff[MyLookup] = Diff
+      .summon[MyLookup]
+      .ignore(_.map.eachKey.id)
+      .modify(_.map)
+      .matchByKey(_.name)
+    val uuid1 = UUID.randomUUID()
+    val uuid2 = UUID.randomUUID()
+    val a1 = MyLookup(Map(KeyModel(uuid1, "k1") -> "val1"))
+    val a2 = MyLookup(Map(KeyModel(uuid2, "k1") -> "val1"))
+    compare(a1, a2) shouldBe DiffResultObject(
+      "MyLookup",
+      Map(
+        "map" -> DiffResultMap(
+          "Map",
+          Map(
+            DiffResultObject(
+              "KeyModel",
+              Map(
+                "id" -> DiffResult.Ignored,
+                "name" -> IdenticalValue("k1")
+              )
+            ) -> IdenticalValue("val1")
+          )
+        )
+      )
+    )
+  }
+
+  it should "ignore part of each value in map" in {
+    implicit val lookupDiff: Diff[MyLookupReversed] = Diff
+      .summon[MyLookupReversed]
+      .ignore(_.map.eachValue.id)
+    val uuid1 = UUID.randomUUID()
+    val uuid2 = UUID.randomUUID()
+    val a1 = MyLookupReversed(Map("val1" -> KeyModel(uuid1, "k1")))
+    val a2 = MyLookupReversed(Map("val1" -> KeyModel(uuid2, "k1")))
+    compare(a1, a2) shouldBe DiffResultObject(
+      "MyLookupReversed",
+      Map(
+        "map" -> DiffResultMap(
+          "Map",
+          Map(
+            IdenticalValue("val1") -> DiffResultObject(
+              "KeyModel",
+              Map(
+                "id" -> DiffResult.Ignored,
+                "name" -> IdenticalValue("k1")
+              )
+            )
+          )
+        )
+      )
+    )
+  }
+
+  it should "ignore part of each value in a set" in {
     implicit val lookupDiff: Diff[Startup] = Diff
-      .autoDerived[Startup]
+      .summon[Startup]
+      .ignore(_.workers.each.age)
       .modify(_.workers)
-      .useMatcher(ObjectMatcher.set[Person].by(_.name))
+      .matchBy(_.name)
     val p2m = p2.copy(age = 33)
     compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
       "Startup",
       Map(
         "workers" -> DiffResultSet(
+          "Set",
+          Set(
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p1.name),
+                "age" -> DiffResult.Ignored,
+                "in" -> IdenticalValue(p1.in)
+              )
+            ),
+            DiffResultObject(
+              "Person",
+              Map(
+                "name" -> IdenticalValue(p2.name),
+                "age" -> DiffResult.Ignored,
+                "in" -> IdenticalValue(p1.in)
+              )
+            )
+          )
+        )
+      )
+    )
+  }
+
+  it should "use overrided object matcher when comparing set" in {
+    implicit val lookupDiff: Diff[Startup] = Diff
+      .summon[Startup]
+      .modify(_.workers)
+      .matchBy(_.name)
+    val p2m = p2.copy(age = 33)
+    compare(Startup(Set(p1, p2)), Startup(Set(p1, p2m))) shouldBe DiffResultObject(
+      "Startup",
+      Map(
+        "workers" -> DiffResultSet(
+          "Set",
           Set(
             DiffResultObject(
               "Person",
@@ -145,7 +234,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     val o2 = Organization(List(p2, p1))
     val d = Diff[Organization]
       .modify(_.people)
-      .useMatcher(ObjectMatcher.list[Person].byValue(_.name))
+      .matchByValue(_.name)
     compare(o1, o2)(d).isIdentical shouldBe true
   }
 
@@ -158,7 +247,7 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
           )
         }
     )
-    implicit val d: Diff[Person] = Diff.autoDerived[Person].ignore(_.name)
+    implicit val d: Diff[Person] = Diff.summon[Person].ignore(_.name)
     compare(p1, p2) shouldBe DiffResultObject(
       "Person",
       Map(
@@ -189,33 +278,19 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
     )
   }
 
-  it should "allow to use object matcher with mutable seq" in {
-    assertCompiles("""
-        |import com.softwaremill.diffx._
-        |case class P1(v: Int)
-        |case class O1(l: scala.collection.mutable.Seq[P1])
-        |
-        |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.list[P1].byValue(_.v))
-        |""".stripMargin)
+  it should "allow modifying auto-derived diff instance for built-in collection" in {
+    implicit val a: Diff[List[Person]] = Diff.summon[List[Person]].matchByValue(_.age)
+    compare(List(p1), List(p2))(a).isIdentical shouldBe false
   }
 
-  it should "allow to use object matcher with mutable map" in {
-    assertCompiles("""
-       |import com.softwaremill.diffx._
-       |case class P1(v: Int)
-       |case class O1(l: scala.collection.mutable.Map[String,P1])
-       |
-       |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.map[String, P1].byValue(_.v))
-       |""".stripMargin)
-  }
+  it should "ignore fields on multiple levels regardless of the invocation order" in {
+    val f1 = Family(p1, p2)
+    val f2 = Family(p1.copy(name = "qwe", age = 0), p2.copy(name = "qwe"))
 
-  it should "allow to use object matcher with mutable set" in {
-    assertCompiles("""
-       |import com.softwaremill.diffx._
-       |case class P1(v: Int)
-       |case class O1(l: scala.collection.mutable.Set[P1])
-       |
-       |Diff.derived[O1].modify(_.l).useMatcher(ObjectMatcher.set[P1].by(_.v))
-       |""".stripMargin)
+    val d1 = Diff[Family].modify(_.first).ignore.modify(_.second.name).ignore
+    compare(f1, f2)(d1).isIdentical shouldBe true
+
+    val d2 = Diff[Family].modify(_.second.name).ignore.modify(_.first).ignore
+    compare(f1, f2)(d2).isIdentical shouldBe true
   }
 }

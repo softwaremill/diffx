@@ -12,7 +12,9 @@ package object diffx extends DiffxSupport {
     new DiffxFunctor[F, A] {}
 
   implicit class DiffxEachMap[F[_, _], K, T](t: F[K, T])(implicit fac: Factory[(K, T), F[K, T]]) {
-    @compileTimeOnly(canOnlyBeUsedInsideIgnore("each"))
-    def each: T = sys.error("")
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("eachKey"))
+    def eachKey: K = sys.error(canOnlyBeUsedInsideDiffxMacro("eachKey"))
+    @compileTimeOnly(canOnlyBeUsedInsideDiffxMacro("eachValue"))
+    def eachValue: T = sys.error(canOnlyBeUsedInsideDiffxMacro("eachValue"))
   }
 }

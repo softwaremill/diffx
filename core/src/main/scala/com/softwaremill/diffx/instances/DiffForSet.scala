@@ -6,14 +6,18 @@ import com.softwaremill.diffx.instances.internal.{IndexedEntry, MatchResult}
 
 import scala.annotation.tailrec
 
-private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T], matcher: ObjectMatcher[SetEntry[T]])
-    extends Diff[C[T]] {
+private[diffx] class DiffForSet[C[_], T](
+    dt: Diff[T],
+    matcher: ObjectMatcher[SetEntry[T]],
+    setLike: SetLike[C],
+    typename: String = "Set"
+) extends Diff[C[T]] {
   override def apply(left: C[T], right: C[T], context: DiffContext): DiffResult = nullGuard(left, right) {
     (left, right) =>
       val adjustedMatcher = context.getMatcherOverride[SetEntry[T]].getOrElse(matcher)
       val matches = matchPairs(
-        left.toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
-        right.toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
+        setLike.asSet(left).toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
+        setLike.asSet(right).toList.zipWithIndex.map(p => IndexedEntry(p._2, SetEntry(p._1))),
         adjustedMatcher,
         List.empty,
         context
@@ -21,9 +25,9 @@ private[diffx] class DiffForSet[T, C[W] <: scala.collection.Set[W]](dt: Diff[T],
       val diffs = matches.map {
         case MatchResult.UnmatchedLeft(v)  => DiffResultAdditional(v)
         case MatchResult.UnmatchedRight(v) => DiffResultMissing(v)
-        case MatchResult.Matched(l, r)     => dt.apply(l, r, context)
+        case MatchResult.Matched(l, r)     => dt.apply(l, r, context.getNextStep(ModifyPath.Each))
       }
-      DiffResultSet(diffs.toSet)
+      DiffResultSet(typename, diffs.toSet)
   }
   @tailrec
   private def matchPairs(

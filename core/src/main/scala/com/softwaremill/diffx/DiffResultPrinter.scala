@@ -15,10 +15,10 @@ object DiffResultPrinter {
       case dr: DiffResultChunk         => arrowColor("[") + showChange(s"${dr.left}", s"${dr.right}") + arrowColor("]")
       case dr: DiffResultValue[_]      => showChange(s"${dr.left}", s"${dr.right}")
       case dr: IdenticalValue[_]       => defaultColor(s"${dr.value}")
-      case dr: DiffResultMissing[_]    => leftColor(s"${dr.value}")
-      case dr: DiffResultMissingChunk  => leftColor(s"[${dr.value}]")
-      case dr: DiffResultAdditional[_] => rightColor(s"${dr.value}")
-      case dr: DiffResultAdditionalChunk => rightColor(s"[${dr.value}]")
+      case dr: DiffResultMissing[_]    => missingColor(s"${dr.value}")
+      case dr: DiffResultMissingChunk  => missingColor(s"[${dr.value}]")
+      case dr: DiffResultAdditional[_] => additionalColor(s"${dr.value}")
+      case dr: DiffResultAdditionalChunk => additionalColor(s"[${dr.value}]")
     }
   }
 
@@ -41,7 +41,9 @@ object DiffResultPrinter {
       .map { case (field, value) =>
         renderField(field) + renderValue(value)
       }
-    defaultColor(s"${resultObject.name}(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(")")
+    defaultColor(s"${resultObject.typename}(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(
+      ")"
+    )
   }
 
   private def showDiffResultMap(diffResultMap: DiffResultMap, indent: Int)(implicit
@@ -57,7 +59,9 @@ object DiffResultPrinter {
         val value = renderValue(v)
         key + separator + value
       }
-    defaultColor("Map(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(")")
+    defaultColor(s"${diffResultMap.typename}(") + s"\n${showFields.mkString(defaultColor(",") + "\n")}" + defaultColor(
+      ")"
+    )
   }
 
   private def showDiffResultSet(diffResultSet: DiffResultSet, indent: Int)(implicit
@@ -65,7 +69,7 @@ object DiffResultPrinter {
   ): String = {
     val showFields = diffResultSet.diffs
       .map(f => s"${i(indent)}${showIndented(f, indent + IndentLevel)}")
-    showFields.mkString(defaultColor("Set(\n"), ",\n", defaultColor(")"))
+    showFields.mkString(defaultColor(s"${diffResultSet.typename}(\n"), ",\n", defaultColor(")"))
   }
 
   private def i(indent: Int): String = " " * indent
@@ -85,10 +89,12 @@ object DiffResultPrinter {
       }
   }
 
-  private[diffx] def leftColor(s: String)(implicit c: ShowConfig): String = c.left(s)
-  private[diffx] def rightColor(s: String)(implicit c: ShowConfig): String = c.right(s)
-  private[diffx] def defaultColor(s: String)(implicit c: ShowConfig): String = c.default(s)
-  private[diffx] def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)
-  private[diffx] def showChange(l: String, r: String)(implicit c: ShowConfig): String =
+  private def leftColor(s: String)(implicit c: ShowConfig): String = c.left(s)
+  private def missingColor(s: String)(implicit c: ShowConfig): String = c.missing(s)
+  private def additionalColor(s: String)(implicit c: ShowConfig): String = c.additional(s)
+  private def rightColor(s: String)(implicit c: ShowConfig): String = c.right(s)
+  private def defaultColor(s: String)(implicit c: ShowConfig): String = c.default(s)
+  private def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)
+  private def showChange(l: String, r: String)(implicit c: ShowConfig): String =
     leftColor(l) + arrowColor(" -> ") + rightColor(r)
 }

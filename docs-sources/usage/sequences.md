@@ -56,7 +56,7 @@ import com.softwaremill.diffx.generic.auto._
 
 case class Person(id: String, name: String)
 
-implicit val personMatcher = ObjectMatcher.list[Person].byValue(_.id)
+implicit val personMatcher = ObjectMatcher.seq[Person].byValue(_.id)
 val bob = Person("1","Bob")
 val alice = Person("2","Alice")
 ```

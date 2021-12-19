@@ -3,6 +3,7 @@ package com.softwaremill.diffx
 /** Defines how the elements within collections are paired
   *
   * @tparam T
+  *   type of the collection element
   */
 trait ObjectMatcher[T] {
   def isSameObject(left: T, right: T): Boolean
@@ -20,31 +21,52 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
 
   implicit def setEntryByValue[T: ObjectMatcher]: ObjectMatcher[SetEntry[T]] = ObjectMatcher.by[SetEntry[T], T](_.t)
 
-  type IterableEntry[T] = MapEntry[Int, T]
+  type SeqEntry[T] = MapEntry[Int, T]
 
   case class SetEntry[T](t: T)
 
   case class MapEntry[K, V](key: K, value: V)
 
-  def list[T] = new ObjectMatcherListHelper[T]
+  /** Matcher for all ordered collections e.g. [[List]], [[Seq]]. There has to exist an implicit instance of
+    * [[com.softwaremill.diffx.SeqLike]] for such collection
+    * @tparam T
+    *   type of the element
+    * @return
+    */
+  def seq[T] = new ObjectMatcherSeqHelper[T]
 
-  class ObjectMatcherListHelper[V] {
-    def byValue[U: ObjectMatcher](f: V => U): ListMatcher[V] = byValue(ObjectMatcher.by[V, U](f))
+  class ObjectMatcherSeqHelper[V] {
+    def byValue[U: ObjectMatcher](f: V => U): SeqMatcher[V] = byValue(ObjectMatcher.by[V, U](f))
 
-    def byValue(implicit ev: ObjectMatcher[V]): ListMatcher[V] =
-      ObjectMatcher.by[IterableEntry[V], V](_.value)
+    def byValue(implicit ev: ObjectMatcher[V]): SeqMatcher[V] =
+      ObjectMatcher.by[SeqEntry[V], V](_.value)
 
-    def byKey[U: ObjectMatcher](f: Int => U): ListMatcher[V] = byKey(ObjectMatcher.by(f))
+    def byKey[U: ObjectMatcher](f: Int => U): SeqMatcher[V] = byKey(ObjectMatcher.by(f))
 
-    def byKey(implicit ko: ObjectMatcher[Int]): ListMatcher[V] = ObjectMatcher.by(_.key)
+    def byKey(implicit ko: ObjectMatcher[Int]): SeqMatcher[V] = ObjectMatcher.by(_.key)
   }
 
+  /** Matcher for unordered collections like e.g. [[Set]]. There has to exist an implicit instance of
+    * [[com.softwaremill.diffx.SetLike]] for such collection
+    *
+    * @tparam T
+    *   type of the element
+    * @return
+    */
   def set[T] = new ObjectMatcherSetHelper[T]
 
   class ObjectMatcherSetHelper[T] {
     def by[U: ObjectMatcher](f: T => U): SetMatcher[T] = setEntryByValue(ObjectMatcher.by(f))
   }
 
+  /** Matcher for map like collections e.g. [[Map]]. There has to exist an implicit instance of
+    * [[com.softwaremill.diffx.MapLike]] for such collection
+    * @tparam K
+    *   type of the key
+    * @tparam V
+    *   type of the value
+    * @return
+    */
   def map[K, V] = new ObjectMatcherMapHelper[K, V]
 
   class ObjectMatcherMapHelper[K, V] {
