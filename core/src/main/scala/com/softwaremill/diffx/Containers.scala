@@ -1,5 +1,6 @@
 package com.softwaremill.diffx
 
+// inspired by https://github.com/jatcwang/difflicious/blob/master/modules/core/src/main/scala/difflicious/utils/SeqLike.scala
 trait SeqLike[C[_]] {
   def asSeq[A](c: C[A]): Seq[A]
 }
