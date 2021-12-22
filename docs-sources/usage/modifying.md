@@ -1,4 +1,4 @@
-# replacing
+# modifying
 
 Sometimes you might want to compare some nested values using a different comparator but
 the type they share is not unique within that hierarchy.
@@ -31,11 +31,27 @@ compare(Person(23, 60), Person(23, 62))
 In fact, replacement is so powerful that ignoring is implemented as a replacement 
 with the `Diff.ignore` instance.
 
-You can use the same mechanism to set particular object matcher for given nested collection in the hierarchy.
+
+## collection support
+
+Specify how objects within particular collection within particular diff instance should be matched.
+We distinguish free main types of collections:
+- seqLike collections where elements are indexed collections
+- setLike collections where elements aren't indexed
+- mapLike collections where elements(values) are indexed by some keys
+
+Each collection should fall into one of above categories. 
+Each category exposes different set of methods.
+
 ```scala mdoc:silent
-case class Organization(peopleList: List[Person], peopleSet: Set[Person], peopleMap: Map[String, Person])
+case class Organization(peopleList: List[Person], peopleSet: Set[Person], peopleMap: Map[Person, Person])
 implicit val diffOrg: Diff[Organization] = Diff.summon[Organization]
+        // seqLike methods:
         .modify(_.peopleList).matchByValue(_.age)
+        .modify(_.peopleList).matchByIndex(index => index % 2)
+        // setLike methods:
         .modify(_.peopleSet).matchBy(_.age)
+        // mapLike methods:
         .modify(_.peopleMap).matchByValue(_.age)
+        .modify(_.peopleMap).matchByKey(_.weight)
 ```

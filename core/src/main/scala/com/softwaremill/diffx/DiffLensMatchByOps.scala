@@ -1,6 +1,10 @@
 package com.softwaremill.diffx
 
 final class DiffLensSeqMatchByOps[C[_], T, S](lens: DiffLens[S, C[T]]) {
+  def matchByIndex[U: ObjectMatcher](f: Int => U): Diff[S] = {
+    lens.outer.modifyMatcherUnsafe(lens.path: _*)(ObjectMatcher.seq[T].byIndex(f))
+  }
+
   def matchByValue[U: ObjectMatcher](f: T => U): Diff[S] = {
     lens.outer.modifyMatcherUnsafe(lens.path: _*)(ObjectMatcher.seq[T].byValue(f))
   }

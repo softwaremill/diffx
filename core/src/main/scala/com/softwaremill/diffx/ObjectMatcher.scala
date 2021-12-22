@@ -41,9 +41,9 @@ object ObjectMatcher extends LowPriorityObjectMatcher {
     def byValue(implicit ev: ObjectMatcher[V]): SeqMatcher[V] =
       ObjectMatcher.by[SeqEntry[V], V](_.value)
 
-    def byKey[U: ObjectMatcher](f: Int => U): SeqMatcher[V] = byKey(ObjectMatcher.by(f))
+    def byIndex[U: ObjectMatcher](f: Int => U): SeqMatcher[V] = byIndex(ObjectMatcher.by(f))
 
-    def byKey(implicit ko: ObjectMatcher[Int]): SeqMatcher[V] = ObjectMatcher.by(_.key)
+    def byIndex(implicit indexMatcher: ObjectMatcher[Int]): SeqMatcher[V] = ObjectMatcher.by(_.key)
   }
 
   /** Matcher for unordered collections like e.g. [[Set]]. There has to exist an implicit instance of

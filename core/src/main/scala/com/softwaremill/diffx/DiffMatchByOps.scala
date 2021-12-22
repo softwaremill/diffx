@@ -1,6 +1,10 @@
 package com.softwaremill.diffx
 
 final class DiffSeqMatchByOps[C[_], T](diff: Diff[C[T]]) {
+  def matchByKey[U: ObjectMatcher](f: Int => U): Diff[C[T]] = {
+    diff.modifyMatcherUnsafe()(ObjectMatcher.seq[T].byIndex(f))
+  }
+  
   def matchByValue[U: ObjectMatcher](f: T => U): Diff[C[T]] = {
     diff.modifyMatcherUnsafe()(ObjectMatcher.seq[T].byValue(f))
   }

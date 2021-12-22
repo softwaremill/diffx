@@ -25,7 +25,7 @@ or extend trait
 
 Given that you have auto-derivation enabled you can summon diff instances as you would summon any other implicit type-class by using
 `implictly[Diff[T]]`. You can also write a shorter version `Diff[T]` which will be equivalent.
-However, if you would like to modify somehow (see [ignoring](./ignoring.md) and [replacing](./replacing.md)) given instance and 
+However, if you would like to modify somehow (see [ignoring](./ignoring.md) and [modifying](./modifying.md)) given instance and 
 put it back into to the implicit scope:
 ```scala 
 implict val diffForMyClass: Diff[MyClass] = Diff[MyClass].doSomething

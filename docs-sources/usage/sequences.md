@@ -65,4 +65,4 @@ compare(List(bob, alice), List(alice, bob))
 ```
 
 *Note: `ObjectMatcher` can be also passed explicitly, either upon creation or during modification*
-*See [replacing](replacing.md) for details.*
+*See [modifying](modifying.md) for details.*

@@ -27,11 +27,8 @@ By default, the difference is shown in the following form:
 
 When comparing collection types the difference is calculated against the `right` value
 
-`rightColor(additionalValue)` when there is an additional entity on the left-hand side
-`leftColor(missingValue)` when there is a missing entity on the left-hand side 
-
-
-Where, by default, `rightColor` is green and `leftColor` is red. 
+`additionalColor(additionalValue)` when there is an additional entity on the left-hand side
+`missingColor(missingValue)` when there is a missing entity on the left-hand side 
 
 Colors can be customized providing an implicit instance of `ShowConfig` class.
 In fact `rightColor` and `leftColor` are functions `string => string` so they can be modified to do whatever you want with the output.
