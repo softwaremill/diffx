@@ -5,13 +5,13 @@ This module contains integration layer between [org.typelevel.cats](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-cats" % "0.6.0" % Test    
+"com.softwaremill.diffx" %% "diffx-cats" % "0.7.0" % Test    
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-cats::0.6.0"
+ivy"com.softwaremill.diffx::diffx-cats::0.7.0"
 ```
 
 ## Usage
@@ -37,7 +37,7 @@ compare(t1, t2)
 //   name = "TestData",
 //   fields = ListMap(
 //     "ints" -> DiffResultObject(
-//       name = "List",
+//       name = "NonEmptyList",
 //       fields = ListMap(
 //         "0" -> DiffResultString(
 //           diffs = List(

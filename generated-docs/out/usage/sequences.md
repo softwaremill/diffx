@@ -29,6 +29,7 @@ val bob = Person("1","Bob")
 ```scala
 compare(Set(bob), Set(bob, Person("2","Alice")))
 // res1: DiffResult = DiffResultSet(
+//   typename = "Set",
 //   diffs = Set(
 //     DiffResultObject(
 //       name = "Person",
@@ -57,6 +58,7 @@ val bob = Person("1","Bob")
 ```scala
 compare(Map("1" -> bob), Map("2" -> bob))
 // res3: DiffResult = DiffResultMap(
+//   typename = "Map",
 //   entries = Map(
 //     DiffResultString(
 //       diffs = List(
@@ -85,7 +87,7 @@ import com.softwaremill.diffx.generic.auto._
 
 case class Person(id: String, name: String)
 
-implicit val personMatcher = ObjectMatcher.list[Person].byValue(_.id)
+implicit val personMatcher = ObjectMatcher.seq[Person].byValue(_.id)
 val bob = Person("1","Bob")
 val alice = Person("2","Alice")
 ```
@@ -113,4 +115,4 @@ compare(List(bob, alice), List(alice, bob))
 ```
 
 *Note: `ObjectMatcher` can be also passed explicitly, either upon creation or during modification*
-*See [replacing](replacing.md) for details.*
+*See [modifying](modifying.md) for details.*
