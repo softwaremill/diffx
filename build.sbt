@@ -6,9 +6,9 @@ import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 
 val scala212 = "2.12.15"
 val scala213 = "2.13.6"
-val scala3 = "3.0.1"
+val scala3 = "3.1.0"
 
-val scalaIdeaVersion = scala213 // the version for which to import sources into intellij
+val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
 val scalatestVersion = "3.2.10"
 val specs2Version = "4.13.1"
