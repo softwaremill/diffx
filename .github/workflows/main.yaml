@@ -22,6 +22,14 @@ jobs:
         run: sbt test
       - name: Compile docs
         run: sbt compileDocs
+      - name: Generate LSIF data
+        uses: sourcegraph/lsif-java-action@master
+        with:
+          verbose: true
+      - name: Upload LSIF data
+        uses: sourcegraph/lsif-upload-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     name: Publish release
