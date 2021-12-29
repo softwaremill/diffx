@@ -23,7 +23,7 @@ jobs:
       - name: Compile docs
         run: sbt compileDocs
       - name: Generate & upload LSIF
-        run: curl -fLo coursier https://git.io/coursier-cli && chmod +x coursier && ./coursier launch com.sourcegraph:lsif-java_2.13:0.7.3 -- --index
+        run: curl -fLo coursier https://git.io/coursier-cli && chmod +x coursier && ./coursier launch com.sourcegraph:lsif-java_2.13:0.7.3 -- index
 
   publish:
     name: Publish release
