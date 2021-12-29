@@ -22,14 +22,8 @@ jobs:
         run: sbt test
       - name: Compile docs
         run: sbt compileDocs
-      - name: Generate LSIF data
-        uses: sourcegraph/lsif-java-action@master
-        with:
-          verbose: true
-      - name: Upload LSIF data
-        uses: sourcegraph/lsif-upload-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate & upload LSIF
+        run: curl -fLo coursier https://git.io/coursier-cli && chmod +x coursier && ./coursier launch com.sourcegraph:lsif-java_2.13:0.7.3 -- --index
 
   publish:
     name: Publish release
