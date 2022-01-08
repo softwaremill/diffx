@@ -15,6 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: coursier/cache-action@v6.3
+      - uses: coursier/setup-action@v1.1.2
         with:
           jvm: adopt:11
           apps: lsif-java
