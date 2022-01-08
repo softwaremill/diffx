@@ -15,15 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: coursier/cache-action@v6.3
-      - uses: olafurpg/setup-scala@v13
         with:
-          java-version: adopt@1.11
+          jvm: adopt:11
+          apps: lsif-java
       - name: Run tests with sbt
         run: sbt test
       - name: Compile docs
         run: sbt compileDocs
       - name: Generate LSIF
-        run: curl -fLo coursier https://git.io/coursier-cli && chmod +x coursier && ./coursier launch com.sourcegraph:lsif-java_2.13:0.7.3 -- index
+        run: lsif-java index 
       - name: Upload LSIF data
         uses: sourcegraph/lsif-upload-action@master
         with:
