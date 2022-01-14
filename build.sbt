@@ -11,7 +11,7 @@ val scala3 = "3.1.0"
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
 val scalatestVersion = "3.2.10"
-val specs2Version = "4.13.1"
+val specs2Version = "4.13.2"
 val smlTaggingVersion = "2.3.2"
 
 lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
