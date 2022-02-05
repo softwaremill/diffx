@@ -85,20 +85,20 @@ object ModifyMacro {
 
     c.Expr[List[ModifyPath]](
       q"${pathEls.collect {
-        case TermPathElement(c) => q"_root_.com.softwaremill.diffx.ModifyPath.Field(${c.decodedName.toString})"
-        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachLeft" =>
-          makeSubtype(symbolOf[Left[Any, Any]])
-        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachRight" =>
-          makeSubtype(symbolOf[Right[Any, Any]])
-        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "each" =>
-          q"_root_.com.softwaremill.diffx.ModifyPath.Each"
-        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachKey" =>
-          q"_root_.com.softwaremill.diffx.ModifyPath.EachKey"
-        case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachValue" =>
-          q"_root_.com.softwaremill.diffx.ModifyPath.EachValue"
-        case SubtypePathElement(subtype) =>
-          makeSubtype(subtype)
-      }}"
+          case TermPathElement(c) => q"_root_.com.softwaremill.diffx.ModifyPath.Field(${c.decodedName.toString})"
+          case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachLeft" =>
+            makeSubtype(symbolOf[Left[Any, Any]])
+          case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachRight" =>
+            makeSubtype(symbolOf[Right[Any, Any]])
+          case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "each" =>
+            q"_root_.com.softwaremill.diffx.ModifyPath.Each"
+          case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachKey" =>
+            q"_root_.com.softwaremill.diffx.ModifyPath.EachKey"
+          case FunctorPathElement(_, method, _ @_*) if method.decodedName.toString == "eachValue" =>
+            q"_root_.com.softwaremill.diffx.ModifyPath.EachValue"
+          case SubtypePathElement(subtype) =>
+            makeSubtype(subtype)
+        }}"
     )
   }
 
