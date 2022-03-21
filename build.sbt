@@ -12,7 +12,7 @@ val scalaIdeaVersion = scala3 // the version for which to import sources into in
 
 val scalatestVersion = "3.2.10"
 val specs2Version = "4.14.1"
-val smlTaggingVersion = "2.3.2"
+val smlTaggingVersion = "2.3.3"
 
 lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
