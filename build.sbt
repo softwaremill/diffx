@@ -11,8 +11,8 @@ val scala3 = "3.1.0"
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
 val scalatestVersion = "3.2.10"
-val specs2Version = "4.14.1"
-val smlTaggingVersion = "2.3.2"
+val specs2Version = "4.15.0"
+val smlTaggingVersion = "2.3.3"
 
 lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
   organization := "com.softwaremill.diffx",
@@ -56,7 +56,7 @@ lazy val core = (projectMatrix in file("core"))
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((3, _)) =>
           Seq(
-            "com.softwaremill.magnolia1_3" %%% "magnolia" % "1.1.0"
+            "com.softwaremill.magnolia1_3" %%% "magnolia" % "1.1.1"
           )
         case _ =>
           Seq(
