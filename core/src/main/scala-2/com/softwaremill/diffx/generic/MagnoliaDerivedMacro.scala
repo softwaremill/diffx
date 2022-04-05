@@ -1,7 +1,7 @@
 package com.softwaremill.diffx.generic
 
 import com.softwaremill.diffx.Derived
-import magnolia.Magnolia
+import magnolia1.Magnolia
 
 object MagnoliaDerivedMacro {
 

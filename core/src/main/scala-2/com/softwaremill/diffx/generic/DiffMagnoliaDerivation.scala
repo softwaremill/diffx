@@ -1,14 +1,14 @@
 package com.softwaremill.diffx.generic
 
 import com.softwaremill.diffx.{Diff, DiffContext, DiffResultObject, DiffResultValue, ModifyPath, nullGuard}
-import magnolia._
+import magnolia1._
 
 import scala.collection.immutable.ListMap
 
 trait DiffMagnoliaDerivation {
   type Typeclass[T] = Diff[T]
 
-  def combine[T](ctx: ReadOnlyCaseClass[Typeclass, T]): Diff[T] = { (left: T, right: T, context: DiffContext) =>
+  def join[T](ctx: ReadOnlyCaseClass[Typeclass, T]): Diff[T] = { (left: T, right: T, context: DiffContext) =>
     nullGuard(left, right) { (left, right) =>
       val map = ListMap(ctx.parameters.map { p =>
         val lType = p.dereference(left)
@@ -25,10 +25,10 @@ trait DiffMagnoliaDerivation {
     }
   }
 
-  def dispatch[T](ctx: SealedTrait[Typeclass, T]): Diff[T] = { (left: T, right: T, context: DiffContext) =>
+  def split[T](ctx: SealedTrait[Typeclass, T]): Diff[T] = { (left: T, right: T, context: DiffContext) =>
     nullGuard(left, right) { (left, right) =>
-      val lType = ctx.dispatch(left)(a => a)
-      val rType = ctx.dispatch(right)(a => a)
+      val lType = ctx.split(left)(a => a)
+      val rType = ctx.split(right)(a => a)
       if (lType == rType) {
         lType.typeclass(
           lType.cast(left),
