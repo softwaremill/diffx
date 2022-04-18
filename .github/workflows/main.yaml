@@ -24,7 +24,7 @@ jobs:
       - name: Compile docs
         run: sbt compileDocs
       - name: Generate LSIF
-        run: lsif-java index 
+        run: lsif-java index
       - name: Upload LSIF data
         uses: sourcegraph/lsif-upload-action@master
         with:
@@ -51,3 +51,35 @@ jobs:
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+      - name: Extract version from commit message
+        run: |
+          version=${GITHUB_REF/refs\/tags\/v/}
+          echo "VERSION=$version" >> $GITHUB_ENV
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+      - name: Publish release notes
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+          publish: true
+          name: "v${{ env.VERSION }}"
+          tag: "v${{ env.VERSION }}"
+          version: "v${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract version from commit message
+        run: |
+          version=${GITHUB_REF/refs\/tags\/v/}
+          echo "VERSION=$version" >> $GITHUB_ENV
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+      - name: Publish release notes
+        uses: release-drafter/release-drafter@v5
+        with:
+          config-name: release-drafter.yml
+          publish: true
+          name: "v${{ env.VERSION }}"
+          tag: "v${{ env.VERSION }}"
+          version: "v${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
