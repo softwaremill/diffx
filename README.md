@@ -20,6 +20,13 @@ When generating documentation, it's best to set the version to the current one, 
 
 That is, in sbt run: `set version := "0.5.0"`, before running `mdoc` in `docs`.
 
+## Releasing a new version
+
+```sh
+$ nix develop
+$ sbt ci-release
+```
+
 ## Copyright
 
 Copyright (C) 2019 SoftwareMill [https://softwaremill.com](https://softwaremill.com).
