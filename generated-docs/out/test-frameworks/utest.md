@@ -5,13 +5,13 @@ To use with utest, add following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-utest" % "0.7.0" % Test
+"com.softwaremill.diffx" %% "diffx-utest" % "0.7.1" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-utest::0.7.0"
+ivy"com.softwaremill.diffx::diffx-utest::0.7.1"
 ```
 
 ## Usage
@@ -41,4 +41,24 @@ val left: Foo = Foo(
 
 assertEqual(left, right)
 ```
+
+## Versions matrix
+
+Below table shows past Diffx releases with the corresponding utest version they were build with.
+For newer versions checkout the release changelog.
+
+| Diffx  | scalatest |
+|--------|:---------:|
+| 0.7.0  |  0.7.10   |
+| 0.6.0  |  0.7.10   |
+| 0.5.x  |  0.7.10   |
+| 0.4.5  |   0.7.7   |
+| 0.4.4  |   0.7.7   |
+| 0.4.3  |   0.7.7   |
+| 0.4.2  |   0.7.7   |
+| 0.4.1  |   0.7.7   |
+| 0.4.0  |   0.7.5   |
+| 0.3.30 |   0.7.5   |
+| 0.3.29 |   0.7.4   |
+| 0.3.28 |   0.7.4   |
 

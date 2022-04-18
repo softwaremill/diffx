@@ -47,13 +47,13 @@ By default, it is set to an identical function.
 ```scala
 implicit val showConfig = ShowConfig.default.copy(transformer = DiffResultTransformer.skipIdentical)
 // showConfig: ShowConfig = ShowConfig(
-//   left = com.softwaremill.diffx.ShowConfig$$$Lambda$11597/0x0000000842d62840@4292838c,
-//   right = com.softwaremill.diffx.ShowConfig$$$Lambda$11597/0x0000000842d62840@7e50258,
-//   missing = com.softwaremill.diffx.ShowConfig$$$Lambda$11597/0x0000000842d62840@5a59b1a9,
-//   additional = com.softwaremill.diffx.ShowConfig$$$Lambda$11597/0x0000000842d62840@352a9ee1,
-//   default = com.softwaremill.diffx.ShowConfig$$$Lambda$11600/0x0000000842d61840@6372f52b,
-//   arrow = com.softwaremill.diffx.ShowConfig$$$Lambda$11597/0x0000000842d62840@4c2adcdf,
-//   transformer = com.softwaremill.diffx.DiffResultTransformer$$$Lambda$11636/0x0000000842d02840@5b69f80a
+//   left = com.softwaremill.diffx.ShowConfig$$$Lambda$10184/0x0000000802892b88@163530b,
+//   right = com.softwaremill.diffx.ShowConfig$$$Lambda$10184/0x0000000802892b88@382468a7,
+//   missing = com.softwaremill.diffx.ShowConfig$$$Lambda$10184/0x0000000802892b88@2013f8f6,
+//   additional = com.softwaremill.diffx.ShowConfig$$$Lambda$10184/0x0000000802892b88@453c98de,
+//   default = com.softwaremill.diffx.ShowConfig$$$Lambda$10187/0x0000000802893398@5edc7079,
+//   arrow = com.softwaremill.diffx.ShowConfig$$$Lambda$10184/0x0000000802892b88@45a65a55,
+//   transformer = com.softwaremill.diffx.DiffResultTransformer$$$Lambda$10221/0x000000080262c000@7a4dde5f
 // )
 case class Person(name:String, age:Int)
 

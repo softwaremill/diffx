@@ -5,13 +5,13 @@ This module contains integration layer between [org.typelevel.cats](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-cats" % "0.7.0" % Test    
+"com.softwaremill.diffx" %% "diffx-cats" % "0.7.1" % Test    
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-cats::0.7.0"
+ivy"com.softwaremill.diffx::diffx-cats::0.7.1"
 ```
 
 ## Usage
