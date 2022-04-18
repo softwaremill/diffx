@@ -78,7 +78,8 @@ lazy val core = (projectMatrix in file("core"))
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213, scala3),
-    libraryDependencies += ("org.scala-js" %%% "scalajs-fake-insecure-java-securerandom" % "1.0.0").cross(CrossVersion.for3Use2_13) % Test
+    libraryDependencies += ("org.scala-js" %%% "scalajs-fake-insecure-java-securerandom" % "1.0.0")
+      .cross(CrossVersion.for3Use2_13) % Test
   )
 
 lazy val scalatestMust = (projectMatrix in file("scalatest-must"))
