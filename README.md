@@ -24,7 +24,7 @@ That is, in sbt run: `set version := "0.5.0"`, before running `mdoc` in `docs`.
 
 ```sh
 $ nix develop
-$ sbt ci-release
+$ sbt release
 ```
 
 ## Copyright
