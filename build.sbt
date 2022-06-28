@@ -228,7 +228,7 @@ lazy val refined = (projectMatrix in file("refined"))
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %%% "refined" % "0.9.29",
+      "eu.timepit" %%% "refined" % "0.10.0",
       "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
