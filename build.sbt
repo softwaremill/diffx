@@ -10,7 +10,7 @@ val scala3 = "3.1.0"
 
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
-val scalatestVersion = "3.2.10"
+val scalatestVersion = "3.2.12"
 val specs2Version = "4.16.1"
 val smlTaggingVersion = "2.3.3"
 
