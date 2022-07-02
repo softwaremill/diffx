@@ -10,8 +10,8 @@ val scala3 = "3.1.0"
 
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
-val scalatestVersion = "3.2.12"
-val specs2Version = "4.15.0"
+val scalatestVersion = "3.2.10"
+val specs2Version = "4.16.1"
 val smlTaggingVersion = "2.3.3"
 
 lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPublishSettings ++ Seq(
@@ -228,7 +228,7 @@ lazy val refined = (projectMatrix in file("refined"))
   .settings(
     name := "diffx-refined",
     libraryDependencies ++= Seq(
-      "eu.timepit" %%% "refined" % "0.9.29",
+      "eu.timepit" %%% "refined" % "0.10.0",
       "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
