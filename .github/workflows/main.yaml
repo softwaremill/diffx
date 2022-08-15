@@ -18,19 +18,18 @@ jobs:
       - uses: coursier/setup-action@v1.2.1
         with:
           jvm: adopt:11
-          apps: lsif-java
       - name: Run tests with sbt
         run: sbt test
       - name: Compile docs
         run: sbt compileDocs
       - name: Generate LSIF
-        run: lsif-java index
+        run: cs launch com.sourcegraph:scip-java_2.13:0.8.2 -- index
+      - name: Install sourcegraph/src
+        run: yarn global add @sourcegraph/src
       - name: Upload LSIF data
-        uses: sourcegraph/lsif-upload-action@master
-        with:
-          endpoint: https://sourcegraph.com
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dump.lsif
+        run: src code-intel upload -trace=3 -root . -file index.scip -github-token $GITHUB_TOKEN
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     name: Publish release
