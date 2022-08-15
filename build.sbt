@@ -4,9 +4,9 @@ import sbt.Reference.display
 import com.softwaremill.SbtSoftwareMillCommon.commonSmlBuildSettings
 import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 
-val scala212 = "2.12.15"
+val scala212 = "2.12.16"
 val scala213 = "2.13.8"
-val scala3 = "3.1.0"
+val scala3 = "3.1.3"
 
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
@@ -69,7 +69,7 @@ lazy val core = (projectMatrix in file("core"))
       "org.scalatest" %%% "scalatest-flatspec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test,
-      "io.github.cquiroz" %%% "scala-java-time" % "2.3.0" % Test
+      "io.github.cquiroz" %%% "scala-java-time" % "2.4.0" % Test
     ),
     versionSpecificScalaSources
   )
@@ -210,7 +210,7 @@ lazy val cats = (projectMatrix in file("cats"))
   .settings(
     name := "diffx-cats",
     libraryDependencies ++= Seq(
-      "org.typelevel" %%% "cats-core" % "2.7.0",
+      "org.typelevel" %%% "cats-core" % "2.8.0",
       "org.scalatest" %%% "scalatest-freespec" % scalatestVersion % Test,
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test
     )
@@ -248,7 +248,7 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     publishArtifact := false,
     name := "docs",
     libraryDependencies ++= Seq(
-      "org.typelevel" %% "cats-core" % "2.7.0",
+      "org.typelevel" %% "cats-core" % "2.8.0",
       "org.scalatest" %% "scalatest-shouldmatchers" % scalatestVersion
     ),
     mdocIn := file("docs-sources"),
