@@ -18,19 +18,22 @@ jobs:
       - uses: coursier/setup-action@v1.2.1
         with:
           jvm: adopt:11
-          apps: lsif-java
       - name: Run tests with sbt
         run: sbt test
       - name: Compile docs
         run: sbt compileDocs
       - name: Generate LSIF
-        run: lsif-java index
-      - name: Upload LSIF data
-        uses: sourcegraph/lsif-upload-action@master
+        run: cs launch com.sourcegraph:scip-java_2.13:0.8.2 -- index
+      - uses: actions/setup-node@v1
         with:
-          endpoint: https://sourcegraph.com
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dump.lsif
+          node-version: '16.x'
+      - name: Install
+        run: npm install -g @sourcegraph/src
+      - name: Upload LSIF data
+        run: src upload
+        env:
+          SRC_ENDPOINT: https://sourcegraph.com
+          SRC_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     name: Publish release
