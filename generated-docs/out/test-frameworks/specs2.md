@@ -5,13 +5,13 @@ To use with specs2, add the following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.7.1" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.8.0" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-specs2::0.7.1"
+ivy"com.softwaremill.diffx::diffx-specs2::0.8.0"
 ```
 
 ## Usage
