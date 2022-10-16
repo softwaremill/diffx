@@ -13,6 +13,13 @@ class DiffxCatsTest extends AnyFreeSpec with Matchers {
     )
   }
 
+  "chain" in {
+    compare(Chain(1), Chain(2)) shouldBe DiffResultObject(
+      "Chain",
+      Map("0" -> DiffResultValue(1, 2))
+    )
+  }
+
   "nonEmptyChain" in {
     compare(NonEmptyChain.one(1), NonEmptyChain.one(2)) shouldBe DiffResultObject(
       "NonEmptyChain",

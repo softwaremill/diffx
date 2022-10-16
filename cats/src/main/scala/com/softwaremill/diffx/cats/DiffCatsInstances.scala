@@ -1,6 +1,6 @@
 package com.softwaremill.diffx.cats
 
-import cats.data.{NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector}
+import cats.data.{Chain, NonEmptyChain, NonEmptyList, NonEmptyMap, NonEmptySet, NonEmptyVector}
 import com.softwaremill.diffx.instances.{DiffForMap, DiffForSeq, DiffForSet}
 import com.softwaremill.diffx.{Diff, MapLike, MapMatcher, SeqLike, SeqMatcher, SetLike, SetMatcher}
 
@@ -15,11 +15,21 @@ trait DiffCatsInstances {
     override def asSeq[A](c: NonEmptyList[A]): Seq[A] = c.toList
   }
 
+  implicit def diffChain[T: Diff](implicit
+      seqMatcher: SeqMatcher[T],
+      seqLike: SeqLike[Chain]
+  ): Diff[Chain[T]] =
+    new DiffForSeq[Chain, T](Diff[T], seqMatcher, seqLike, "Chain")
+
   implicit def diffNec[T: Diff](implicit
       seqMatcher: SeqMatcher[T],
       seqLike: SeqLike[NonEmptyChain]
   ): Diff[NonEmptyChain[T]] =
     new DiffForSeq[NonEmptyChain, T](Diff[T], seqMatcher, seqLike, "NonEmptyChain")
+
+  implicit def chainIsLikeSeq: SeqLike[Chain] = new SeqLike[Chain] {
+    override def asSeq[A](c: Chain[A]): Seq[A] = c.toList
+  }
 
   implicit def necIsLikeSeq: SeqLike[NonEmptyChain] = new SeqLike[NonEmptyChain] {
     override def asSeq[A](c: NonEmptyChain[A]): Seq[A] = c.toChain.toList
