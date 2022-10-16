@@ -19,3 +19,9 @@ project/plugins/project/
 .bloop/
 metals.sbt
 .vscode
+
+index.scip
+
+node_modules
+package.json
+package-lock.json
