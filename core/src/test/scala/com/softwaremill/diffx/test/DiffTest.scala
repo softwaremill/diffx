@@ -846,13 +846,13 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
       "different first element should make them different" in {
         compare((1, 2), (3, 2)) shouldBe DiffResultObject(
           "Tuple2",
-          Map("_1" -> DiffResultValue(1, 3), "_2" -> IdenticalValue(2))
+          ListMap("_1" -> DiffResultValue(1, 3), "_2" -> IdenticalValue(2))
         )
       }
       "different second element should make them different" in {
         compare((1, 3), (1, 2)) shouldBe DiffResultObject(
           "Tuple2",
-          Map("_1" -> IdenticalValue(1), "_2" -> DiffResultValue(3, 2))
+          ListMap("_1" -> IdenticalValue(1), "_2" -> DiffResultValue(3, 2))
         )
       }
     }
@@ -863,19 +863,19 @@ class DiffTest extends AnyFreeSpec with Matchers with AutoDerivation {
       "different first element should make them different" in {
         compare((1, 2, 3), (4, 2, 3)) shouldBe DiffResultObject(
           "Tuple3",
-          Map("_1" -> DiffResultValue(1, 4), "_2" -> IdenticalValue(2), "_3" -> IdenticalValue(3))
+          ListMap("_1" -> DiffResultValue(1, 4), "_2" -> IdenticalValue(2), "_3" -> IdenticalValue(3))
         )
       }
       "different second element should make them different" in {
         compare((1, 2, 3), (1, 4, 3)) shouldBe DiffResultObject(
           "Tuple3",
-          Map("_1" -> IdenticalValue(1), "_2" -> DiffResultValue(2, 4), "_3" -> IdenticalValue(3))
+          ListMap("_1" -> IdenticalValue(1), "_2" -> DiffResultValue(2, 4), "_3" -> IdenticalValue(3))
         )
       }
       "different third element should make them different" in {
         compare((1, 2, 3), (1, 2, 4)) shouldBe DiffResultObject(
           "Tuple3",
-          Map("_1" -> IdenticalValue(1), "_2" -> IdenticalValue(2), "_3" -> DiffResultValue(3, 4))
+          ListMap("_1" -> IdenticalValue(1), "_2" -> IdenticalValue(2), "_3" -> DiffResultValue(3, 4))
         )
       }
     }

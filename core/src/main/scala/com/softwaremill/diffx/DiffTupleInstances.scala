@@ -1,5 +1,7 @@
 package com.softwaremill.diffx
 
+import scala.collection.immutable.ListMap
+
 trait DiffTupleInstances {
 
   implicit def dTuple2[T1, T2](implicit d1: Diff[T1], d2: Diff[T2]): Diff[Tuple2[T1, T2]] = new Diff[Tuple2[T1, T2]] {
@@ -8,7 +10,7 @@ trait DiffTupleInstances {
         right: (T1, T2),
         context: DiffContext
     ): DiffResult = {
-      val results = List("_1" -> d1.apply(left._1, right._1), "_2" -> d2.apply(left._2, right._2)).toMap
+      val results = ListMap("_1" -> d1.apply(left._1, right._1), "_2" -> d2.apply(left._2, right._2))
       DiffResultObject("Tuple2", results)
     }
   }
@@ -20,11 +22,11 @@ trait DiffTupleInstances {
           right: (T1, T2, T3),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3)
-        ).toMap
+        )
         DiffResultObject("Tuple3", results)
       }
     }
@@ -40,12 +42,12 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
         "_4" -> d4.apply(left._4, right._4)
-      ).toMap
+      )
       DiffResultObject("Tuple4", results)
     }
   }
@@ -62,13 +64,13 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4, T5),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
         "_4" -> d4.apply(left._4, right._4),
         "_5" -> d5.apply(left._5, right._5)
-      ).toMap
+      )
       DiffResultObject("Tuple5", results)
     }
   }
@@ -86,14 +88,14 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4, T5, T6),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
         "_4" -> d4.apply(left._4, right._4),
         "_5" -> d5.apply(left._5, right._5),
         "_6" -> d6.apply(left._6, right._6)
-      ).toMap
+      )
       DiffResultObject("Tuple6", results)
     }
   }
@@ -112,7 +114,7 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4, T5, T6, T7),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
@@ -120,7 +122,7 @@ trait DiffTupleInstances {
         "_5" -> d5.apply(left._5, right._5),
         "_6" -> d6.apply(left._6, right._6),
         "_7" -> d7.apply(left._7, right._7)
-      ).toMap
+      )
       DiffResultObject("Tuple7", results)
     }
   }
@@ -140,7 +142,7 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4, T5, T6, T7, T8),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
@@ -149,7 +151,7 @@ trait DiffTupleInstances {
         "_6" -> d6.apply(left._6, right._6),
         "_7" -> d7.apply(left._7, right._7),
         "_8" -> d8.apply(left._8, right._8)
-      ).toMap
+      )
       DiffResultObject("Tuple8", results)
     }
   }
@@ -170,7 +172,7 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4, T5, T6, T7, T8, T9),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
@@ -180,7 +182,7 @@ trait DiffTupleInstances {
         "_7" -> d7.apply(left._7, right._7),
         "_8" -> d8.apply(left._8, right._8),
         "_9" -> d9.apply(left._9, right._9)
-      ).toMap
+      )
       DiffResultObject("Tuple9", results)
     }
   }
@@ -203,7 +205,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -214,7 +216,7 @@ trait DiffTupleInstances {
           "_8" -> d8.apply(left._8, right._8),
           "_9" -> d9.apply(left._9, right._9),
           "_10" -> d10.apply(left._10, right._10)
-        ).toMap
+        )
         DiffResultObject("Tuple10", results)
       }
     }
@@ -238,7 +240,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -250,7 +252,7 @@ trait DiffTupleInstances {
           "_9" -> d9.apply(left._9, right._9),
           "_10" -> d10.apply(left._10, right._10),
           "_11" -> d11.apply(left._11, right._11)
-        ).toMap
+        )
         DiffResultObject("Tuple11", results)
       }
     }
@@ -275,7 +277,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -288,7 +290,7 @@ trait DiffTupleInstances {
           "_10" -> d10.apply(left._10, right._10),
           "_11" -> d11.apply(left._11, right._11),
           "_12" -> d12.apply(left._12, right._12)
-        ).toMap
+        )
         DiffResultObject("Tuple12", results)
       }
     }
@@ -314,7 +316,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -328,7 +330,7 @@ trait DiffTupleInstances {
           "_11" -> d11.apply(left._11, right._11),
           "_12" -> d12.apply(left._12, right._12),
           "_13" -> d13.apply(left._13, right._13)
-        ).toMap
+        )
         if (results.values.forall(_.isIdentical)) {
           IdenticalValue(left)
         } else {
@@ -359,7 +361,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -374,7 +376,7 @@ trait DiffTupleInstances {
           "_12" -> d12.apply(left._12, right._12),
           "_13" -> d13.apply(left._13, right._13),
           "_14" -> d14.apply(left._14, right._14)
-        ).toMap
+        )
         DiffResultObject("Tuple14", results)
       }
     }
@@ -402,7 +404,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -418,7 +420,7 @@ trait DiffTupleInstances {
           "_13" -> d13.apply(left._13, right._13),
           "_14" -> d14.apply(left._14, right._14),
           "_15" -> d15.apply(left._15, right._15)
-        ).toMap
+        )
         DiffResultObject("Tuple15", results)
       }
     }
@@ -447,7 +449,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -464,7 +466,7 @@ trait DiffTupleInstances {
           "_14" -> d14.apply(left._14, right._14),
           "_15" -> d15.apply(left._15, right._15),
           "_16" -> d16.apply(left._16, right._16)
-        ).toMap
+        )
         DiffResultObject("Tuple16", results)
       }
     }
@@ -494,7 +496,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -512,7 +514,7 @@ trait DiffTupleInstances {
           "_15" -> d15.apply(left._15, right._15),
           "_16" -> d16.apply(left._16, right._16),
           "_17" -> d17.apply(left._17, right._17)
-        ).toMap
+        )
         DiffResultObject("Tuple17", results)
       }
     }
@@ -543,7 +545,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -562,7 +564,7 @@ trait DiffTupleInstances {
           "_16" -> d16.apply(left._16, right._16),
           "_17" -> d17.apply(left._17, right._17),
           "_18" -> d18.apply(left._18, right._18)
-        ).toMap
+        )
         DiffResultObject("Tuple18", results)
       }
     }
@@ -594,7 +596,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -614,7 +616,7 @@ trait DiffTupleInstances {
           "_17" -> d17.apply(left._17, right._17),
           "_18" -> d18.apply(left._18, right._18),
           "_19" -> d19.apply(left._19, right._19)
-        ).toMap
+        )
         DiffResultObject("Tuple19", results)
       }
     }
@@ -648,7 +650,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -669,7 +671,7 @@ trait DiffTupleInstances {
           "_18" -> d18.apply(left._18, right._18),
           "_19" -> d19.apply(left._19, right._19),
           "_20" -> d20.apply(left._20, right._20)
-        ).toMap
+        )
         DiffResultObject("Tuple20", results)
       }
     }
@@ -704,7 +706,7 @@ trait DiffTupleInstances {
           right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21),
           context: DiffContext
       ): DiffResult = {
-        val results = List(
+        val results = ListMap(
           "_1" -> d1.apply(left._1, right._1),
           "_2" -> d2.apply(left._2, right._2),
           "_3" -> d3.apply(left._3, right._3),
@@ -726,7 +728,7 @@ trait DiffTupleInstances {
           "_19" -> d19.apply(left._19, right._19),
           "_20" -> d20.apply(left._20, right._20),
           "_21" -> d21.apply(left._21, right._21)
-        ).toMap
+        )
         DiffResultObject("Tuple21", results)
       }
     }
@@ -787,7 +789,7 @@ trait DiffTupleInstances {
         right: (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22),
         context: DiffContext
     ): DiffResult = {
-      val results = List(
+      val results = ListMap(
         "_1" -> d1.apply(left._1, right._1),
         "_2" -> d2.apply(left._2, right._2),
         "_3" -> d3.apply(left._3, right._3),
@@ -810,7 +812,7 @@ trait DiffTupleInstances {
         "_20" -> d20.apply(left._20, right._20),
         "_21" -> d21.apply(left._21, right._21),
         "_22" -> d22.apply(left._22, right._22)
-      ).toMap
+      )
       DiffResultObject("Tuple22", results)
     }
   }
