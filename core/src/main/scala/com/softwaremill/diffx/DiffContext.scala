@@ -22,7 +22,7 @@ case class DiffContext(
 
   private def treeOverride[T](nextPath: ModifyPath, tree: Tree[T]) = {
     tree match {
-      case Tree.Leaf(v)     => Some(v)
+      case Tree.Leaf(v)     => None
       case Tree.Node(tries) => getOverrideFromNode(nextPath, tries)
     }
   }
