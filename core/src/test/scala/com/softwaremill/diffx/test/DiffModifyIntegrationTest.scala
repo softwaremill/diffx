@@ -320,4 +320,31 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
       )
     )
   }
+
+  it should "allow propagate modification from substituted diff instance" in {
+    case class Address(house: Int, street: String)
+    case class Person(name: String, address: Address)
+
+    val add = Diff.summon[Address].ignore(_.house)
+    val d = Diff
+      .summon[Person]
+      .modify(_.address)
+      .setTo(add)
+
+    val a1 = Address(123, "Robin St.")
+    val a2 = Address(456, "Robin St.")
+
+    val p1 = Person("Mason", a1)
+    val p2 = Person("Mason", a2)
+    d(p1, p2) shouldBe DiffResultObject(
+      "Person",
+      ListMap(
+        "name" -> IdenticalValue("Mason"),
+        "address" -> DiffResultObject(
+          "Address",
+          ListMap("house" -> IdenticalValue("<ignored>"), "street" -> IdenticalValue("Robin St."))
+        )
+      )
+    )
+  }
 }

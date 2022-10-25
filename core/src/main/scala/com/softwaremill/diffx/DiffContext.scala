@@ -67,7 +67,7 @@ object Tree {
   def empty[T]: Node[T] = Tree.Node[T](Map.empty)
 
   case class Leaf[T](v: T) extends Tree[T] {
-    override def merge(tree: Tree[T]): Tree[T] = this
+    override def merge(tree: Tree[T]): Tree[T] = tree
   }
   case class Node[T](tries: Map[ModifyPath, Tree[T]]) extends Tree[T] {
     override def merge(tree: Tree[T]): Tree[T] = {
