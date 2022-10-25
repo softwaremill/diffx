@@ -30,10 +30,16 @@ trait DiffMagnoliaDerivation {
       val lType = ctx.split(left)(a => a)
       val rType = ctx.split(right)(a => a)
       if (lType == rType) {
-        lType.typeclass(
+        val leftTypeClass = lType.typeclass
+        val contextPath = ModifyPath.Subtype(lType.typeName.owner, lType.typeName.short)
+        val modifyFromOverride = context
+          .getOverride(contextPath)
+          .map(_.asInstanceOf[leftTypeClass.type => leftTypeClass.type])
+          .getOrElse(identity[leftTypeClass.type] _)
+        modifyFromOverride(leftTypeClass)(
           lType.cast(left),
           lType.cast(right),
-          context.getNextStep(ModifyPath.Subtype(lType.typeName.owner, lType.typeName.short)).merge(context)
+          context.getNextStep(contextPath).merge(context)
         )
       } else {
         DiffResultValue(lType.typeName.full, rType.typeName.full)

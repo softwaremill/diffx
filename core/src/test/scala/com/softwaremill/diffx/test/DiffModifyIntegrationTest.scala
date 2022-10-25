@@ -7,6 +7,7 @@ import org.scalatest.matchers.should.Matchers
 
 import java.time.Instant
 import java.util.UUID
+import scala.collection.immutable.ListMap
 
 class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDerivation {
   val instant: Instant = Instant.now()
@@ -292,5 +293,31 @@ class DiffModifyIntegrationTest extends AnyFlatSpec with Matchers with AutoDeriv
 
     val d2 = Diff[Family].modify(_.second.name).ignore.modify(_.first).ignore
     compare(f1, f2)(d2).isIdentical shouldBe true
+  }
+
+  it should "allow to set custom diff to a nested case class field" in {
+    case class Address(house: Int, street: String)
+    case class Person(name: String, address: Address)
+
+    val add = Diff.summon[Address]
+    val d = Diff
+      .summon[Person]
+      .modify(_.address)
+      .setTo(add)
+
+    val a1 = Address(123, "Robin St.")
+    val a2 = Address(456, "Robin St.")
+    val p1 = Person("Mason", a1)
+    val p2 = Person("Mason", a2)
+    d(p1, p2) shouldBe DiffResultObject(
+      "Person",
+      ListMap(
+        "name" -> IdenticalValue("Mason"),
+        "address" -> DiffResultObject(
+          "Address",
+          ListMap("house" -> DiffResultValue(123, 456), "street" -> IdenticalValue("Robin St."))
+        )
+      )
+    )
   }
 }
