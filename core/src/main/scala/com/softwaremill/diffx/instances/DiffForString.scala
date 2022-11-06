@@ -11,11 +11,50 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
       val rows = generator.generateDiffRows(splitIntoLines(left), splitIntoLines(right))
       val lineResults = processLineDiffs(rows)
       if (lineResults.forall(_.isIdentical)) {
-        IdenticalValue(left)
+        if (left == right) {
+          IdenticalValue(left)
+        } else {
+          val resultsByChar =
+            generator.generateDiffRows[Int](left.map(c => c.toInt).toList, right.map(c => c.toInt).toList)
+          val resultsAsString: List[DiffRow[String]] = resultsByChar.map {
+            case DiffRow.Insert(newLine)          => DiffRow.Insert(newLine.toChar.toString)
+            case DiffRow.Delete(oldLine)          => DiffRow.Delete(oldLine.toChar.toString)
+            case DiffRow.Change(oldLine, newLine) => DiffRow.Change(oldLine.toChar.toString, newLine.toChar.toString)
+            case DiffRow.Equal(oldLine, newLine)  => DiffRow.Equal(oldLine.toChar.toString, newLine.toChar.toString)
+          }
+          DiffResultString(mergeIdentical(resultsAsString))
+        }
       } else {
         DiffResultString(lineResults)
       }
     }
+
+  private def mergeIdentical(rows: List[DiffRow[String]]): List[DiffResult] = {
+    rows
+      .foldLeft(List[DiffResult](IdenticalValue[String](""))) { (acc, item) =>
+        acc match {
+          case list @ ::(IdenticalValue(head: String), next) =>
+            item match {
+              case DiffRow.Insert("\n")             => DiffResultMissing("") :: list
+              case DiffRow.Insert(newLine)          => DiffResultMissing(newLine) :: list
+              case DiffRow.Delete("\n")             => DiffResultAdditional("") :: list
+              case DiffRow.Delete(oldLine)          => DiffResultAdditional(oldLine) :: list
+              case DiffRow.Change(oldLine, newLine) => DiffResultValue(oldLine, newLine) :: list
+              case DiffRow.Equal(oldLine, newLine)  => IdenticalValue(head ++ oldLine) :: next
+            }
+          case other =>
+            item match {
+              case DiffRow.Insert("\n")             => DiffResultMissing("") :: other
+              case DiffRow.Insert(newLine)          => DiffResultMissing(newLine) :: other
+              case DiffRow.Delete("\n")             => DiffResultAdditional("") :: other
+              case DiffRow.Delete(oldLine)          => DiffResultAdditional(oldLine) :: other
+              case DiffRow.Change(oldLine, newLine) => DiffResultValue(oldLine, newLine) :: other
+              case DiffRow.Equal(oldLine, newLine)  => IdenticalValue(oldLine) :: other
+            }
+        }
+      }
+      .reverse
+  }
 
   private def processLineDiffs(rows: List[DiffRow[String]]) = {
     rows.map {
@@ -56,8 +95,10 @@ class DiffForString(similarityThreshold: Double = 0.5) extends Diff[String] {
       .map(_.mkString)
   }
 
-  private def processWordDiffs(words: List[DiffRow[String]]): List[DiffResult] = {
-    words.map {
+  private def processWordDiffs(words: List[DiffRow[String]]): List[DiffResult] = words.map(processWordDiff)
+
+  private def processWordDiff(wd: DiffRow[String]) = {
+    wd match {
       case DiffRow.Insert(newLine)     => DiffResultMissingChunk(newLine)
       case DiffRow.Delete(oldLine)     => DiffResultAdditionalChunk(oldLine)
       case DiffRow.Change("", newLine) => DiffResultMissingChunk(newLine)
