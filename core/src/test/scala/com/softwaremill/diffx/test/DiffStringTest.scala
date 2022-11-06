@@ -5,6 +5,7 @@ import com.softwaremill.diffx.{
   DiffResultAdditional,
   DiffResultAdditionalChunk,
   DiffResultChunk,
+  DiffResultMissing,
   DiffResultMissingChunk,
   DiffResultString,
   DiffResultStringLine,
@@ -238,6 +239,17 @@ class DiffStringTest extends AnyFreeSpec with Matchers {
       diffForString(left, right) shouldBe DiffResultString(
         List(IdenticalValue("bob"), IdenticalValue("and mark"), DiffResultAdditional("alice went to school"))
       )
+    }
+
+    "additional empty line should make a difference" in {
+      diffForString("hello", "hello\n") shouldBe DiffResultString(List(IdenticalValue("hello"), DiffResultMissing("")))
+      diffForString("hello\n", "hello") shouldBe DiffResultString(
+        List(IdenticalValue("hello"), DiffResultAdditional(""))
+      )
+      diffForString("\nhello", "hello") shouldBe DiffResultString(
+        List(DiffResultAdditional(""), IdenticalValue("hello"))
+      )
+      diffForString("hello", "\nhello") shouldBe DiffResultString(List(DiffResultMissing(""), IdenticalValue("hello")))
     }
   }
 }
