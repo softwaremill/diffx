@@ -57,3 +57,16 @@ class NonCaseClass(private val field: String) {
     }
   }
 }
+
+class VerboseNonCaseClass(private val key: String, private val value: Int) {
+  override def toString: String =
+    s"""VerboseNonCaseClass(
+       |    key:   $key,
+       |    value: $value
+       |)""".stripMargin
+
+  override def equals(obj: Any): Boolean = obj match {
+    case other: VerboseNonCaseClass => other.key == key && other.value == value
+    case _ => false
+  }
+}

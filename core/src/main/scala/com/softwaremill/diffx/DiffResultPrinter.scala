@@ -12,13 +12,13 @@ object DiffResultPrinter {
       case dr: DiffResultString        => s"${dr.diffs.map(ds => showIndented(ds, indent)).mkString("\n")}"
       case dr: DiffResultStringLine    => mergeChunks(dr.diffs).map(ds => showIndented(ds, indent)).mkString
       case dr: DiffResultStringWord    => mergeChunks(dr.diffs).map(ds => showIndented(ds, indent)).mkString
-      case dr: DiffResultChunk         => arrowColor("[") + showChange(s"${dr.left}", s"${dr.right}") + arrowColor("]")
-      case dr: DiffResultValue[_]      => showChange(s"${dr.left}", s"${dr.right}")
-      case dr: IdenticalValue[_]       => defaultColor(s"${dr.value}")
-      case dr: DiffResultMissing[_]    => missingColor(s"${dr.value}")
-      case dr: DiffResultMissingChunk  => missingColor(s"[${dr.value}]")
-      case dr: DiffResultAdditional[_] => additionalColor(s"${dr.value}")
-      case dr: DiffResultAdditionalChunk => additionalColor(s"[${dr.value}]")
+      case dr: DiffResultChunk         => arrowColor("[") + showChange(s"${dr.left}", s"${dr.right}", indent) + arrowColor("]")
+      case dr: DiffResultValue[_]      => showChange(s"${dr.left}", s"${dr.right}", indent)
+      case dr: IdenticalValue[_]       => defaultColor(s"${dr.value}", indent)
+      case dr: DiffResultMissing[_]    => missingColor(s"${dr.value}", indent)
+      case dr: DiffResultMissingChunk  => missingColor(s"[${dr.value}]", indent)
+      case dr: DiffResultAdditional[_] => additionalColor(s"${dr.value}", indent)
+      case dr: DiffResultAdditionalChunk => additionalColor(s"[${dr.value}]", indent)
     }
   }
 
@@ -89,12 +89,14 @@ object DiffResultPrinter {
       }
   }
 
-  private def leftColor(s: String)(implicit c: ShowConfig): String = c.left(s)
-  private def missingColor(s: String)(implicit c: ShowConfig): String = c.missing(s)
-  private def additionalColor(s: String)(implicit c: ShowConfig): String = c.additional(s)
-  private def rightColor(s: String)(implicit c: ShowConfig): String = c.right(s)
-  private def defaultColor(s: String)(implicit c: ShowConfig): String = c.default(s)
+  private def missingColor(s: String, indent: Int)(implicit c: ShowConfig): String = withColor(s, c.missing, indent)
+  private def additionalColor(s: String, indent: Int)(implicit c: ShowConfig): String = withColor(s, c.additional, indent)
+  private def defaultColor(s: String, indent: Int = 0)(implicit c: ShowConfig): String = withColor(s, c.default, indent)
   private def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)
-  private def showChange(l: String, r: String)(implicit c: ShowConfig): String =
-    leftColor(l) + arrowColor(" -> ") + rightColor(r)
+  private def showChange(l: String, r: String, indent: Int)(implicit c: ShowConfig): String =
+    withColor(l, c.left, indent) + arrowColor(" -> ") + withColor(r, c.right, indent)
+
+  private def withColor(value: String, color: String => String, indent: Int): String = {
+    value.split("\n", -1).map(color(_)).mkString("\n" + " ".repeat(indent))
+  }
 }
