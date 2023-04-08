@@ -13,11 +13,11 @@ jobs:
     env:
       JAVA_OPTS: -Xmx4G
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3.1.0
       - uses: coursier/cache-action@v6.4
       - uses: coursier/setup-action@v1.2.1
         with:
-          jvm: adopt:11
+          jvm: zulu:17
       - name: Run tests with sbt
         run: sbt test
       - name: Compile docs
@@ -39,7 +39,7 @@ jobs:
     env:
       JAVA_OPTS: -Xmx4G
     steps:
-      - uses: actions/checkout@v3.5.0
+      - uses: actions/checkout@v3.1.0
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v6.4
@@ -66,3 +66,5 @@ jobs:
           version: "v${{ env.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
