@@ -171,9 +171,9 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
 
   "diff iterable output" - {
     "it should show an indented diff for objects with multiline toString" in {
-      val john = VerboseNonCaseClass("John", 33)
-      val mary = VerboseNonCaseClass("Mary", 28)
-      val jane = VerboseNonCaseClass("Jane", 5)
+      val john = new VerboseNonCaseClass("John", 33)
+      val mary = new VerboseNonCaseClass("Mary", 28)
+      val jane = new VerboseNonCaseClass("Jane", 5)
       DiffResultIterable(
         "List",
         Map(
