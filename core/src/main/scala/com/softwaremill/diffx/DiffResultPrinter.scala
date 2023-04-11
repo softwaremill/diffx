@@ -97,6 +97,6 @@ object DiffResultPrinter {
     withColor(l, c.left, indent) + arrowColor(" -> ") + withColor(r, c.right, indent)
 
   private def withColor(value: String, color: String => String, indent: Int): String = {
-    value.split("\n", -1).map(color(_)).mkString("\n" + " ".repeat(indent))
+    value.split("\n", -1).map(color(_)).mkString("\n" + " " * indent)
   }
 }
