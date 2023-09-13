@@ -35,7 +35,7 @@ with the `Diff.ignore` instance.
 ## collection support
 
 Specify how objects within particular collection within particular diff instance should be matched.
-We distinguish free main types of collections:
+We distinguish three main types of collections:
 - seqLike collections where elements are indexed collections
 - setLike collections where elements aren't indexed
 - mapLike collections where elements(values) are indexed by some keys
