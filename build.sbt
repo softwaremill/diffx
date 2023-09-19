@@ -7,7 +7,7 @@ import complete.DefaultParsers._
 
 val scala212 = "2.12.16"
 val scala213 = "2.13.8"
-val scala3 = "3.1.3"
+val scala3 = "3.2.2"
 
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
@@ -96,7 +96,7 @@ lazy val core = (projectMatrix in file("core"))
   )
   .jvmPlatform(
     scalaVersions = List(scala212, scala213, scala3),
-      settings = enableMimaSettings
+    settings = enableMimaSettings
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213, scala3),
@@ -209,6 +209,23 @@ lazy val munit = (projectMatrix in file("munit"))
     settings = commonSettings ++ Seq(scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) })
   )
 
+lazy val weaver = (projectMatrix in file("weaver"))
+  .settings(commonSettings)
+  .settings(
+    name := "diffx-weaver",
+    libraryDependencies ++= Seq(
+      "com.disneystreaming" %%% "weaver-cats" % "0.8.3"
+    ),
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+  )
+  .dependsOn(core)
+  .jvmPlatform(
+    scalaVersions = List(scala212, scala213, scala3)
+  )
+  .jsPlatform(
+    scalaVersions = List(scala212, scala213, scala3)
+  )
+
 lazy val tagging = (projectMatrix in file("tagging"))
   .settings(commonSettings)
   .settings(
@@ -280,7 +297,7 @@ lazy val docs = (projectMatrix in file("generated-docs")) // important: it must 
     ),
     mdocOut := file("generated-docs/out")
   )
-  .dependsOn(core, scalatestShould, specs2, utest, refined, tagging, cats, munit)
+  .dependsOn(core, scalatestShould, specs2, utest, refined, tagging, cats, munit, weaver)
   .jvmPlatform(scalaVersions = List(scala213))
 
 val testJVM = taskKey[Unit]("Test JVM projects")
@@ -289,7 +306,7 @@ val testJS = taskKey[Unit]("Test JS projects")
 val allAggregates =
   core.projectRefs ++ scalatestMust.projectRefs ++ scalatestShould.projectRefs ++ scalatestLegacy.projectRefs ++
     specs2.projectRefs ++ utest.projectRefs ++ cats.projectRefs ++
-    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs ++ munit.projectRefs
+    refined.projectRefs ++ tagging.projectRefs ++ docs.projectRefs ++ munit.projectRefs ++ weaver.projectRefs
 
 def filterProject(p: String => Boolean) =
   ScopeFilter(inProjects(allAggregates.filter(pr => p(display(pr.project))): _*))
