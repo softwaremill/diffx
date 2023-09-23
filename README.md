@@ -1,6 +1,6 @@
 ![diffx](https://github.com/softwaremill/diffx/raw/master/banner.png)
 
-[![Build Status](https://img.shields.io/github/workflow/status/softwaremill/diffx/CI/master)](https://github.com/softwaremill/diffx/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/softwaremill/diffx/main.yaml?branch=master)](https://github.com/softwaremill/diffx/actions)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.softwaremill.diffx/diffx-core_2.13/badge.svg)](https://search.maven.org/search?q=g:com.softwaremill.diffx)
 [![diffx-core Scala version support](https://index.scala-lang.org/softwaremill/diffx/diffx-core/latest-by-scala-version.svg)](https://index.scala-lang.org/softwaremill/diffx/diffx-core)
 
