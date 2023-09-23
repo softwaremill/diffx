@@ -28,6 +28,7 @@ jobs:
           distribution: "temurin"
           cache: "sbt"
           java-version: 11
+      - uses: coursier/setup-action@v1.3.0
       - name: Compile
         run: sbt $SBT_JAVA_OPTS -v "compileScoped ${{ matrix.scala-version }} ${{ matrix.target-platform }}"
       - name: Compile docs
@@ -36,10 +37,15 @@ jobs:
       - name: Test
         run: sbt $SBT_JAVA_OPTS -v "testScoped ${{ matrix.scala-version }} ${{ matrix.target-platform }}"
       - name: Generate LSIF
+        if: matrix.target-platform == 'JVM' && matrix.scala-version == 2.13
         run: cs launch com.sourcegraph:scip-java_2.13:0.8.2 -- index
       - name: Install sourcegraph/src
+        if: matrix.target-platform == 'JVM' && matrix.scala-version == 2.13
+
         run: yarn global add @sourcegraph/src
       - name: Upload LSIF data
+        if: matrix.target-platform == 'JVM' && matrix.scala-version == 2.13
+
         run: src code-intel upload -trace=3 -root . -file index.scip -github-token $GITHUB_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
