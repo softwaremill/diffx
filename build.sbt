@@ -27,6 +27,7 @@ lazy val commonSettings: Seq[Def.Setting[_]] = commonSmlBuildSettings ++ ossPubl
   organization := "com.softwaremill.diffx",
   scmInfo := Some(ScmInfo(url("https://github.com/softwaremill/diffx"), "git@github.com:softwaremill/diffx.git")),
   ideSkipProject := (scalaVersion.value != scalaIdeaVersion) || thisProjectRef.value.project.contains("JS"),
+  mimaPreviousArtifacts := Set.empty, // we only use MiMa for `core` for now, using enableMimaSettings
   updateDocs := Def.taskDyn {
     val files1 = UpdateVersionInDocs(sLog.value, organization.value, version.value)
     Def.task {
@@ -40,6 +41,16 @@ val compileDocs: TaskKey[Unit] = taskKey[Unit]("Compiles docs module throwing aw
 compileDocs := {
   (docs.jvm(scala213) / mdoc).toTask(" --out target/diffx-docs").value
 }
+
+val versioningSchemeSettings = Seq(versionScheme := Some("early-semver"))
+
+val enableMimaSettings = Seq(
+  mimaPreviousArtifacts := {
+    val previous = previousStableVersion.value
+    println(s"[info] Not a M or RC version, using previous version for MiMa check: $previous")
+    previous.map(organization.value %% moduleName.value % _).toSet
+  }
+)
 
 val versionSpecificScalaSources = {
   Compile / unmanagedSourceDirectories := {
@@ -59,6 +70,7 @@ val versionSpecificScalaSources = {
 
 lazy val core = (projectMatrix in file("core"))
   .settings(commonSettings)
+  .settings(versioningSchemeSettings)
   .settings(
     name := "diffx-core",
     libraryDependencies ++= {
@@ -83,7 +95,8 @@ lazy val core = (projectMatrix in file("core"))
     versionSpecificScalaSources
   )
   .jvmPlatform(
-    scalaVersions = List(scala212, scala213, scala3)
+    scalaVersions = List(scala212, scala213, scala3),
+      settings = enableMimaSettings
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213, scala3),
