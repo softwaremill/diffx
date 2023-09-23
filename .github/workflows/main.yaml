@@ -2,26 +2,39 @@ name: CI
 
 on:
   push:
-    branches: [ "**" ]
-    tags: [ v* ]
+    branches: ["**"]
+    tags: [v*]
   pull_request:
-    branches: [ "**" ]
-
+    branches: ["**"]
+env:
+  # .sbtopts specifies 8g, which is needed to import into IntelliJ, but on GH that exceeds the maximum available memory
+  SBT_JAVA_OPTS: -J-Xms4g -J-Xmx4g
 jobs:
   build:
-    runs-on: ubuntu-20.04
-    env:
-      JAVA_OPTS: -Xmx4G
+    # run on external PRs, but not on internal PRs since those will be run by push to branch
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        scala-version: ["2.12", "2.13", "3"]
+        target-platform: ["JVM", "JS"]
     steps:
       - uses: actions/checkout@v3.5.2
       - uses: coursier/cache-action@v6.4
-      - uses: coursier/setup-action@v1.3.0
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
         with:
-          jvm: zulu:17
-      - name: Run tests with sbt
-        run: sbt test
+          distribution: "temurin"
+          cache: "sbt"
+          java-version: 11
+      - name: Compile
+        run: sbt $SBT_JAVA_OPTS -v "compileScoped ${{ matrix.scala-version }} ${{ matrix.target-platform }}"
       - name: Compile docs
+        if: matrix.target-platform == 'JVM'
         run: sbt compileDocs
+      - name: Test
+        run: sbt $SBT_JAVA_OPTS -v "testScoped ${{ matrix.scala-version }} ${{ matrix.target-platform }}"
       - name: Generate LSIF
         run: cs launch com.sourcegraph:scip-java_2.13:0.8.2 -- index
       - name: Install sourcegraph/src
@@ -35,16 +48,22 @@ jobs:
     name: Publish release
     if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v'))
     needs: [build]
-    runs-on: ubuntu-20.04
-    env:
-      JAVA_OPTS: -Xmx4G
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3.5.2
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v6.4
-      - uses: olafurpg/setup-scala@v14
-      - run: sbt ci-release
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 11
+          cache: "sbt"
+      - name: Compile
+        run: sbt $SBT_JAVA_OPTS compile
+      - name: Publish artifacts
+        run: sbt $SBT_JAVA_OPTS ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}
@@ -66,5 +85,3 @@ jobs:
           version: "v${{ env.VERSION }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
