@@ -306,6 +306,10 @@ lazy val rootProject = project
     compileScoped := Def.inputTaskDyn {
       val args = spaceDelimited("<arg>").parsed
       Def.taskDyn((Compile / compile).all(filterByVersionAndPlatform(args.head, args(1))))
+    }.evaluated,
+    testScoped := Def.inputTaskDyn {
+      val args = spaceDelimited("<arg>").parsed
+      Def.taskDyn((Test / test).all(filterByVersionAndPlatform(args.head, args(1))))
     }.evaluated
   )
   .aggregate(allAggregates: _*)
