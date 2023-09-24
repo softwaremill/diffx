@@ -6,20 +6,18 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        shellPackages = [
-          "jre"
-          "sbt"
-          "nodejs"
-          "yarn"
-        ];
       in
       {
         devShell = pkgs.mkShell {
-          buildInputs = map (pkgName: pkgs.${pkgName}) shellPackages;
+          buildInputs = with pkgs; [
+            (sbt.override {
+              jre = temurin-jre-bin-17;
+            })
+            nodejs
+            yarn
+          ];
           welcomeMessage = ''
             Welcome to the Diffx Nix shell! 👋
-            Available packages:
-            ${builtins.concatStringsSep "\n" (map (n : "- ${n}") shellPackages)}
           '';
 
           shellHook = ''
@@ -29,3 +27,4 @@
       }
     );
 }
+
