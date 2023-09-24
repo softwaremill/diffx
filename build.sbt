@@ -7,7 +7,7 @@ import complete.DefaultParsers._
 
 val scala212 = "2.12.16"
 val scala213 = "2.13.8"
-val scala3 = "3.1.3"
+val scala3 = "3.2.2"
 
 val scalaIdeaVersion = scala3 // the version for which to import sources into intellij
 
@@ -96,7 +96,7 @@ lazy val core = (projectMatrix in file("core"))
   )
   .jvmPlatform(
     scalaVersions = List(scala212, scala213, scala3),
-      settings = enableMimaSettings
+    settings = enableMimaSettings
   )
   .jsPlatform(
     scalaVersions = List(scala212, scala213, scala3),
