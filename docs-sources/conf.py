@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# sttp documentation build configuration file, created by
+# diffx documentation build configuration file, created by
 # sphinx-quickstart on Thu Oct 12 15:51:09 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -42,7 +42,7 @@ release = ''
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = ['myst_parser', 'sphinx_rtd_theme']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -54,8 +54,10 @@ templates_path = ['_templates']
 from recommonmark.parser import CommonMarkParser
 from recommonmark.transform import AutoStructify
 
-source_parsers = {
-    '.md': CommonMarkParser,
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.txt': 'markdown',
+    '.md': 'markdown',
 }
 
 source_suffix = ['.rst', '.md']

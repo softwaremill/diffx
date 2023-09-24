@@ -2,10 +2,16 @@
 version: 2
 
 sphinx:
-   configuration: generated-docs/out/conf.py
+  configuration: generated-docs/out/conf.py
 
-# Optionally set the version of Python and requirements required to build your docs
 python:
-   version: 3.7
-   install:
-   - requirements: generated-docs/out/requirements.pip
+  install:
+  - requirements: generated-docs/out/requirements.txt
+
+build:
+  os: ubuntu-22.04
+  tools:
+    python: "3.7"
+    nodejs: "18" # not sure if needed but better to fix its version
+    rust: "1.64" # not sure if needed but better to fix its version
+    golang: "1.19" # not sure if needed but better to fix its version
