@@ -5,19 +5,19 @@ object DiffResultPrinter {
 
   def showIndented(diffResult: DiffResult, indent: Int)(implicit sc: ShowConfig): String = {
     diffResult match {
-      case dr: DiffResultObject        => showDiffResultObject(dr, indent)
-      case dr: DiffResultIterable      => showDiffResultIterable(dr, indent)
-      case dr: DiffResultMap           => showDiffResultMap(dr, indent)
-      case dr: DiffResultSet           => showDiffResultSet(dr, indent)
-      case dr: DiffResultString        => s"${dr.diffs.map(ds => showIndented(ds, indent)).mkString("\n")}"
-      case dr: DiffResultStringLine    => mergeChunks(dr.diffs).map(ds => showIndented(ds, indent)).mkString
-      case dr: DiffResultStringWord    => mergeChunks(dr.diffs).map(ds => showIndented(ds, indent)).mkString
-      case dr: DiffResultChunk         => arrowColor("[") + showChange(s"${dr.left}", s"${dr.right}", indent) + arrowColor("]")
-      case dr: DiffResultValue[_]      => showChange(s"${dr.left}", s"${dr.right}", indent)
-      case dr: IdenticalValue[_]       => defaultColor(s"${dr.value}", indent)
-      case dr: DiffResultMissing[_]    => missingColor(s"${dr.value}", indent)
-      case dr: DiffResultMissingChunk  => missingColor(s"[${dr.value}]", indent)
-      case dr: DiffResultAdditional[_] => additionalColor(s"${dr.value}", indent)
+      case dr: DiffResultObject     => showDiffResultObject(dr, indent)
+      case dr: DiffResultIterable   => showDiffResultIterable(dr, indent)
+      case dr: DiffResultMap        => showDiffResultMap(dr, indent)
+      case dr: DiffResultSet        => showDiffResultSet(dr, indent)
+      case dr: DiffResultString     => s"${dr.diffs.map(ds => showIndented(ds, indent)).mkString("\n")}"
+      case dr: DiffResultStringLine => mergeChunks(dr.diffs).map(ds => showIndented(ds, indent)).mkString
+      case dr: DiffResultStringWord => mergeChunks(dr.diffs).map(ds => showIndented(ds, indent)).mkString
+      case dr: DiffResultChunk => arrowColor("[") + showChange(s"${dr.left}", s"${dr.right}", indent) + arrowColor("]")
+      case dr: DiffResultValue[_]        => showChange(s"${dr.left}", s"${dr.right}", indent)
+      case dr: IdenticalValue[_]         => defaultColor(s"${dr.value}", indent)
+      case dr: DiffResultMissing[_]      => missingColor(s"${dr.value}", indent)
+      case dr: DiffResultMissingChunk    => missingColor(s"[${dr.value}]", indent)
+      case dr: DiffResultAdditional[_]   => additionalColor(s"${dr.value}", indent)
       case dr: DiffResultAdditionalChunk => additionalColor(s"[${dr.value}]", indent)
     }
   }
@@ -90,7 +90,8 @@ object DiffResultPrinter {
   }
 
   private def missingColor(s: String, indent: Int)(implicit c: ShowConfig): String = withColor(s, c.missing, indent)
-  private def additionalColor(s: String, indent: Int)(implicit c: ShowConfig): String = withColor(s, c.additional, indent)
+  private def additionalColor(s: String, indent: Int)(implicit c: ShowConfig): String =
+    withColor(s, c.additional, indent)
   private def defaultColor(s: String, indent: Int = 0)(implicit c: ShowConfig): String = withColor(s, c.default, indent)
   private def arrowColor(s: String)(implicit c: ShowConfig): String = c.arrow(s)
   private def showChange(l: String, r: String, indent: Int)(implicit c: ShowConfig): String =
