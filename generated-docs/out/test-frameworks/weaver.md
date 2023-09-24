@@ -5,13 +5,13 @@ To use with weaver, add the following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.weaver" %% "diffx-weaver" % "0.9.0" % Test
+"com.softwaremill.weaver" %% "diffx-weaver" % "0.9.0+2-f87b8412+20230924-1748-SNAPSHOT" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-weaver::0.9.0"
+ivy"com.softwaremill.diffx::diffx-weaver::0.9.0+2-f87b8412+20230924-1748-SNAPSHOT"
 ```
 
 ## Usage
