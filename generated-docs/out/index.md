@@ -61,8 +61,8 @@ compare(left, right)
 //       )
 //     ),
 //     "parent" -> DiffResultValue(
-//       left = "repl.MdocSession.App.Foo",
-//       right = "repl.MdocSession.App.Bar"
+//       left = "repl.MdocSession.MdocApp.Foo",
+//       right = "repl.MdocSession.MdocApp.Bar"
 //     )
 //   )
 // )

@@ -44,7 +44,7 @@ implicit val conf: DiffConfiguration = DiffConfiguration(makeIgnored =
 )
 // conf: DiffConfiguration = DiffConfiguration(makeIgnored = <function1>)
 val d = Diff[Person].ignore(_.age)
-// d: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@2b53172e
+// d: Diff[Person] = com.softwaremill.diffx.Diff$$anon$1@15be0d90
 d(Person("bob", 25), Person("bob", 30)) 
 // res2: DiffResult = DiffResultObject(
 //   name = "Person",
