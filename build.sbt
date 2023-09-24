@@ -77,11 +77,11 @@ lazy val core = (projectMatrix in file("core"))
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((3, _)) =>
           Seq(
-            "com.softwaremill.magnolia1_3" %%% "magnolia" % "1.1.2"
+            "com.softwaremill.magnolia1_3" %%% "magnolia" % "1.1.4"
           )
         case _ =>
           Seq(
-            "com.softwaremill.magnolia1_2" %%% "magnolia" % "1.1.2",
+            "com.softwaremill.magnolia1_2" %%% "magnolia" % "1.1.4",
             "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided
           )
       }
@@ -92,7 +92,11 @@ lazy val core = (projectMatrix in file("core"))
       "org.scalatest" %%% "scalatest-shouldmatchers" % scalatestVersion % Test,
       "io.github.cquiroz" %%% "scala-java-time" % "2.4.0" % Test
     ),
-    versionSpecificScalaSources
+    versionSpecificScalaSources,
+    scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => Seq("-Xmax-inlines:64")
+      case _            => Seq()
+    })
   )
   .jvmPlatform(
     scalaVersions = List(scala212, scala213, scala3),
