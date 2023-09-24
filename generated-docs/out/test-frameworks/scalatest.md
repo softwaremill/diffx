@@ -6,24 +6,24 @@ To use with scalatest, add the following dependency:
 
 For use with `should` matchers:
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest-should" % "0.9.0+2-f87b8412+20230924-1748-SNAPSHOT" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest-should" % "0.9.0" % Test
 ```
 
 For use with `must` matchers:
 ```scala
-"com.softwaremill.diffx" %% "diffx-scalatest-must" % "0.9.0+2-f87b8412+20230924-1748-SNAPSHOT" % Test
+"com.softwaremill.diffx" %% "diffx-scalatest-must" % "0.9.0" % Test
 ```
 
 ## mill
 
 For use with `should` matchers:
 ```scala
-ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0+2-f87b8412+20230924-1748-SNAPSHOT"
+ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0"
 ```
 
 For use with `must` matchers:
 ```scala
-ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0+2-f87b8412+20230924-1748-SNAPSHOT"
+ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0"
 ```
 
 ## Usage

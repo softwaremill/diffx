@@ -5,13 +5,13 @@ This module contains integration layer between [com.softwaremill.common.tagging]
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-tagging" % "0.9.0+2-f87b8412+20230924-1748-SNAPSHOT"
+"com.softwaremill.diffx" %% "diffx-tagging" % "0.9.0"
 ```
 
 ## mill 
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-tagging::0.9.0+2-f87b8412+20230924-1748-SNAPSHOT"
+ivy"com.softwaremill.diffx::diffx-tagging::0.9.0"
 ```
 
 ## Usage
