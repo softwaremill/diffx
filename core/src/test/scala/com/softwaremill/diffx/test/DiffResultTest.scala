@@ -179,7 +179,7 @@ class DiffResultTest extends AnyFreeSpec with Matchers {
         Map(
           "0" -> IdenticalValue(john),
           "1" -> DiffResultAdditional(mary),
-          "2" -> DiffResultMissing(jane),
+          "2" -> DiffResultMissing(jane)
         )
       ).show() shouldBe
         """List(

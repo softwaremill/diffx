@@ -67,6 +67,6 @@ class VerboseNonCaseClass(private val key: String, private val value: Int) {
 
   override def equals(obj: Any): Boolean = obj match {
     case other: VerboseNonCaseClass => other.key == key && other.value == value
-    case _ => false
+    case _                          => false
   }
 }
