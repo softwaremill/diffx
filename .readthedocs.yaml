@@ -6,8 +6,8 @@ sphinx:
 
 python:
   install:
-  - method: pip
-  - requirements: generated-docs/out/requirements.txt
+    - requirements: generated-docs/out/requirements.txt
+    - method: pip
 
 build:
   os: ubuntu-22.04
