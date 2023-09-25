@@ -49,4 +49,4 @@ For newer versions checkout the release changelog.
 
 | Diffx | weaver |
 | ----- | :----: |
-| 0.9.1 | 0.8.3  |
+| 0.9.0 | 0.8.3  |
