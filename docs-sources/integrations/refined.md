@@ -5,7 +5,7 @@ This module contains integration layer between [eu.timepit.refined](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-refined" % "@VERSION@" % Test    
+"com.softwaremill.diffx" %% "diffx-refined" % "@VERSION@" % Test
 ```
 
 ## mill

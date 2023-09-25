@@ -17,6 +17,7 @@ ivy"com.softwaremill.diffx::diffx-cats::0.9.0"
 ## Usage
 
 Assuming you have some data types from the cats library in your hierarchy:
+
 ```scala
 import cats.data._
 case class TestData(ints: NonEmptyList[String])

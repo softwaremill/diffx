@@ -5,11 +5,13 @@ To use with scalatest, add the following dependency:
 ## sbt
 
 For use with `should` matchers:
+
 ```scala
 "com.softwaremill.diffx" %% "diffx-scalatest-should" % "0.9.0" % Test
 ```
 
 For use with `must` matchers:
+
 ```scala
 "com.softwaremill.diffx" %% "diffx-scalatest-must" % "0.9.0" % Test
 ```
@@ -17,11 +19,13 @@ For use with `must` matchers:
 ## mill
 
 For use with `should` matchers:
+
 ```scala
 ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0"
 ```
 
 For use with `must` matchers:
+
 ```scala
 ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0"
 ```
@@ -29,6 +33,7 @@ ivy"com.softwaremill.diffx::diffx-scalatest-must::0.9.0"
 ## Usage
 
 Then, depending on the chosen matcher style extend or import relevant trait/object:
+
 - should -> `com.softwaremill.diffx.scalatest.DiffShouldMatcher`
 - must -> `com.softwaremill.diffx.scalatest.DiffMustMatcher`
 
@@ -63,7 +68,7 @@ Below table shows past Diffx releases with the corresponding scalatest version t
 For newer versions checkout the release changelog.
 
 | Diffx  | scalatest |
-|--------|:---------:|
+| ------ | :-------: |
 | 0.7.0  |  3.2.10   |
 | 0.6.0  |  3.2.10   |
 | 0.5.x  |   3.2.9   |
@@ -76,4 +81,3 @@ For newer versions checkout the release changelog.
 | 0.3.30 |   3.2.3   |
 | 0.3.29 |   3.1.2   |
 | 0.3.28 |   3.1.1   |
-

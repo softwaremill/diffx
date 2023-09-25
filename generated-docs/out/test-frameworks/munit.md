@@ -47,13 +47,12 @@ assertEqual(left, right)
 Below table shows past Diffx releases with the corresponding munit version they were build with.
 For newer versions checkout the release changelog.
 
-| Diffx  | scalatest |
-|--------|:---------:|
-| 0.7.0  |  0.7.29   |
-| 0.6.0  |  0.7.29   |
-| 0.5.6  |  0.7.28   |
-| 0.5.5  |  0.7.27   |
-| 0.5.4  |  0.7.27   |
-| 0.5.3  |  0.7.26   |
-| 0.5.2  |  0.7.26   |
-
+| Diffx | scalatest |
+| ----- | :-------: |
+| 0.7.0 |  0.7.29   |
+| 0.6.0 |  0.7.29   |
+| 0.5.6 |  0.7.28   |
+| 0.5.5 |  0.7.27   |
+| 0.5.4 |  0.7.27   |
+| 0.5.3 |  0.7.26   |
+| 0.5.2 |  0.7.26   |

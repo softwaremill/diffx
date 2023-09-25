@@ -49,7 +49,7 @@ Below table shows past Diffx releases with the corresponding specs2 version they
 For newer versions checkout the release changelog.
 
 | Diffx  |  scalatest   |
-|--------|:------------:|
+| ------ | :----------: |
 | 0.7.0  |    4.13.1    |
 | 0.6.0  |    4.13.0    |
 | 0.5.6  | 4.12.4-js-ec |
@@ -68,4 +68,3 @@ For newer versions checkout the release changelog.
 | 0.3.30 |    4.10.5    |
 | 0.3.29 |    4.9.4     |
 | 0.3.28 |    4.9.3     |
-
