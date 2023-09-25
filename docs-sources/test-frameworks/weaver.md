@@ -5,7 +5,7 @@ To use with weaver, add the following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.weaver" %% "diffx-weaver" % "@VERSION@" % Test
+"com.softwaremill.diffx" %% "diffx-weaver" % "@VERSION@" % Test
 ```
 
 ## mill
@@ -48,5 +48,5 @@ Below table shows past Diffx releases with the corresponding weaver version they
 For newer versions checkout the release changelog.
 
 | Diffx | weaver |
-| ----- | :----: |
-| 0.9.0 | 0.8.3  |
+|-------| :----: |
+| 0.9.1 | 0.8.3  |
