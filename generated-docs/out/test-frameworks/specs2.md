@@ -5,13 +5,13 @@ To use with specs2, add the following dependency:
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-specs2" % "0.9.1" % Test
+"com.softwaremill.diffx" %% "diffx-specs2" % "0.9.0" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-specs2::0.9.1"
+ivy"com.softwaremill.diffx::diffx-specs2::0.9.0"
 ```
 
 ## Usage
@@ -49,7 +49,7 @@ Below table shows past Diffx releases with the corresponding specs2 version they
 For newer versions checkout the release changelog.
 
 | Diffx  |  scalatest   |
-|--------|:------------:|
+| ------ | :----------: |
 | 0.7.0  |    4.13.1    |
 | 0.6.0  |    4.13.0    |
 | 0.5.6  | 4.12.4-js-ec |
@@ -68,4 +68,3 @@ For newer versions checkout the release changelog.
 | 0.3.30 |    4.10.5    |
 | 0.3.29 |    4.9.4     |
 | 0.3.28 |    4.9.3     |
-

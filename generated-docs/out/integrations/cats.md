@@ -5,18 +5,19 @@ This module contains integration layer between [org.typelevel.cats](https://gith
 ## sbt
 
 ```scala
-"com.softwaremill.diffx" %% "diffx-cats" % "0.9.1" % Test    
+"com.softwaremill.diffx" %% "diffx-cats" % "0.9.0" % Test
 ```
 
 ## mill
 
 ```scala
-ivy"com.softwaremill.diffx::diffx-cats::0.9.1"
+ivy"com.softwaremill.diffx::diffx-cats::0.9.0"
 ```
 
 ## Usage
 
 Assuming you have some data types from the cats library in your hierarchy:
+
 ```scala
 import cats.data._
 case class TestData(ints: NonEmptyList[String])

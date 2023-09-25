@@ -48,5 +48,5 @@ Below table shows past Diffx releases with the corresponding weaver version they
 For newer versions checkout the release changelog.
 
 | Diffx | weaver |
-|-------| :----: |
+| ----- | :----: |
 | 0.9.1 | 0.8.3  |

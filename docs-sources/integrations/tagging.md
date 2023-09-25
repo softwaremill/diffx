@@ -8,7 +8,7 @@ This module contains integration layer between [com.softwaremill.common.tagging]
 "com.softwaremill.diffx" %% "diffx-tagging" % "@VERSION@"
 ```
 
-## mill 
+## mill
 
 ```scala
 ivy"com.softwaremill.diffx::diffx-tagging::@VERSION@"
