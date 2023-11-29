@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: coursier/cache-action@v6.4
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           cache: "sbt"
@@ -60,7 +60,7 @@ jobs:
         with:
           fetch-depth: 0 # checkout tags so that dynver works properly (we need the version for MiMa)
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: 11
@@ -78,7 +78,7 @@ jobs:
         with:
           fetch-depth: 0 # checkout tags so that dynver works properly (we need the version for MiMa)
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: 11
@@ -97,7 +97,7 @@ jobs:
           fetch-depth: 0
       - uses: coursier/cache-action@v6.4
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: 11
