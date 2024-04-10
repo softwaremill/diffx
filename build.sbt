@@ -5,7 +5,7 @@ import com.softwaremill.SbtSoftwareMillCommon.commonSmlBuildSettings
 import com.softwaremill.Publish.{ossPublishSettings, updateDocs}
 import complete.DefaultParsers._
 
-val scala212 = "2.12.16"
+val scala212 = "2.12.19"
 val scala213 = "2.13.13"
 val scala3 = "3.2.2"
 
